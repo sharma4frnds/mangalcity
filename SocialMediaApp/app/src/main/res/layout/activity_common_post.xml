@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:layout_marginTop="60dp"
+        android:descendantFocusability="beforeDescendants"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+                <RelativeLayout
+                    android:id="@+id/relativeLayout2"
+                    android:layout_width="match_parent"
+                    android:layout_height="290dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/post_border">
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="240dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:background="#ADD8E6"
+                        android:id="@+id/view" />
+
+                    <EditText
+                        android:id="@+id/editText_textpost"
+                        android:layout_width="300dp"
+                        android:layout_height="50dp"
+                        android:layout_alignBottom="@+id/person_profile_image"
+                        android:layout_marginBottom="13dp"
+                        android:layout_toEndOf="@+id/person_profile_image"
+                        android:layout_toRightOf="@+id/person_profile_image"
+                        android:background="@null"
+                        android:ems="10"
+                        android:fontFamily="@font/pt_sans_web_regular"
+                        android:gravity="center"
+                        android:hint="Write SomeThing Here"
+                        android:inputType="textPersonName"
+                        android:maxLines="2"
+                        android:textSize="15sp" />
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/person_profile_image"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+
+                        android:layout_alignLeft="@+id/view"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignStart="@+id/view"
+                        android:layout_marginTop="19dp"
+                        android:background="@drawable/user" />
+
+                    <ImageView
+                        android:id="@+id/gallery_upload"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/view"
+                        android:layout_alignStart="@+id/view"
+                        android:layout_below="@+id/view"
+                        android:layout_marginTop="12dp"
+                        app:srcCompat="@drawable/gallery_icon" />
+
+                    <ImageView
+                        android:id="@+id/imageView5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignEnd="@+id/person_profile_image"
+                        android:layout_alignRight="@+id/person_profile_image"
+                        android:layout_alignTop="@+id/gallery_upload"
+                        app:srcCompat="@drawable/videoicon" />
+
+                    <ImageView
+
+                        android:id="@+id/setImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:layout_alignLeft="@+id/view"
+                        android:layout_alignStart="@+id/view"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_below="@+id/person_profile_image"
+                        android:scaleType="fitXY"
+                        android:layout_marginTop="21dp"
+                        android:background="@drawable/user" />
+
+                    <!--<TextView-->
+                    <!--android:id="@+id/textView3"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_above="@+id/editText"-->
+                    <!--android:layout_marginBottom="19dp"-->
+                    <!--android:layout_marginLeft="30dp"-->
+                    <!--android:layout_marginStart="30dp"-->
+                    <!--android:layout_toEndOf="@+id/person_profile_image"-->
+                    <!--android:layout_toRightOf="@+id/person_profile_image"-->
+                    <!--android:text="Say Something" />-->
+                </RelativeLayout>
+
+
+                <!--<RelativeLayout-->
+                <!--android:id="@+id/trending"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="380dp"-->
+                <!--android:layout_below="@+id/textView3"-->
+                <!--android:layout_marginTop="40dp">-->
+                <!--<android.support.v7.widget.RecyclerView-->
+                <!--android:id="@+id/recyclerview_horizental"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--&gt;-->
+                <!--</android.support.v7.widget.RecyclerView>-->
+                <!--</RelativeLayout>-->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/relativeLayout2"
+                    >
+
+
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recyclerview"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="70dp"
+
+                        >
+
+                    </android.support.v7.widget.RecyclerView>
+                </RelativeLayout>
+
+                <Button
+                    android:id="@+id/post_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignEnd="@+id/relativeLayout2"
+                    android:layout_alignRight="@+id/relativeLayout2"
+                    android:layout_below="@+id/relativeLayout2"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginRight="14dp"
+                    android:layout_marginTop="14dp"
+                    android:background="@color/appBlue"
+                    android:fontFamily="@font/pt_sans_web_bold"
+                    android:text="post"
+                    android:textColor="@color/white" />
+
+
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

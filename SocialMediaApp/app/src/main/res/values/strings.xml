@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">MangalCity</string>
+
+    <string name="next">NEXT</string>
+    <string name="skip">SKIP</string>
+    <string name="start">GOT IT</string>
+    <string name="read_file">This app needs access to your file storage so that it can read photos.</string>
+
+
+    <string name="contens">Social media is an integral part of today’s society. With loads of information being disseminated over the Internet, social media has become the very fabric upon which our society is being built. The people who are at the forefront of molding the future of social networking sites are teens and children. This is because vast majorities of the people who use the Internet are children and teens. Reportedly, many teens spend an average of 8 hours online every day. Much of that time is thought to be spent on social media sites, with only some attention focused on research and learning.
+
+For the past decade, social media has been touted as a platform for youngsters to congregate online and interact socially as if they were in person, regardless of their distance from each other. There are likely teens out there who do not know of many other uses of the Internet other than their favorite social media platform.</string>
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="textpost">Write something here...\n
+यहां कुछ लिखें ...</string>
+</resources>

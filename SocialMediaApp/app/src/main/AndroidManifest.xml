@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="net.clamour.mangalcity">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/fab"
+        android:label="@string/app_name"
+        android:roundIcon="@drawable/fab"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".profile.LoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".profile.RegistrationActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".profile.SplashScreen"
+            android:screenOrientation="portrait">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+        <activity
+            android:name=".profile.GetOtp"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Home.PostActivity"
+            android:screenOrientation="portrait" >
+              </activity>
+        <activity
+            android:name=".profile.RegistrationActivity2"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".profile.SlidingSplash"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Home.DrawerBaseActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".profile.UserProfile"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".sidebar.ChangePassword"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".sidebar.AboutUs"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".PostTabs.CommonPostActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login" />
+        <activity
+            android:name=".countrypost.CountryPost"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".districtpost.DistrictPost"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".statepost.StatePost"
+            android:screenOrientation="portrait" />
+        <activity android:name=".PostTabs.ActivityLog" />
+        <activity android:name=".PostTabs.SharePostActivity"></activity>
+    </application>
+
+</manifest>
