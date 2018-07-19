@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -17,6 +17,26 @@
         android:roundIcon="@drawable/fab"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.facebook.CustomTabActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="@string/fb_login_protocol_scheme" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait" />
@@ -29,21 +49,18 @@
         <activity
             android:name=".profile.SplashScreen"
             android:screenOrientation="portrait">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".profile.GetOtp"
             android:screenOrientation="portrait" />
         <activity
             android:name=".Home.PostActivity"
-            android:screenOrientation="portrait" >
-              </activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".profile.RegistrationActivity2"
             android:screenOrientation="portrait" />
@@ -68,6 +85,14 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
         <activity
             android:name=".countrypost.CountryPost"
             android:screenOrientation="portrait" />
@@ -78,7 +103,12 @@
             android:name=".statepost.StatePost"
             android:screenOrientation="portrait" />
         <activity android:name=".PostTabs.ActivityLog" />
-        <activity android:name=".PostTabs.SharePostActivity"></activity>
+        <activity android:name=".PostTabs.SharePostActivity" />
+        <activity android:name=".PostTabs.FeedBackActivity" />
+        <activity android:name=".Home.OtherUserProfile" />
+        <activity android:name=".Home.BottomNavigationPostActivity" />
+        <activity android:name=".Home.OpenImageActivity" />
+        <activity android:name=".Home.SearchActivity"></activity>
     </application>
 
 </manifest>

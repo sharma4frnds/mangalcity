@@ -10,6 +10,24 @@ public class UserPostResponse {
     public String first_name;
     private String last_name;
     private String image;
+    private String url;
+    private String cover_image;
+
+    public String getCover_image() {
+        return cover_image;
+    }
+
+    public void setCover_image(String cover_image) {
+        this.cover_image = cover_image;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     public String getId() {
         return id;

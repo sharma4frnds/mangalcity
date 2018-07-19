@@ -2,6 +2,7 @@ package net.clamour.mangalcity.profile;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import net.clamour.mangalcity.Home.PostActivity;
 import net.clamour.mangalcity.R;
 
 
@@ -31,6 +33,9 @@ public class SlidingSplash extends AppCompatActivity {
     private int[] layouts;
     private Button btnSkip, btnNext;
     private PreferenceManager prefManager;
+    SharedPreferences slidingPrefrences;
+    SharedPreferences LoginPrefrences;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +48,20 @@ public class SlidingSplash extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_sliding_splash);
+
+        slidingPrefrences=this.getSharedPreferences("net.clamour.mangalcity.profile.SlidingSplash",MODE_PRIVATE);
+       // LoginPrefrences = this.getSharedPreferences("net.clamour.mangalcity.profile.LoginActivity", MODE_PRIVATE);
+        if(slidingPrefrences.contains("slidingsplashloading")){
+
+            Intent intent=new Intent(SlidingSplash.this,LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
+        saveSliding();
+
+
+
 
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         dotsLayout = (LinearLayout) findViewById(R.id.layoutDots);
@@ -193,5 +212,12 @@ public class SlidingSplash extends AppCompatActivity {
             View view = (View) object;
             container.removeView(view);
         }
+    }
+    public void saveSliding(){
+
+        SharedPreferences.Editor editor = slidingPrefrences.edit();
+        editor.putString("slidingsplashloading", "slidingsplashloading");
+        editor.commit();
+
     }
 }

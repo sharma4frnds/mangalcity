@@ -96,6 +96,19 @@
             android:textStyle="bold"
             />
 
+        <TextView
+            android:id="@+id/resendOtp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/submit_otp"
+            android:layout_alignRight="@+id/submit_otp"
+            android:layout_below="@+id/submit_otp"
+            android:layout_marginTop="17dp"
+            android:textSize="18sp"
+            android:fontFamily="@font/pt_sans_web_bold"
+            android:textColor="@color/black"
+            android:text="Resend OTP" />
+
     </RelativeLayout>
 
 

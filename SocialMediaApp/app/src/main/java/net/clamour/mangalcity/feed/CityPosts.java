@@ -1,0 +1,128 @@
+
+package net.clamour.mangalcity.feed;
+
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
+
+public class CityPosts {
+
+    @SerializedName("current_page")
+    private Long currentPage;
+    @Expose
+    private List<FeedPostData> data;
+    @Expose
+    private Long from;
+    @SerializedName("last_page")
+    private Long lastPage;
+    @SerializedName("next_page_url")
+    private String nextPageUrl;
+    @Expose
+    private String path;
+    @SerializedName("per_page")
+    private Long perPage;
+    @SerializedName("prev_page_url")
+    private Object prevPageUrl;
+    @Expose
+    private Long to;
+    @Expose
+    private Long total;
+
+    public Long getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(Long currentPage) {
+        this.currentPage = currentPage;
+    }
+
+    public List<FeedPostData> getData() {
+        return data;
+    }
+
+    public void setData(List<FeedPostData> data) {
+        this.data = data;
+    }
+
+    public Long getFrom() {
+        return from;
+    }
+
+    public void setFrom(Long from) {
+        this.from = from;
+    }
+
+    public Long getLastPage() {
+        return lastPage;
+    }
+
+    public void setLastPage(Long lastPage) {
+        this.lastPage = lastPage;
+    }
+
+    public String getNextPageUrl() {
+        return nextPageUrl;
+    }
+
+    public void setNextPageUrl(String nextPageUrl) {
+        this.nextPageUrl = nextPageUrl;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public Long getPerPage() {
+        return perPage;
+    }
+
+    public void setPerPage(Long perPage) {
+        this.perPage = perPage;
+    }
+
+    public Object getPrevPageUrl() {
+        return prevPageUrl;
+    }
+
+    public void setPrevPageUrl(Object prevPageUrl) {
+        this.prevPageUrl = prevPageUrl;
+    }
+
+    public Long getTo() {
+        return to;
+    }
+
+    public void setTo(Long to) {
+        this.to = to;
+    }
+
+    public Long getTotal() {
+        return total;
+    }
+
+    public void setTotal(Long total) {
+        this.total = total;
+    }
+
+    @Override
+    public String toString() {
+        return "CityPosts{" +
+                "currentPage=" + currentPage +
+                ", data=" + data +
+                ", from=" + from +
+                ", lastPage=" + lastPage +
+                ", nextPageUrl='" + nextPageUrl + '\'' +
+                ", path='" + path + '\'' +
+                ", perPage=" + perPage +
+                ", prevPageUrl=" + prevPageUrl +
+                ", to=" + to +
+                ", total=" + total +
+                '}';
+    }
+}

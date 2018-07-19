@@ -42,52 +42,111 @@
 
 
                     <RelativeLayout
+                        android:id="@+id/relativeLayout5"
                         android:layout_width="match_parent"
-                        android:layout_height="250dp"
-                        android:background="@drawable/profile_background"
-                        android:id="@+id/relativeLayout5">
+                        android:layout_height="200dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:background="@color/lightBlue">
+
+                        <ImageView
+                            android:id="@+id/coverImage"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
+                            android:scaleType="centerCrop" />
 
                         <de.hdodenhof.circleimageview.CircleImageView
                             android:id="@+id/person_profile_image"
                             android:layout_width="100dp"
                             android:layout_height="100dp"
-                            android:layout_alignParentTop="true"
-                            android:layout_centerHorizontal="true"
-                            android:layout_marginTop="60dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:layout_marginBottom="16dp"
+                            android:layout_marginLeft="17dp"
+                            android:layout_marginStart="17dp"
                             android:background="@drawable/user" />
 
-                        <TextView
-                            android:id="@+id/textView6"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/person_profile_image"
-                            android:layout_centerHorizontal="true"
-                            android:layout_marginTop="14dp"
-                            android:textColor="@color/white"
-                            android:fontFamily="@font/pt_sans_web_regular"
-                            android:text="Pooja Kumari" />
 
-                        <ImageView
-                            android:id="@+id/camera_icon"
+                        <!--<ImageView-->
+                            <!--android:id="@+id/camera_cover"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_alignParentEnd="true"-->
+                            <!--android:layout_alignParentRight="true"-->
+                            <!--android:layout_below="@+id/user_name"-->
+                            <!--android:layout_marginEnd="19dp"-->
+                            <!--android:layout_marginRight="19dp"-->
+                            <!--android:layout_marginTop="20dp"-->
+                            <!--android:background="@drawable/camera" />-->
+
+                        <!--<ImageView-->
+                            <!--android:id="@+id/profile_camera"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_alignBottom="@+id/person_profile_image"-->
+                            <!--android:layout_alignEnd="@+id/person_profile_image"-->
+                            <!--android:layout_alignRight="@+id/person_profile_image"-->
+                            <!--android:layout_marginBottom="2dp"-->
+                            <!--app:srcCompat="@drawable/ic_create_black_24dp" />-->
+
+                        <EditText
+                            android:id="@+id/editText_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_alignBottom="@+id/person_profile_image"
                             android:layout_alignParentEnd="true"
-                            android:layout_alignParentRight="true"
-                            android:layout_below="@+id/textView6"
-                            android:layout_marginEnd="19dp"
-                            android:layout_marginRight="19dp"
-                            android:background="@drawable/camera" />
+                            android:layout_marginBottom="36dp"
+                            android:background="@null"
+                            android:cursorVisible="false"
 
-                        <ImageView
-                            android:id="@+id/imageView3"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignTop="@+id/textView6"
-                            android:layout_toEndOf="@+id/person_profile_image"
-                            android:layout_toRightOf="@+id/person_profile_image"
-                            app:srcCompat="@drawable/ic_create_black_24dp" />
+                            android:ems="10"
+                            android:fontFamily="@font/pt_sans_web_regular"
+                            android:inputType="textPersonName"
+                            android:text="Name"
+                            android:textColor="@color/black"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
 
                     </RelativeLayout>
+
+                    <!--<RelativeLayout-->
+                        <!--android:id="@+id/r0"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="50dp"-->
+                        <!--android:layout_alignParentLeft="true"-->
+                        <!--android:layout_alignParentStart="true"-->
+                        <!--android:layout_marginTop="10dp"-->
+                        <!--android:background="@color/lightBlue"-->
+                        <!--android:layout_below="@+id/relativeLayout5">-->
+
+                        <!--<EditText-->
+                            <!--android:id="@+id/name_pro"-->
+                            <!--android:layout_width="300dp"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_alignParentLeft="true"-->
+                            <!--android:layout_alignParentStart="true"-->
+                            <!--android:layout_centerVertical="true"-->
+                            <!--android:layout_marginLeft="22dp"-->
+                            <!--android:layout_marginStart="22dp"-->
+                            <!--android:background="@null"-->
+                            <!--android:inputType="number"-->
+                            <!--android:maxLength="10"-->
+                            <!--android:fontFamily="@font/pt_sans_web_regular"-->
+                            <!--android:hint="UserName."-->
+                            <!--android:textSize="15sp" />-->
+                        <!--<ImageView-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:background="@drawable/ic_create_black_24dp"-->
+                            <!--android:layout_centerVertical="true"-->
+                            <!--android:layout_marginRight="20dp"-->
+                            <!--android:layout_alignParentRight="true"/>-->
+
+                    <!--</RelativeLayout>-->
 
                     <RelativeLayout
                         android:id="@+id/r1"
@@ -96,6 +155,7 @@
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:background="@color/lightBlue"
+                        android:layout_marginTop="20dp"
                         android:layout_below="@+id/relativeLayout5">
 
                         <EditText
@@ -310,20 +370,21 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/r7"
-                        android:text="Home Location"
                         android:layout_marginLeft="22dp"
-                        android:textSize="20sp"
                         android:layout_marginTop="20dp"
+                        android:fontFamily="@font/pt_sans_web_bold"
+                        android:text="Current Location"
                         android:textColor="@color/black"
-                        android:fontFamily="@font/pt_sans_web_bold"/>
+                        android:textSize="20sp" />
 
                     <LinearLayout
                         android:id="@+id/linear_home"
                         android:layout_width="match_parent"
                         android:layout_height="260dp"
-
+                       android:orientation="vertical"
                         android:layout_marginTop="30dp"
                         android:layout_below="@+id/textcurrent">
+
 
 
                         <LinearLayout
@@ -339,7 +400,7 @@
                                 android:padding="2dp">
 
                                 <Spinner
-                                    android:id="@+id/country_spinner"
+                                    android:id="@+id/country_spinnercurrentLocation"
                                     android:drawSelectorOnTop="true"
 
                                     android:layout_width="fill_parent"
@@ -362,9 +423,8 @@
                                 android:padding="2dp">
 
                                 <Spinner
-                                    android:id="@+id/state_spinner"
+                                    android:id="@+id/state_spinnercurrentLocation"
                                     android:drawSelectorOnTop="true"
-
                                     android:layout_width="fill_parent"
                                     android:layout_height="wrap_content"
 
@@ -385,7 +445,7 @@
                                 android:padding="2dp">
 
                                 <Spinner
-                                    android:id="@+id/district_spinner"
+                                    android:id="@+id/district_spinnercurrentLocation"
                                     android:drawSelectorOnTop="true"
                                     android:layout_width="fill_parent"
                                     android:layout_height="wrap_content"
@@ -406,7 +466,7 @@
                                 android:padding="2dp">
 
                                 <Spinner
-                                    android:id="@+id/block_spinner"
+                                    android:id="@+id/block_spinnercurrentLocation"
                                     android:drawSelectorOnTop="true"
                                     android:layout_width="fill_parent"
                                     android:layout_height="wrap_content"
@@ -425,26 +485,45 @@
                         </LinearLayout>
 
 
+
+
                     </LinearLayout>
+
+
+
                     <TextView
                         android:id="@+id/texthome"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/linear_home"
-                        android:text="Current Location"
                         android:layout_marginLeft="22dp"
-                        android:textSize="20sp"
-                        android:layout_marginTop="20dp"
+                        android:fontFamily="@font/pt_sans_web_bold"
+                        android:text="HomeLocation"
+                        android:layout_marginTop="40dp"
                         android:textColor="@color/black"
-                        android:fontFamily="@font/pt_sans_web_bold"/>
+                        android:textSize="20sp" />
+
+                    <CheckBox
+                        android:id="@+id/checkbox_home"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="Set your home location as current location"
+                        android:layout_below="@+id/texthome"
+                        android:onClick="itemClicked"
+                        android:layout_marginBottom="200dp"
+
+                        />
+
 
                     <LinearLayout
                         android:id="@+id/linear_current"
                         android:layout_width="match_parent"
-                        android:layout_height="260dp"
-
-                        android:layout_marginTop="30dp"
+                        android:layout_height="390dp"
+                        android:layout_marginTop="70dp"
                         android:layout_below="@+id/texthome">
+
+
 
 
                         <LinearLayout
@@ -549,22 +628,17 @@
                     </LinearLayout>
 
 
-
-
                     <Button
-                        android:id="@+id/button"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/profile_update"
+                        android:layout_width="200dp"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_below="@+id/r7"
-                        android:layout_marginEnd="135dp"
-                        android:layout_marginRight="135dp"
-                        android:layout_marginTop="699dp"
+                        android:layout_alignBottom="@+id/linear_current"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginBottom="22dp"
                         android:background="@color/appBlue"
-                        android:textColor="@color/white"
                         android:fontFamily="@font/pt_sans_web_regular"
-                        android:text="Submit" />
+                        android:text="Submit"
+                        android:textColor="@color/white" />
 
 
                 </RelativeLayout>
@@ -574,15 +648,17 @@
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
+
     <ListView
 
         android:id="@+id/left_drawer"
-        android:layout_height="match_parent"
         android:layout_width="240dp"
-        android:divider="@android:color/transparent"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_gravity="start"
         android:background="#fff"
-        android:choiceMode="singleChoice"
 
-        />
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent" />
 </android.support.v4.widget.DrawerLayout>

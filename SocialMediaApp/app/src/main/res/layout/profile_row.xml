@@ -8,20 +8,22 @@
     android:padding="16dp"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/drawer_profile_image"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginBottom="16dp"
         android:scaleType="centerCrop"
+        android:layout_gravity="center"
         android:src="@drawable/user"
         />
 
     <TextView
         android:id="@+id/name"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Test Test"
+        android:layout_gravity="center"
         android:textColor="@color/black"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textStyle="bold"
@@ -29,12 +31,12 @@
 
     <TextView
         android:id="@+id/email"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="test@gmail.com"
+        android:text="Welcome"
+        android:layout_gravity="center"
         android:textColor="@color/black"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        style="@style/Widget.AppCompat.Spinner"
         />
 
 </LinearLayout>

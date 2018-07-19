@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -18,19 +19,20 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
-import net.clamour.mangalcity.Home.PostActivity;
-import net.clamour.mangalcity.PostTabs.CommonPostActivity;
+import net.clamour.mangalcity.Home.PaginationScrollListener;
+import net.clamour.mangalcity.PostTabs.FeedBackActivity;
 import net.clamour.mangalcity.PostTabs.PostAdapter;
-import net.clamour.mangalcity.PostTabs.PostModalClass;
 import net.clamour.mangalcity.R;
+import net.clamour.mangalcity.ResponseModal.CityPostResponse;
 import net.clamour.mangalcity.ResponseModal.CountryPostResponse;
+import net.clamour.mangalcity.ResponseModal.DistrictMainResponse;
 import net.clamour.mangalcity.ResponseModal.FeedsResponse;
-import net.clamour.mangalcity.ResponseModal.LoginResponse;
-import net.clamour.mangalcity.ResponseModal.UserPostResponse;
-import net.clamour.mangalcity.profile.LoginActivity;
+import net.clamour.mangalcity.ResponseModal.PostDeleteResponse;
+import net.clamour.mangalcity.ResponseModal.StateMainResponse;
+import net.clamour.mangalcity.districtpost.DistrictPost;
 import net.clamour.mangalcity.webservice.ApiClient;
 import net.clamour.mangalcity.webservice.ApiInterface;
 
@@ -47,13 +49,24 @@ public class StatePost extends AppCompatActivity {
     ApiInterface apiInterface;
     Boolean isSucess;
     private static final String TAG = "CountryPost";
-    List<CountryPostResponse>countryPostResponses_array;
+    List<CityPostResponse>statePostResponses_array;
     //  ArrayList<PostModalClass> post_array;
     PostAdapter postAdapter;
     private RecyclerView recyclerView;
 
     SharedPreferences LoginPrefrences;
     String UserToken;
+    LinearLayoutManager linearLayoutManager;
+    private static final int PAGE_START = 1;
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
+    private int TOTAL_PAGES = 15;
+    private int currentPage = PAGE_START;
+    List<CityPostResponse> nextList;
+    String post_id;
+    Button btn_cancel,reportspam,delete,download;
+    BottomSheetDialog dialog;
+    ProgressBar progressBar;
 
 
 
@@ -63,125 +76,383 @@ public class StatePost extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_state_post);
 
-        Toolbar toolbar1 = (Toolbar) findViewById(R.id.main_page_toolbar);
-        toolbar1.setTitleTextColor(Color.parseColor("#ffffff"));
-        toolbar1.setTitle("State Post");
-
-
-        setSupportActionBar(toolbar1);
-
-        final Drawable upArrow = getResources().getDrawable(R.drawable.ic_arrow_back_black_24dp);
-        upArrow.setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
-
-        getSupportActionBar().setHomeAsUpIndicator(upArrow);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-        LoginPrefrences = this.getSharedPreferences("net.clamour.mangalcity.profile.LoginActivity", MODE_PRIVATE);
-        UserToken=LoginPrefrences.getString("userToken","");
-
-
-
-
-        countryPostResponses_array=new ArrayList<>();
-        recyclerView=(RecyclerView)findViewById(R.id.recyclerview);
-//        gallery_upload=(ImageView)findViewById(R.id.gallery_upload);
-//        setImage=(ImageView)findViewById(R.id.setImage);
-//        PostText_et=(EditText)findViewById(R.id.editText_textpost) ;
-//        post_button=(Button)findViewById(R.id.post_button);
+//        Toolbar toolbar1 = (Toolbar) findViewById(R.id.main_page_toolbar);
+//        toolbar1.setTitleTextColor(Color.parseColor("#ffffff"));
+//        toolbar1.setTitle("State Post");
 //
-//        gallery_upload.setOnClickListener(new View.OnClickListener() {
+//
+//        setSupportActionBar(toolbar1);
+//
+//        final Drawable upArrow = getResources().getDrawable(R.drawable.ic_arrow_back_black_24dp);
+//        upArrow.setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
+//
+//        getSupportActionBar().setHomeAsUpIndicator(upArrow);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayShowHomeEnabled(true);
+//
+//        LoginPrefrences = this.getSharedPreferences("net.clamour.mangalcity.profile.LoginActivity", MODE_PRIVATE);
+//        UserToken=LoginPrefrences.getString("userToken","");
+//
+//
+//
+//
+//        progressBar = (ProgressBar) findViewById(R.id.main_progress);
+//        recyclerView=(RecyclerView)findViewById(R.id.recyclerview);
+//
+//        statePostResponses_array=new ArrayList<>();
+//        linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+//        recyclerView.setLayoutManager(linearLayoutManager);
+//
+//        recyclerView.setItemAnimator(new DefaultItemAnimator());
+//        postAdapter=new PostAdapter(StatePost.this);
+//        recyclerView.setAdapter(postAdapter);
+//
+//        postAdapter.setOnItemClicklistner(new PostAdapter.setOnItemClickListener() {
 //            @Override
-//            public void onClick(View view) {
-//                //captureImage();
+//            public void onViewMoreClickListner(int position) {
+//                init_modal_bottomsheet(position);
+//
+//            }
+//        });
+//
+//        recyclerView.addOnScrollListener(new PaginationScrollListener(linearLayoutManager) {
+//            @Override
+//            protected void showForm() {
+//                // formLayout.setVisibility(View.VISIBLE);
+//            }
+//
+//            @Override
+//            protected void hideForm() {
+//
+//                //formLayout.setVisibility(View.GONE);
+//            }
+//
+//            @Override
+//            protected void onScrolledToEnd() {
+//                Log.e("Position", "Last item reached");
+//                isLoading = true;
+//                currentPage += 1;
+//                loadNextPage();
+//            }
+//
+//            @Override
+//            protected void loadMoreItems() {
+//                Log.d(TAG, "loadMoreItems: Loading");
+//
+//
+//            }
+//
+//            @Override
+//            public int getTotalPageCount() {
+//                return TOTAL_PAGES;
+//            }
+//
+//            @Override
+//            public boolean isLastPage() {
+//
+//                return isLastPage;
+//            }
+//
+//            @Override
+//            public boolean isLoading() {
+//                return isLoading;
+//            }
+//        });
+//        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+//        loadFirstPage();
+//
+//        //getCountryPost();
+//
+//    }
+//
+//    public void loadFirstPage(){
+//        Log.d(TAG, "load 1 Page: " + currentPage);
+//        callFeedApi().enqueue(new Callback<StateMainResponse>() {
+//            @Override
+//            public void onResponse(Call<StateMainResponse> call, Response<StateMainResponse> response) {
+//
+//                progressBar.setVisibility(View.GONE);
+//                nextList =fetchResults(response);
+//
+//                // postAdapter.clear();
+//                for (CityPostResponse cityPostResponse:nextList){
+//
+//                    post_id=cityPostResponse.getId();
+//                    Log.d(TAG, "onResponseidddactivity: "+post_id+cityPostResponse.getCreated_at());
+//                }
+//
+//                postAdapter.addAll(nextList);
+//
+//
+//                if (currentPage <= TOTAL_PAGES) postAdapter.addLoadingFooter();
+//                else isLastPage = true;
+//
+//
+//
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Call<StateMainResponse> call, Throwable t) {
+//
 //            }
 //        });
 //
 //
 //
-
-        getCountryPost();
-
+//    }
+//
+//    private void loadNextPage(){
+//
+//        Log.d(TAG, "loadNextPage: " + currentPage);
+//
+//
+//
+//        callFeedApi().enqueue(new Callback<StateMainResponse>() {
+//            @Override
+//            public void onResponse(Call<StateMainResponse> call, Response<StateMainResponse> response) {
+//
+//                postAdapter.removeLoadingFooter();
+//                isLoading = false;
+//                List<CityPostResponse> nextList =fetchResults(response);
+//                for (CityPostResponse cityPostResponse:nextList){
+//
+//                    post_id=cityPostResponse.getId();
+//                    Log.d(TAG, "onResponseidddactivity: "+post_id+cityPostResponse.getCreated_at());
+//                }
+//
+//                postAdapter.addAll(nextList);
+//
+//                if (currentPage != TOTAL_PAGES) postAdapter.addLoadingFooter();
+//                else isLastPage = true;
+//
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Call<StateMainResponse> call, Throwable t) {
+//
+//            }
+//        });
+//
+//
+//    }
+//
+//    private List<CityPostResponse> fetchResults(Response<StateMainResponse> response) {
+//        StateMainResponse body = response.body();
+//        return body.getState_posts().getData();
+//    }
+//    private Call<StateMainResponse> callFeedApi() {
+//        return apiInterface.getStateFeeds(UserToken,currentPage+"");
+//    }
+//
+//
+////    public void getCountryPost(){
+////
+////        pDialog = new ProgressDialog(StatePost.this);
+////        pDialog.setMessage("Please wait...");
+////        pDialog.setCancelable(true);
+////        pDialog.show();
+////
+////
+////        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+////
+////        Call<StateMainResponse> call = apiInterface.getStateFeeds(UserToken);
+////
+////        call.enqueue(new Callback<StateMainResponse>() {
+////            @Override
+////            public void onResponse(Call<StateMainResponse> call, Response<StateMainResponse> response) {
+////                pDialog.cancel();
+////
+////                StateMainResponse feedsResponse = response.body();
+////                isSucess = feedsResponse.getSuccess();
+////                Log.d(TAG, "onResponse: " + isSucess);
+////
+////                countryPostResponses_array=feedsResponse.getState_posts().getData();
+////                Log.d(TAG, "onResponse: " + countryPostResponses_array);
+////
+////
+//////                for ( CountryMainResponse countryPostResponse:countryPostResponses_array){
+//////
+//////                    String hfdh=countryPostResponse.getCreated_at();
+//////                    Log.d(TAG, "onResponse: "+hfdh);
+//////
+//////                    String fjdsfj=countryPostResponse.user.getFirst_name();
+//////                    Log.d(TAG, "onResponse: "+fjdsfj);
+//////
+//////                }
+////                postAdapter=new PostAdapter(StatePost.this,countryPostResponses_array);
+////
+////                RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(StatePost.this);
+////                recyclerView.setLayoutManager(layoutManager);
+////                recyclerView.setItemAnimator(new DefaultItemAnimator());
+////                recyclerView.setAdapter(postAdapter);
+////
+////
+////
+////
+////
+////            }
+////
+////            @Override
+////            public void onFailure(Call<StateMainResponse> call, Throwable t) {
+////
+////            }
+////        });
+////
+////
+////    }
+//
+//    @Override
+//
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//
+//            case android.R.id.home:
+//                // Respond to the action bar's Up/Home button
+//                // adapter.notifyDataSetChanged();
+//
+//                finish();
+//                // NavUtils.navigateUpFromSameTask(this);
+//                return true;
+//
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//
+//    }
+//    public void init_modal_bottomsheet(final int position) {
+//        View modalbottomsheet = getLayoutInflater().inflate(R.layout.modal_bottomsheet, null);
+//
+//
+//        dialog = new BottomSheetDialog(this);
+//        dialog.setContentView(modalbottomsheet);
+//        dialog.setCanceledOnTouchOutside(false);
+//        dialog.setCancelable(false);
+//        dialog.show();
+//
+//
+//        btn_cancel = (Button) modalbottomsheet.findViewById(R.id.btn_cancel);
+//        reportspam = (Button) modalbottomsheet.findViewById(R.id.ReportSpam);
+//        delete = (Button) modalbottomsheet.findViewById(R.id.Delete);
+//        download = (Button) modalbottomsheet.findViewById(R.id.DownLoad);
+//
+//        reportspam.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.d(TAG, "onClick: "+position+""+nextList.get(position).getId());
+//                Intent intent = new Intent(StatePost.this, FeedBackActivity.class);
+//                intent.putExtra("postid",nextList.get(position).getId());
+//                startActivity(intent);
+//                dialog.hide();
+//
+//
+//            }
+//        });
+//
+//        delete.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                final AlertDialog alertDialog = new AlertDialog.Builder(
+//                        StatePost.this).create();
+//
+//                // Setting Dialog Title
+//                alertDialog.setTitle("                 Alert!");
+//
+//                // Setting Dialog Message
+//                alertDialog.setMessage("Are You Surely Want to Delete");
+//
+//                // Setting Icon to Dialog
+//
+//
+//                // Setting OK Button
+//                alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
+//                    public void onClick(final DialogInterface dialog, int which) {
+//                        //                                    Intent intent = new Intent(Intent.ACTION_MAIN);
+//                        //                                    intent.addCategory(Intent.CATEGORY_APP_EMAIL);
+//                        //                                    startActivity(intent);
+//                        // Write your code here to execute after dialog closed
+//                        // alertDialog.dismiss();
+//                        // Toast.makeText(getApplicationContext(), "You clicked on OK", Toast.LENGTH_LONG).show();
+//
+//                        // verifyEmail();
+//                        // saveData();
+//                        //  notifyDataSetChanged();
+//                        alertDialog.dismiss();
+//
+//
+//                        pDialog = new ProgressDialog(StatePost.this);
+//                        pDialog.setMessage("Please wait...");
+//                        pDialog.setCancelable(true);
+//                        pDialog.show();
+//
+//                        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+//
+//                        Call<PostDeleteResponse> call = apiInterface.deltePost(UserToken, nextList.get(position).getId());
+//
+//                        call.enqueue(new Callback<PostDeleteResponse>() {
+//                            @Override
+//                            public void onResponse(Call<PostDeleteResponse> call, Response<PostDeleteResponse> response) {
+//                                pDialog.cancel();
+//
+//                                PostDeleteResponse postDeleteResponse = response.body();
+//                                isSucess = postDeleteResponse.getSuccess();
+//                                Log.d(TAG, "onResponse: " + isSucess);
+//                                //  notifyItemRangeChanged(position, event_list.size());
+//
+//
+//                                if (isSucess == true) {
+//
+//                                    nextList.remove(position);
+//                                    postAdapter.notifyItemRemoved(position);
+//                                    alertDialog.dismiss();
+//                                    dialog.dismiss();
+//
+//                                    Toast.makeText(StatePost.this,"Deleted Successfully",Toast.LENGTH_SHORT).show();
+//                                } else if (isSucess == false) {
+//
+//                                    Toast.makeText(StatePost.this,"Please Try Again",Toast.LENGTH_SHORT).show();
+//                                    dialog.dismiss();
+//
+//                                }
+//
+//
+//                            }
+//
+//                            @Override
+//                            public void onFailure(Call<PostDeleteResponse> call, Throwable t) {
+//
+//                            }
+//                        });
+//
+//
+//                    }
+//                });
+//
+//                // Showing Alert Message
+//                alertDialog.show();
+//
+//            }
+//        });
+//
+//
+//        // alertDialog.show();
+//
+//
+//        download.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//            }
+//        });
+//
+//        btn_cancel.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                dialog.hide();
+//            }
+//        });
     }
-
-    public void getCountryPost(){
-
-        pDialog = new ProgressDialog(StatePost.this);
-        pDialog.setMessage("Please wait...");
-        pDialog.setCancelable(true);
-        pDialog.show();
-
-
-        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-
-        Call<FeedsResponse> call = apiInterface.getFeeds(UserToken);
-
-        call.enqueue(new Callback<FeedsResponse>() {
-            @Override
-            public void onResponse(Call<FeedsResponse> call, Response<FeedsResponse> response) {
-                pDialog.cancel();
-
-                FeedsResponse feedsResponse = response.body();
-                isSucess = feedsResponse.getSuccess();
-                Log.d(TAG, "onResponse: " + isSucess);
-
-                countryPostResponses_array=feedsResponse.getState_posts();
-                Log.d(TAG, "onResponse: " + countryPostResponses_array);
-
-
-                for ( CountryPostResponse countryPostResponse:countryPostResponses_array){
-
-                    String hfdh=countryPostResponse.getCreated_at();
-                    Log.d(TAG, "onResponse: "+hfdh);
-
-                    String fjdsfj=countryPostResponse.user.getFirst_name();
-                    Log.d(TAG, "onResponse: "+fjdsfj);
-
-                }
-                postAdapter=new PostAdapter(StatePost.this,countryPostResponses_array);
-
-                RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(StatePost.this);
-                recyclerView.setLayoutManager(layoutManager);
-                recyclerView.setItemAnimator(new DefaultItemAnimator());
-                recyclerView.setAdapter(postAdapter);
-
-
-//                first_name = loginResponse.data.user.first_name;
-//                Log.d(TAG, "onResponse: " + first_name);
-//                last_name = loginResponse.data.user.last_name;
-//                mobile = loginResponse.data.user.mobile;
-//                email = loginResponse.data.user.email;
-
-
-
-            }
-
-            @Override
-            public void onFailure(Call<FeedsResponse> call, Throwable t) {
-
-            }
-        });
-
-
-    }
-
-    @Override
-
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-
-            case android.R.id.home:
-                // Respond to the action bar's Up/Home button
-                // adapter.notifyDataSetChanged();
-
-                finish();
-                // NavUtils.navigateUpFromSameTask(this);
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-
-    }
-
 }
+

@@ -17,6 +17,8 @@ public class User {
     public String verified;
     public String profile;
     public String image;
+    public String url;
+
 
 
 }

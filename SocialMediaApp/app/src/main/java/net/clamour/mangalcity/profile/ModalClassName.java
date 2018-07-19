@@ -7,6 +7,15 @@ package net.clamour.mangalcity.profile;
 public class ModalClassName {
     private String statename;
     private String districtname;
+    private String cityname;
+
+    public String getCityname() {
+        return cityname;
+    }
+
+    public void setCityname(String cityname) {
+        this.cityname = cityname;
+    }
 
     public String getDistrictname() {
         return districtname;

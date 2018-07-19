@@ -64,8 +64,8 @@ public class DrawerBaseActivity extends AppCompatActivity {
 
     public void setDrawer(){
         ListView lt = (ListView) findViewById(R.id.left_drawer);
-        String St[] = {"","Home","My Profile","Activity Log","Rate Us","About Us","Share","Change Password","Logout"};
-        Integer imgs[] = {0,R.drawable.home,R.drawable.ic_person_black_24dp,R.drawable.ic_person_black_24dp,R.drawable.rating,R.drawable.about,R.drawable.share,R.drawable.security,R.drawable.ic_exit_to_app_black_24dp,0};
+        String St[] = {"","Home","My Profile","Activity Log","Rate Us","About Us","Share","Change Password","Logout",""};
+        Integer imgs[] = {0,R.drawable.home,R.drawable.ic_person_black_24dp,R.drawable.activitylog,R.drawable.rating,R.drawable.about,R.drawable.share,R.drawable.security,R.drawable.ic_exit_to_app_black_24dp,0};
 
 
         CustomAdapterDrawer CAD = new CustomAdapterDrawer(this, St, imgs);
@@ -81,22 +81,26 @@ public class DrawerBaseActivity extends AppCompatActivity {
                 if(position==1){
 
                     Intent intent=new Intent(DrawerBaseActivity.this,PostActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }
 
                 if(position==2){
                     Intent intent=new Intent(DrawerBaseActivity.this,UserProfile.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }
 
                 if(position==3){
 
                     Intent intent=new Intent(DrawerBaseActivity.this,ActivityLog.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }
 
                 if(position==7){
                     Intent intent=new Intent(DrawerBaseActivity.this,ChangePassword.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }
                 if(position==4){
@@ -106,6 +110,7 @@ public class DrawerBaseActivity extends AppCompatActivity {
 //
                 if(position==5){
                     Intent intent=new Intent(DrawerBaseActivity.this,AboutUs.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
 
                 }
@@ -120,11 +125,11 @@ public class DrawerBaseActivity extends AppCompatActivity {
                             DrawerBaseActivity.this);
 
                     // set title
-                    alertDialogBuilder.setTitle("Alert!");
+                    alertDialogBuilder.setTitle("                    Logout!");
 
                     // set dialog message
                     alertDialogBuilder
-                            .setMessage("Are you really want to logut")
+                            .setMessage("      Are you really want to logout")
                             .setCancelable(false)
                             .setPositiveButton("YES",new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog,int id) {

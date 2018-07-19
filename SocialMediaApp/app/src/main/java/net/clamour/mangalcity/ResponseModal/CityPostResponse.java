@@ -1,0 +1,101 @@
+package net.clamour.mangalcity.ResponseModal;
+
+/**
+ * Created by clamour_5 on 7/2/2018.
+ */
+
+public class CityPostResponse {
+
+    private String id;
+    private String user_id;
+    private String message;
+    private String type;
+    private String value;
+    private String likes;
+    private String dislikes;
+    private String created_at;
+
+    public UserPostResponse user;
+    public Like like;
+
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getLikes() {
+        return likes;
+    }
+
+    public void setLikes(String likes) {
+        this.likes = likes;
+    }
+
+    public String getDislikes() {
+        return dislikes;
+    }
+
+    public void setDislikes(String dislikes) {
+        this.dislikes = dislikes;
+    }
+
+    public String getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
+    }
+
+    public UserPostResponse getUser() {
+        return user;
+    }
+
+    public void setUser(UserPostResponse user) {
+        this.user = user;
+    }
+
+    public Like getLike() {
+        return like;
+    }
+
+    public void setLike(Like like) {
+        this.like = like;
+    }
+}

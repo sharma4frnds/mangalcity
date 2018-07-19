@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true">
+
+
+
+    <RelativeLayout
+
+        android:id="@+id/relativeLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true">
+
+
+        <RelativeLayout
+            android:id="@+id/relativeLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="170dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:background="#fff">
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="100dp"
+                android:background="#ADD8E6" />
+
+            <RelativeLayout
+                android:id="@+id/relativeLayout6"
+                android:layout_width="260dp"
+                android:layout_height="60dp"
+                android:layout_alignEnd="@+id/view"
+                android:layout_alignParentTop="true"
+                android:layout_alignRight="@+id/view"
+                android:layout_marginTop="22dp"
+                android:background="@drawable/post_border">
+
+                <EditText
+                    android:id="@+id/editText_textpost"
+                    android:layout_width="200dp"
+                    android:layout_height="50dp"
+                    android:layout_centerVertical="true"
+                    android:background="@null"
+                    android:ems="10"
+
+                    android:fontFamily="@font/pt_sans_web_regular"
+                    android:gravity="center"
+                    android:hint="@string/textpost"
+                    android:inputType="textPersonName"
+                    android:maxLines="5"
+                    android:textColorHint="#000"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:id="@+id/imagepreview"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="23dp"
+                    android:adjustViewBounds="true"
+                    android:layout_marginRight="23dp"
+                    />
+            </RelativeLayout>
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/person_profile_image"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+
+                android:layout_alignLeft="@+id/view"
+                android:layout_alignStart="@+id/view"
+                android:layout_alignTop="@+id/relativeLayout6"
+                android:layout_marginTop="13dp"
+                android:background="@drawable/circle_user" />
+
+            <ImageView
+                android:id="@+id/gallery_upload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/view"
+                android:layout_alignStart="@+id/view"
+                android:layout_marginLeft="10dp"
+                android:layout_alignTop="@+id/post_buttonnn"
+                android:background="@drawable/gallery_icon" />
+            <!--<View-->
+            <!--android:id="@+id/view3"-->
+            <!--android:layout_width="1dp"-->
+            <!--android:layout_height="30dp"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:layout_marginTop="110dp"-->
+            <!--android:layout_marginLeft="75dp"-->
+            <!--android:background="@color/appBlue" />-->
+
+            <ImageView
+                android:id="@+id/video_upload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/relativeLayout6"
+                android:layout_alignStart="@+id/relativeLayout6"
+                android:layout_alignTop="@+id/gallery_upload"
+                android:background="@drawable/videoicon" />
+
+            <!--<View-->
+            <!--android:id="@+id/view4"-->
+            <!--android:layout_width="1dp"-->
+            <!--android:layout_height="30dp"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:layout_marginTop="110dp"-->
+            <!--android:layout_marginLeft="135dp"-->
+            <!--android:background="@color/appBlue" />-->
+
+
+            <!--<TextView-->
+            <!--android:id="@+id/textView3"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignTop="@+id/person_profile_image"-->
+            <!--android:layout_centerHorizontal="true"-->
+            <!--android:layout_marginTop="23dp"-->
+            <!--android:fontFamily="@font/pt_sans_web_bold"-->
+            <!--android:text="update Your Status" />-->
+
+            <!--<ImageView-->
+            <!--android:id="@+id/imagepreview"-->
+            <!--android:layout_width="70dp"-->
+            <!--android:layout_height="75dp"-->
+            <!--android:layout_below="@+id/view"-->
+            <!--android:layout_marginEnd="36dp"-->
+            <!--android:layout_marginRight="36dp"-->
+            <!--android:layout_toLeftOf="@+id/post_buttonnn"-->
+            <!--android:layout_toStartOf="@+id/post_buttonnn"-->
+            <!--android:adjustViewBounds="true"-->
+            <!--android:scaleType="fitXY" />-->
+
+            <Button
+                android:id="@+id/post_buttonnn"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_alignEnd="@+id/view"
+                android:layout_alignRight="@+id/view"
+                android:layout_below="@+id/view"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/button_background"
+                android:fontFamily="@font/pt_sans_web_bold"
+                android:text="POST"
+                android:textColor="@color/white" />
+
+            <ImageView
+                android:id="@+id/audio_upload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/video_upload"
+                android:layout_marginLeft="30dp"
+                android:layout_marginStart="30dp"
+                android:layout_toEndOf="@+id/video_upload"
+                android:layout_toRightOf="@+id/video_upload"
+                app:srcCompat="@drawable/ic_audiotrack_black_24dp" />
+
+            <TextView
+                android:id="@+id/selected_file"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/gallery_upload"
+                android:layout_alignStart="@+id/gallery_upload"
+                android:layout_below="@+id/gallery_upload"
+                android:layout_marginTop="10dp"
+                android:visibility="invisible"
+                android:text="TextView" />
+
+            <ImageView
+                android:id="@+id/cross_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/selected_file"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:visibility="invisible"
+                android:layout_alignLeft="@+id/video_upload"
+                android:layout_alignStart="@+id/video_upload"
+                app:srcCompat="@drawable/cross" />
+
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+
+</LinearLayout>

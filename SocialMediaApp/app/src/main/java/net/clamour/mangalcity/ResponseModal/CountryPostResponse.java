@@ -14,19 +14,19 @@ public class CountryPostResponse {
     private String likes;
     private String dislikes;
     private String created_at;
-//    private String like;
-////
-//
-//    public String getLike() {
-//        return like;
-//    }
-//
-//    public void setLike(String like) {
-//        this.like = like;
-//    }
 
     public UserPostResponse user;
-    public OwnLikeResponse like;
+    public Like like;
+
+    public Like getLike() {
+        return like;
+    }
+
+    public void setLike(Like like) {
+        this.like = like;
+    }
+
+    //  public OwnLikeResponse like;
 
     public UserPostResponse getUser() {
         return user;
@@ -40,13 +40,6 @@ public class CountryPostResponse {
         return id;
     }
 
-//    public OwnLikeResponse getLike() {
-//        return like;
-//    }
-//
-//    public void setLike(OwnLikeResponse like) {
-//        this.like = like;
-//    }
 
     public void setId(String id) {
         this.id = id;
@@ -108,12 +101,5 @@ public class CountryPostResponse {
         this.created_at = created_at;
     }
 
-//        public String getLike() {
-//        return like;
-//    }
-//
-//    public void setLike(String like) {
-//        this.like = like;
-//    }
 
 }

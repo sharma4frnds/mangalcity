@@ -12,35 +12,63 @@
     card_view:cardUseCompatPadding="true"
     card_view:cardPreventCornerOverlap="false"
     >
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="#fff">
+        android:background="#fff"
+        android:orientation="vertical">
 
         <RelativeLayout
             android:id="@+id/relative_image"
             android:layout_width="match_parent"
-            android:layout_height="380dp">
+            android:layout_height="340dp">
 
             <RelativeLayout
                 android:id="@+id/relativ1"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginTop="110dp"
-                >
+                android:layout_height="150dp"
+                android:layout_marginTop="130dp">
 
                 <ImageView
                     android:id="@+id/post_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop"
+                    android:visibility="invisible" />
+
+                <RelativeLayout
+                    android:id="@+id/videorelative"
+                    android:layout_width="fill_parent"
+                    android:layout_height="150dp"
                     android:visibility="invisible"
-                    />
-                <VideoView
-                    android:id="@+id/post_video"
+                    >
+
+                    <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+                        android:id="@+id/exo_player_view"
+                        android:layout_width="fill_parent"
+                        android:layout_height="match_parent">
+
+                    </com.google.android.exoplayer2.ui.SimpleExoPlayerView>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/audiorelative"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:visibility="invisible"/>
+                    android:layout_height="100dp"
+                    android:layout_marginTop="60dp"
+                    android:visibility="invisible">
+
+                    <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+                        android:id="@+id/exo_player_view_audio"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+
+                    </com.google.android.exoplayer2.ui.SimpleExoPlayerView>
+                </RelativeLayout>
+
             </RelativeLayout>
 
 
@@ -50,8 +78,8 @@
                 android:layout_height="0.5dp"
                 android:layout_below="@+id/relativ1"
                 android:layout_marginLeft="10dp"
-                android:layout_marginTop="10dp"
                 android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp"
                 android:background="@color/appBlue" />
 
             <RelativeLayout
@@ -63,8 +91,8 @@
 
                 <ImageView
                     android:id="@+id/image_like"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
 
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
@@ -75,8 +103,8 @@
 
                 <ImageView
                     android:id="@+id/image_dislike"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
 
                     android:layout_alignTop="@+id/image_like"
                     android:layout_marginLeft="16dp"
@@ -87,16 +115,16 @@
 
                 <ImageView
                     android:id="@+id/image_comment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_alignTop="@+id/no_of_likes"
                     android:layout_marginLeft="150dp"
                     android:background="@drawable/comment" />
 
                 <ImageView
                     android:id="@+id/image_share"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
@@ -110,12 +138,12 @@
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@+id/image_like"
                     android:layout_marginLeft="5dp"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginTop="2dp"
-                    android:layout_toEndOf="@+id/image_like"
-                    android:layout_toRightOf="@+id/image_like"
-                    android:textColor="@color/black"
-                    android:text="1" />
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="2dp"
+                android:layout_toEndOf="@+id/image_like"
+                android:layout_toRightOf="@+id/image_like"
+                android:text="1"
+                    android:textColor="@color/black" />
 
                 <TextView
                     android:id="@+id/no_of_dislikes"
@@ -125,24 +153,24 @@
                     android:layout_marginLeft="6dp"
                     android:layout_marginStart="6dp"
                     android:layout_toEndOf="@+id/image_dislike"
-                    android:textColor="@color/black"
                     android:layout_toRightOf="@+id/image_dislike"
-                    android:text="1" />
+                    android:text="1"
+                    android:textColor="@color/black" />
 
                 <TextView
                     android:id="@+id/textView11"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@+id/image_share"
+                    android:layout_centerVertical="true"
                     android:layout_marginLeft="12dp"
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="2dp"
-                    android:fontFamily="@font/pt_sans_web_regular"
-                    android:layout_centerVertical="true"
-                    android:textColor="@color/black"
                     android:layout_toEndOf="@+id/image_comment"
                     android:layout_toRightOf="@+id/image_comment"
-                    android:text="comment" />
+                    android:fontFamily="@font/pt_sans_web_regular"
+                    android:text="comment"
+                    android:textColor="@color/black" />
 
                 <TextView
                     android:id="@+id/share_text"
@@ -152,11 +180,11 @@
                     android:layout_alignParentRight="true"
                     android:layout_alignTop="@+id/image_comment"
                     android:layout_marginEnd="22dp"
-                    android:textColor="@color/black"
-                    android:fontFamily="@font/pt_sans_web_regular"
                     android:layout_marginRight="22dp"
+                    android:fontFamily="@font/pt_sans_web_regular"
+                    android:text="share"
 
-                    android:text="share" />
+                    android:textColor="@color/black" />
 
             </RelativeLayout>
 
@@ -165,9 +193,9 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_alignLeft="@+id/view"
-                android:layout_marginTop="10dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignStart="@+id/view"
+                android:layout_marginTop="10dp"
                 android:background="@drawable/user" />
 
             <TextView
@@ -175,13 +203,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/user_image"
-                android:layout_marginLeft="21dp"
                 android:layout_marginStart="21dp"
-                android:textColor="@color/black"
-                android:fontFamily="@font/pt_sans_web_regular"
                 android:layout_toEndOf="@+id/user_image"
-                android:layout_toRightOf="@+id/user_image"
-                android:text="Anushka Sharma" />
+                android:fontFamily="@font/pt_sans_web_bold"
+                android:text="Anushka Sharma"
+                android:textColor="@color/appBlue"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/post_timing"
@@ -190,23 +217,24 @@
                 android:layout_alignLeft="@+id/user_name"
                 android:layout_alignStart="@+id/user_name"
                 android:layout_below="@+id/user_name"
-                android:textColor="@color/text_grey"
-                android:layout_marginTop="3dp"
+                android:layout_marginTop="8dp"
                 android:fontFamily="@font/pt_sans_web_regular"
-                android:text="10 Hrs" />
+                android:text="10 Hrs"
+                android:textColor="@color/black" />
 
             <TextView
                 android:id="@+id/post_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/post_timing"
-                android:layout_alignStart="@+id/post_timing"
-                android:layout_below="@+id/post_timing"
-                android:fontFamily="@font/pt_sans_web_regular"
-                android:text="TextView"
+                android:layout_alignLeft="@+id/user_image"
+                android:layout_alignStart="@+id/user_image"
+                android:layout_below="@+id/user_image"
+                android:layout_marginTop="13dp"
                 android:ellipsize="end"
-                android:maxLines="2"
-                android:layout_marginTop="5dp"
+                android:layout_marginLeft="10dp"
+                android:fontFamily="@font/pt_sans_web_regular"
+                android:maxLines="1"
+                android:text="TextView"
                 android:textColor="@color/black" />
 
             <ImageView
@@ -214,15 +242,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignEnd="@+id/view"
-                android:layout_alignRight="@+id/view"
                 android:layout_alignTop="@+id/user_name"
-                android:layout_marginEnd="7dp"
-                android:layout_marginRight="7dp"
                 android:background="@drawable/dots" />
 
 
         </RelativeLayout>
-
 
 
     </LinearLayout>

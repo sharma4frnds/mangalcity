@@ -6,6 +6,15 @@ package net.clamour.mangalcity.ResponseModal;
 
 public class LogoutResponse {
     public Boolean success;
+    public String mobile;
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
 
     public Boolean getSuccess() {
         return success;

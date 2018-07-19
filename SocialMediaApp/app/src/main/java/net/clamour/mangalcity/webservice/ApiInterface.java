@@ -1,8 +1,12 @@
 package net.clamour.mangalcity.webservice;
 
 
+import net.clamour.mangalcity.Activity.ActivityResponse;
+import net.clamour.mangalcity.ResponseModal.CountryMainResponse;
 import net.clamour.mangalcity.ResponseModal.DislikeResponse;
+import net.clamour.mangalcity.ResponseModal.DistrictMainResponse;
 import net.clamour.mangalcity.ResponseModal.FeedsResponse;
+import net.clamour.mangalcity.ResponseModal.GetProfileResponse;
 import net.clamour.mangalcity.ResponseModal.LikeResponse;
 import net.clamour.mangalcity.ResponseModal.LoginResponse;
 import net.clamour.mangalcity.ResponseModal.LogoutResponse;
@@ -11,7 +15,12 @@ import net.clamour.mangalcity.ResponseModal.PostDeleteResponse;
 import net.clamour.mangalcity.ResponseModal.PostResponse;
 import net.clamour.mangalcity.ResponseModal.PostShareresponse;
 import net.clamour.mangalcity.ResponseModal.RegisterResponse;
+import net.clamour.mangalcity.ResponseModal.ResendOtpResponse;
+import net.clamour.mangalcity.ResponseModal.SpamTagsResponse;
+import net.clamour.mangalcity.ResponseModal.StateMainResponse;
+import net.clamour.mangalcity.ResponseModal.UpdateProfileResponse;
 import net.clamour.mangalcity.ResponseModal.changePasswordResponse;
+import net.clamour.mangalcity.feed.PostFeedResponse;
 
 import java.util.ArrayList;
 
@@ -58,7 +67,7 @@ public interface ApiInterface {
 
     @POST("feeds")
     @FormUrlEncoded
-    Call<FeedsResponse>getFeeds(@Field("token") String token);
+    Call<PostFeedResponse>getFeeds(@Field("token") String token, @Field("page") String page);
 
     @POST("delete_post")
     @FormUrlEncoded
@@ -66,7 +75,7 @@ public interface ApiInterface {
 
     @POST("share_post")
     @FormUrlEncoded
-    Call<PostShareresponse>share_post(@Field("token") String token, @Field("post_id") String post_id);
+    Call<PostShareresponse>share_post(@Field("token") String token, @Field("post_id") String post_id,@Field("share_message") String share_message);
 
     @POST("dolike")
     @FormUrlEncoded
@@ -74,10 +83,56 @@ public interface ApiInterface {
 
     @POST("dodislikes")
     @FormUrlEncoded
-    Call<DislikeResponse>dislike_post(@Field("token") String token, @Field("post_id") String post_id);
+    Call<LikeResponse>dislike_post(@Field("token") String token, @Field("post_id") String post_id);
+
+    @POST("auth/resend_otp")
+    @FormUrlEncoded
+    Call<ResendOtpResponse>resendOtp(@Field("mobile") String mobile);
+
+    @POST("spam_tags")
+    @FormUrlEncoded
+    Call<SpamTagsResponse>getSpamTags(@Field("token") String token);
+
+    @POST("report_feedback")
+    @FormUrlEncoded
+    Call<LogoutResponse>getReportFeedback(@Field("token") String token,@Field("post_id") String post_id,@Field("spam_tags") String spam_tags);
 
 
 
+    @POST("userprofile")
+    @FormUrlEncoded
+    Call<UpdateProfileResponse>updateProfile(@Field("token") String token,@Field("first_name") String first_name,@Field("last_name") String last_name,@Field("email") String email,@Field("country") String country,@Field("state") String state,@Field("district") String district,@Field("city") String city,@Field("gender") String gender,@Field("marital_status") String marital_status,@Field("current_location") String current_location,@Field("home_city") String home_city,@Field("home_district") String home_district,@Field("home_state") String home_state);
+
+    @POST("getprofile")
+    @FormUrlEncoded
+    Call<GetProfileResponse>getProfile(@Field("token") String token);
+
+    @POST("forgot_password_otp")
+    @FormUrlEncoded
+    Call<LogoutResponse>SendOtp(@Field("mobile") String token);
+
+    @POST("forgot_change_password")
+    @FormUrlEncoded
+    Call<LogoutResponse>forgetPassword(@Field("otp") String otp ,@Field("mobile")String mobile,@Field("password")String password,@Field("password_confirmation")String password_confirmation);
+
+    @POST("district_feeds")
+    @FormUrlEncoded
+    Call<DistrictMainResponse>getDistrictFeeds(@Field("token") String token ,@Field("page") String page);
+    @POST("country_feeds")
+    @FormUrlEncoded
+    Call<CountryMainResponse>getCountryFeeds(@Field("token") String token,@Field("page") String page);
+
+    @POST("state_feeds")
+    @FormUrlEncoded
+    Call<StateMainResponse>getStateFeeds(@Field("token") String token,@Field("page") String page);
+
+    @POST("profile")
+    @FormUrlEncoded
+    Call<PostFeedResponse>getOtherProfile(@Field("token") String token ,@Field("url")String url);
+
+    @POST("activity")
+    @FormUrlEncoded
+    Call<ActivityResponse>activityLogs(@Field("token") String token ,@Field("page") String page);
 
 
 }

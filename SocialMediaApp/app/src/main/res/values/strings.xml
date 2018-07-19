@@ -1,5 +1,12 @@
 <resources>
     <string name="app_name">MangalCity</string>
+    <string name="google_maps_key">AIzaSyAXOAGWAHXpqhatcxVSd-arFhGh1E11DHM</string>
+
+    <string name="facebook_app_id">777016639156926</string>
+    <string name="fb_login_protocol_scheme">fb777016639156926</string>
+
+    <string name="server_client_id">81024215252-klqes94lo9aoib16n6702qbirdpu4h1f.apps.googleusercontent.com</string>
+
 
     <string name="next">NEXT</string>
     <string name="skip">SKIP</string>

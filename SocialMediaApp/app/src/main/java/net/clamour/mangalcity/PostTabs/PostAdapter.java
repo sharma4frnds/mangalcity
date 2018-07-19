@@ -1,733 +1,662 @@
 package net.clamour.mangalcity.PostTabs;
 
 
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.MediaController;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.extractor.ExtractorsFactory;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.upstream.BandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 
-import net.clamour.mangalcity.Home.PostActivity;
+import net.clamour.mangalcity.Home.OpenImageActivity;
+import net.clamour.mangalcity.Home.OtherUserProfile;
 import net.clamour.mangalcity.R;
-import net.clamour.mangalcity.ResponseModal.CountryPostResponse;
-import net.clamour.mangalcity.ResponseModal.DislikeResponse;
-import net.clamour.mangalcity.ResponseModal.LikeResponse;
-import net.clamour.mangalcity.ResponseModal.LoginResponse;
-import net.clamour.mangalcity.ResponseModal.PostDeleteResponse;
-import net.clamour.mangalcity.profile.LoginActivity;
-import net.clamour.mangalcity.webservice.ApiClient;
-import net.clamour.mangalcity.webservice.ApiInterface;
+import net.clamour.mangalcity.feed.FeedPostData;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import static android.content.Context.MODE_PRIVATE;
 
 
-public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> {
+public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final String TAG = "PostAdapter";
-    Context context;
-    List<CountryPostResponse> event_list;
-    ItemClickListener clickListener;
-    ImageView postImage;
-    ImageView imageLike;
-    ImageView imageDislike;
-    ImageView imageComment;
-    ImageView imageShare;
-    ImageView userImage;
-    TextView userName;
-    TextView postTiming;
-    TextView postText;
-    TextView no_of_likes;
-    TextView no_of_dislikes,share_text;
-    VideoView post_video;
-    RelativeLayout relativeImage,relativeCard;
 
-    ImageView dots;
+
+    private String post_id;
+    private String userToken;
+    private String user_id;
+    private SharedPreferences LoginPrefrences;
+    private SimpleExoPlayer exoPlayer,exoPlayerView_audio;
+    private static final int FORMPOST = 0;
+    private static final int ITEM = 1;
+    private static final int LOADING = 2;
     android.support.v7.app.AlertDialog alertDialog;
-    Button feedback,delete;
-    String post_id,userToken,user_id,mylikeId,liketype,likerespose;
-    SharedPreferences LoginPrefrences;
-    ApiInterface apiInterface;
-    Boolean isSucess;
-    ProgressDialog pDialog;
 
 
+    private boolean isLoadingAdded = false;
 
+    private Context context;
+    private List<FeedPostData> feedPostData;
+    private OnItemClickListner itemClickListner;
+    private OnPostClickListner onPostClickListner;
+    private String profile_image;
+    private Uri uri;
+    private MyPostViewHolder myPostViewHolder;
 
 
+    public interface OnItemClickListner {
+        void onLikeClick(int position);
 
+        void onDislikeClick(int position);
 
-    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        void onSharePostClick(int position);
 
+        void onShareImageClick(int position);
 
+        void onDotClick(int position);
 
-        public MyViewHolder(View view) {
-            super(view);
+        void onUserImageClick(int position);
 
-         userName=(TextView)view.findViewById(R.id.user_name);
-         postText=(TextView)view.findViewById(R.id.post_text);
-         postTiming=(TextView)view.findViewById(R.id.post_timing);
-         userImage=(ImageView)view.findViewById(R.id.user_image);
-         imageShare=(ImageView)view.findViewById(R.id.image_share);
-         imageComment=(ImageView)view.findViewById(R.id.image_comment);
-         imageDislike=(ImageView)view.findViewById(R.id.image_dislike);
-         imageLike=(ImageView)view.findViewById(R.id.image_like);
-         postImage=(ImageView)view.findViewById(R.id.post_image);
-         no_of_likes=(TextView) view.findViewById(R.id.no_of_likes);
-         no_of_dislikes=(TextView)view.findViewById(R.id.no_of_dislikes);
-         post_video=(VideoView)view.findViewById(R.id.post_video);
-         dots=(ImageView)view.findViewById(R.id.dots);
-         relativeImage=(RelativeLayout) view.findViewById(R.id.relativ1);
-         relativeCard=(RelativeLayout)view.findViewById(R.id.relative_image) ;
-         share_text=(TextView)view.findViewById(R.id.share_text);
-
-            view.setTag(view);
-
-            view.setOnClickListener(this);
-
-
-        }
-
-        @Override
-        public void onClick(View view) {
-            if (clickListener != null) clickListener.onClick(view, getAdapterPosition());
-        }
-    }
-
-    public PostAdapter(Context context, List<CountryPostResponse> event_list) {
-        this.context = context;
-        this.event_list = event_list;
-    }
-
-    @Override
-    public void onBindViewHolder(MyViewHolder holder, final int position) {
-
-        LoginPrefrences = context.getSharedPreferences("net.clamour.mangalcity.profile.LoginActivity", MODE_PRIVATE);
-        userToken=LoginPrefrences.getString("userToken","");
-        Log.i("UserTokenAdapter",userToken);
-
-        user_id=LoginPrefrences.getString("user_id","");
-        Log.i("userid",user_id);
-
-
-        final CountryPostResponse countryPostResponse = event_list.get(position);
-
-//        if(event_list.get(position).like.toString()==null){
-//
-//            imageLike.setImageResource(R.drawable.like_gray);
-//            imageDislike.setImageResource(R.drawable.dislike_grey);
-//        }
-//        else if(event_list.get(position).like.toString()!=null){
-//
-//            mylikeId=event_list.get(position).like.getUser_id();
-//            Log.d(TAG, "onBindViewHolder: "+mylikeId);
-//
-//            imageLike.setImageResource(R.drawable.like_gray);
-//            imageDislike.setImageResource(R.drawable.dislike_grey);
-//        }
-
-//        mylikeId=countryPostResponse.getLike().getUser_id();
-//        Log.d(TAG, "onBindViewHolder: "+mylikeId);
-//
-//        liketype=countryPostResponse.getLike().getType();
-//        Log.i("liketype",liketype);
-//
-//        if(user_id.equals(mylikeId)&&liketype.equals("1")){
-//
-//            imageLike.setImageResource(R.drawable.like);
-//            imageDislike.setImageResource(R.drawable.dislike_grey);
-//        }
-//        else if(user_id.equals(mylikeId)&&liketype.equals("0")) {
-//
-//            imageLike.setImageResource(R.drawable.like_gray);
-//            imageDislike.setImageResource(R.drawable.dislike);
-//
-//
-//        }
-
-
-
-        imageLike.setTag(position);
-
-        imageLike.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                pDialog = new ProgressDialog(context);
-                pDialog.setMessage("Please wait...");
-                pDialog.setCancelable(true);
-                pDialog.show();
-
-                apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-
-                Call<LikeResponse> call = apiInterface.like_post(userToken, event_list.get(position).getId());
-
-                call.enqueue(new Callback<LikeResponse>() {
-                    @Override
-                    public void onResponse(Call<LikeResponse> call, Response<LikeResponse> response) {
-                        pDialog.cancel();
-
-                        LikeResponse likeResponse = response.body();
-                        isSucess = likeResponse.getSuccess();
-                        Log.d(TAG, "onResponse: " + isSucess);
-                        String lcount=likeResponse.getLcount();
-                        Log.i("lcount",lcount);
-                      String dcount=likeResponse.getDcount();
-                      Log.i("dcount",dcount);
-
-                      no_of_likes.setText(lcount);
-                        no_of_likes.setText(dcount);
-
-
-                        if (isSucess == true) {
-                            no_of_likes.setText(lcount);
-                            no_of_likes.setText(dcount);
-
-//                            final AlertDialog alertDialog = new AlertDialog.Builder(
-//                                    context).create();
-//
-//                            // Setting Dialog Title
-//                            alertDialog.setTitle("                 Alert!");
-//
-//                            // Setting Dialog Message
-//                            alertDialog.setMessage("            Post Deleted Sucessfully");
-//
-//                            // Setting Icon to Dialog
-//
-//
-//                            // Setting OK Button
-//                            alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int which) {
-//                                    //                                    Intent intent = new Intent(Intent.ACTION_MAIN);
-//                                    //                                    intent.addCategory(Intent.CATEGORY_APP_EMAIL);
-//                                    //                                    startActivity(intent);
-//                                    // Write your code here to execute after dialog closed
-//                                    // alertDialog.dismiss();
-//                                    // Toast.makeText(getApplicationContext(), "You clicked on OK", Toast.LENGTH_LONG).show();
-//
-//                                    // verifyEmail();
-//                                    // saveData();
-//                                //    notifyDataSetChanged();
-//                                    alertDialog.dismiss();
-//
-//                                }
-//                            });
-//
-//                            // Showing Alert Message
-//                            alertDialog.show();
-
-                        } else if (isSucess == false) {
-
-                            final AlertDialog alertDialog = new AlertDialog.Builder(
-                                    context).create();
-                            // saveData();
-                            // Setting Dialog Title
-                            alertDialog.setTitle("                 Alert!");
-
-                            // Setting Dialog Message
-                            alertDialog.setMessage("    Invalid Credentials");
-
-                            // Setting Icon to Dialog
-
-
-                            // Setting OK Button
-                            alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    //                                    Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                                    //                                    emailIntent.setType("text/plain");
-                                    //                                    startActivity(emailIntent);
-
-                                    // Write your code here to execute after dialog closed
-                                    alertDialog.dismiss();
-                                }
-                            });
-
-                            // Showing Alert Message
-                            alertDialog.show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<LikeResponse> call, Throwable t) {
-
-                    }
-                });
-imageDislike.setTag(position);
-imageDislike.setOnClickListener(new View.OnClickListener() {
-    @Override
-    public void onClick(View view) {
-        pDialog = new ProgressDialog(context);
-        pDialog.setMessage("Please wait...");
-        pDialog.setCancelable(true);
-        pDialog.show();
-
-        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-
-        Call<DislikeResponse> call = apiInterface.dislike_post(userToken, event_list.get(position).getId());
-
-        call.enqueue(new Callback<DislikeResponse>() {
-            @Override
-            public void onResponse(Call<DislikeResponse> call, Response<DislikeResponse> response) {
-                pDialog.cancel();
-
-                DislikeResponse likeResponse = response.body();
-                isSucess = likeResponse.getSuccess();
-                Log.d(TAG, "onResponse: " + isSucess);
-                String lcount=likeResponse.getLcount();
-                Log.i("lcount",lcount);
-                String dcount=likeResponse.getDcount();
-                Log.i("dcount",dcount);
-
-                no_of_likes.setText(lcount);
-                no_of_likes.setText(dcount);
-
-
-                if (isSucess == true) {
-                    no_of_likes.setText(lcount);
-                    no_of_likes.setText(dcount);
-
-//                            final AlertDialog alertDialog = new AlertDialog.Builder(
-//                                    context).create();
-//
-//                            // Setting Dialog Title
-//                            alertDialog.setTitle("                 Alert!");
-//
-//                            // Setting Dialog Message
-//                            alertDialog.setMessage("            Post Deleted Sucessfully");
-//
-//                            // Setting Icon to Dialog
-//
-//
-//                            // Setting OK Button
-//                            alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int which) {
-//                                    //                                    Intent intent = new Intent(Intent.ACTION_MAIN);
-//                                    //                                    intent.addCategory(Intent.CATEGORY_APP_EMAIL);
-//                                    //                                    startActivity(intent);
-//                                    // Write your code here to execute after dialog closed
-//                                    // alertDialog.dismiss();
-//                                    // Toast.makeText(getApplicationContext(), "You clicked on OK", Toast.LENGTH_LONG).show();
-//
-//                                    // verifyEmail();
-//                                    // saveData();
-//                                //    notifyDataSetChanged();
-//                                    alertDialog.dismiss();
-//
-//                                }
-//                            });
-//
-//                            // Showing Alert Message
-//                            alertDialog.show();
-
-                } else if (isSucess == false) {
-
-                    final AlertDialog alertDialog = new AlertDialog.Builder(
-                            context).create();
-                    // saveData();
-                    // Setting Dialog Title
-                    alertDialog.setTitle("                 Alert!");
-
-                    // Setting Dialog Message
-                    alertDialog.setMessage("    Invalid Credentials");
-
-                    // Setting Icon to Dialog
-
-
-                    // Setting OK Button
-                    alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            //                                    Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                            //                                    emailIntent.setType("text/plain");
-                            //                                    startActivity(emailIntent);
-
-                            // Write your code here to execute after dialog closed
-                            alertDialog.dismiss();
-                        }
-                    });
-
-                    // Showing Alert Message
-                    alertDialog.show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<DislikeResponse> call, Throwable t) {
-
-            }
-        });
 
 
     }
-});
 
-            }
-        });
+    public interface OnPostClickListner {
+        void onPostButtonClick(String msz);
 
+        void onImageButttonClick();
 
-        imageShare.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(context,SharePostActivity.class);
+        void onVideoButttonClick();
 
-                if(countryPostResponse.getType().contains("image")){
+        void onAudioButtonClick();
+    }
 
-                    intent.putExtra("image",event_list.get(position).getValue());
-                    intent.putExtra("token",userToken);
-                    intent.putExtra("post_id",event_list.get(position).getId());
-                    intent.putExtra("profileimage",event_list.get(position).user.getImage());
+    public void setOnPostClickListner(OnPostClickListner postClickListner) {
+        this.onPostClickListner = postClickListner;
+    }
 
-                }
-                else if(countryPostResponse.getType().contains("video")){
-                    intent.putExtra("video",event_list.get(position).getValue());
-                    intent.putExtra("token",userToken);
-                    intent.putExtra("post_id",event_list.get(position).getId());
-                    intent.putExtra("profileimage",event_list.get(position).user.getImage());
+    public void setOnItemClickListner(OnItemClickListner onItemClickListner) {
+        this.itemClickListner = onItemClickListner;
+    }
 
+    protected class LoadingVH extends RecyclerView.ViewHolder {
 
-                }
-                else if(countryPostResponse.getType().contains("")){
-
-                    intent.putExtra("text",event_list.get(position).getMessage());
-                    intent.putExtra("token",userToken);
-                    intent.putExtra("post_id",event_list.get(position).getId());
-                    intent.putExtra("profileimage",event_list.get(position).user.getImage());
-
-                }
-                context.startActivity(intent);
-
-
-
-            }
-        });
-
-        share_text.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(context,SharePostActivity.class);
-
-                if(countryPostResponse.getType().contains("image")){
-
-                    intent.putExtra("image",event_list.get(position).getValue());
-                    intent.putExtra("token",userToken);
-                    intent.putExtra("post_id",event_list.get(position).getId());
-                    intent.putExtra("profileimage",event_list.get(position).user.getImage());
-
-                }
-                else if(countryPostResponse.getType().contains("video")){
-                    intent.putExtra("video",event_list.get(position).getValue());
-                    intent.putExtra("token",userToken);
-                    intent.putExtra("post_id",event_list.get(position).getId());
-                    intent.putExtra("profileimage",event_list.get(position).user.getImage());
-
-
-                }
-                else if(countryPostResponse.getType().contains("")){
-
-                    intent.putExtra("text",event_list.get(position).getMessage());
-                    intent.putExtra("token",userToken);
-                    intent.putExtra("post_id",event_list.get(position).getId());
-                    intent.putExtra("profileimage",event_list.get(position).user.getImage());
-
-                }
-                context.startActivity(intent);
-
-            }
-        });
-
-
-        userName.setText(countryPostResponse.user.getFirst_name()+" "+countryPostResponse.user.getLast_name());
-
-       // post_image_string=countryPostResponse.getValue();
-        if(countryPostResponse.getType().isEmpty()){
-
-            postImage.setVisibility(View.INVISIBLE);
-            post_video.setVisibility(View.INVISIBLE);
-
-            ViewGroup.LayoutParams params = relativeImage.getLayoutParams();
-            params.height = 0;
-            params.width = 0;
-
-            ViewGroup.LayoutParams params1 = relativeCard.getLayoutParams();
-
-            params1.height = 380;
-            params1.width = 700;
-
-
-            // MediaController mediaController = new MediaController(context);
-         //   post_video.setMediaController(mediaController);
-
-//            Uri uri=Uri.parse("http://emergingncr.com/mangalcity/public/images/post/post_video/1528895061.mp4");
-//            post_video.setVideoURI(uri);
-//            //post_video.start();
-//            post_video.pause();
-
+        public LoadingVH(View itemView) {
+            super(itemView);
         }
-        else if(countryPostResponse.getType().contains("video")) {
+    }
 
-            Log.i("video","video");
+    public class MyPostViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.editText_textpost)
+        EditText editTextTextpost;
+        @BindView(R.id.person_profile_image)
+        ImageView personProfileImage;
+        @BindView(R.id.gallery_upload)
+        ImageView galleryUpload;
+        @BindView(R.id.video_upload)
+        ImageView video_upload;
+        @BindView(R.id.audio_upload)
+        ImageView audio_upload;
+        @BindView(R.id.imagepreview)
+        ImageView imagepreview;
+        @BindView(R.id.post_buttonnn)
+        Button post_button;
+        private OnPostClickListner postClickListner;
 
-            postImage.setVisibility(View.INVISIBLE);
-            post_video.setVisibility(View.VISIBLE);
-
-            Uri uri = Uri.parse("http://emergingncr.com/mangalcity/public/images/post/post_video/" + countryPostResponse.getValue());
-            post_video.setVideoURI(uri);
-
-            MediaController mediaController = new
-                    MediaController(context);
-           // mediaController.setAnchorView(post_video);
-            post_video.setMediaController(mediaController);
-            post_video.pause();
-            post_video.seekTo(100);
-
-        }
-
-        else if(countryPostResponse.getType().contains("image")){
-
-            Log.i("image","image");
-
-            postImage.setVisibility(View.VISIBLE);
-            post_video.setVisibility(View.INVISIBLE);
-
-
-
-            Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/post/post_image/"+countryPostResponse.getValue())
+        public MyPostViewHolder(View itemView, final OnPostClickListner listner) {
+            super(itemView);
+            this.postClickListner = listner;
+            ButterKnife.bind(this, itemView);
+            Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/user/" + profile_image)
                     .thumbnail(0.5f)
                     .crossFade()
                     .placeholder(0)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(postImage);
-
+                    .into(personProfileImage);
 
         }
 
+        @OnClick({R.id.gallery_upload, R.id.video_upload,R.id.audio_upload, R.id.post_buttonnn})
+        public void onViewClicked(View view) {
+            switch (view.getId()) {
+                case R.id.gallery_upload:
+                    postClickListner.onImageButttonClick();
+                    if (uri != null)
+                        imagepreview.setImageURI(null);
+                    break;
+                case R.id.video_upload:
+                    postClickListner.onVideoButttonClick();
+                    break;
+                case R.id.audio_upload:
+                    postClickListner.onAudioButtonClick();
+                    break;
 
-
-
-        Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/user/"+countryPostResponse.user.getImage())
-                .thumbnail(0.5f)
-                .crossFade()
-                .placeholder(0)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(userImage);
-
-              no_of_likes.setText(countryPostResponse.getLikes());
-        no_of_dislikes.setText(countryPostResponse.getDislikes());
-
-        post_id=countryPostResponse.getId();
-        Log.i("post_id",post_id);
-
-
-        // userImage.setImageResource(countryPostResponse.user.getI);
-      //  postImage.setImageResource(countryPostResponse.getPost_image());
-      //  imageLike.setImageResource(countryPostResponse.getLike_image());
-      //  imageDislike.setImageResource(countryPostResponse.getDislike_image());
-      //  imageShare.setImageResource(countryPostResponse.getShare_image());
-      //  imageComment.setImageResource(countryPostResponse.getComment_image());
-        postText.setText(countryPostResponse.getMessage());
-        postTiming.setText(countryPostResponse.getCreated_at());
-
-        dots.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                openDialog();
-
-
+                case R.id.post_buttonnn:
+                    String message = editTextTextpost.getText().toString();
+                    postClickListner.onPostButtonClick(message);
+                    if (message != null)
+                        editTextTextpost.getText().clear();
+                    break;
             }
-        });
+        }
 
+        private void bindFormData(Uri uri) {
+            imagepreview.setImageURI(uri);
+        }
 
-
-
-    }
-
-    @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.postlistitems, parent, false);
-        return new MyViewHolder(itemView);
-
-    }
-
-    @Override
-    public int getItemCount() {
-        Log.i("sizeeeee", event_list.size() + "");
-        return event_list.size();
-    }
-
-    public void setClickListener(ItemClickListener itemClickListener) {
-        this.clickListener = itemClickListener;
+        private void resetFormData() {
+            imagepreview.setImageResource(0);
+            editTextTextpost.getText().clear();
+            notifyItemChanged(0);
+        }
 
 
     }
 
-    public void openDialog(){
+    public class MyViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.post_image)
+        ImageView postImage;
+        @BindView(R.id.exo_player_view)
+        SimpleExoPlayerView exoPlayerView;
+        @BindView(R.id.exo_player_view_audio)
+        SimpleExoPlayerView exoPlayerView_audio;
+        @BindView(R.id.videorelative)
+        RelativeLayout videorelative;
+        @BindView(R.id.relativ1)
+        RelativeLayout relativ1;
+        @BindView(R.id.view)
+        View view;
+        @BindView(R.id.image_like)
+        ImageView imageLike;
+        @BindView(R.id.image_dislike)
+        ImageView imageDislike;
+        @BindView(R.id.image_comment)
+        ImageView imageComment;
+        @BindView(R.id.image_share)
+        ImageView imageShare;
+        @BindView(R.id.no_of_likes)
+        TextView noOfLikes;
+        @BindView(R.id.no_of_dislikes)
+        TextView noOfDislikes;
+        @BindView(R.id.textView11)
+        TextView textView11;
+        @BindView(R.id.share_text)
+        TextView shareText;
+        @BindView(R.id.user_image)
+        CircleImageView userImage;
+        @BindView(R.id.user_name)
+        TextView userName;
+        @BindView(R.id.post_timing)
+        TextView postTiming;
+        @BindView(R.id.post_text)
+        TextView postText;
+        @BindView(R.id.dots)
+        ImageView dots;
+        @BindView(R.id.relative_image)
+        RelativeLayout relativeImage;
+        @BindView(R.id.audiorelative)
+        RelativeLayout audiorelative;
 
-        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(context);
+        private OnItemClickListner listner;
+
+        @OnClick({R.id.image_like, R.id.image_dislike, R.id.image_comment, R.id.image_share, R.id.no_of_likes, R.id.no_of_dislikes, R.id.share_text, R.id.dots ,R.id.user_name})
+        public void onViewClicked(View view) {
+            switch (view.getId()) {
+                case R.id.image_like:
+                    if (listner != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listner.onLikeClick(position-1);
+                        }
+
+                    }
+                    break;
+                case R.id.image_dislike:
+                    if (listner != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listner.onDislikeClick(position-1);
+                        }
+
+                    }
+                    break;
+                case R.id.image_comment:
+                    if (listner != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listner.onSharePostClick(position-1);
+                        }
+
+                    }
+                    break;
+                case R.id.image_share:
+                    if (listner != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listner.onShareImageClick(position-1);
+                        }
+
+                    }
+                    break;
+                case R.id.no_of_likes:
+                    if (listner != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listner.onLikeClick(position-1);
+                        }
+
+                    }
+                    break;
+                case R.id.no_of_dislikes:
+                    if (listner != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listner.onDislikeClick(position-1);
+                        }
+
+                    }
+                    break;
+                case R.id.share_text:
+                    if (listner != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listner.onShareImageClick(position-1);
+                        }
+
+                    }
+                    break;
+                case R.id.dots:
+                    if (listner != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listner.onDotClick(position-1);
+                        }
+
+                    }
+                    break;
 
 
-
-        LayoutInflater inflater = LayoutInflater.from(context);
-
-
-        View subView = inflater.inflate(R.layout.feedbackdialog, null);
-        builder.setView(subView);
-        alertDialog = builder.create();
-
-        feedback=(Button)subView.findViewById(R.id.feedback);
-        delete=(Button)subView.findViewById(R.id.delete);
-
-
-        feedback.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-
-
-
-
-
-            }
-        });
-        final int position=0;
-        delete.setTag(position);
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alertDialog.dismiss();
-
-                pDialog = new ProgressDialog(context);
-                pDialog.setMessage("Please wait...");
-                pDialog.setCancelable(true);
-                pDialog.show();
-
-                apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-
-                Call<PostDeleteResponse> call = apiInterface.deltePost(userToken, event_list.get(position).getId());
-
-                call.enqueue(new Callback<PostDeleteResponse>() {
-                    @Override
-                    public void onResponse(Call<PostDeleteResponse> call, Response<PostDeleteResponse> response) {
-                        pDialog.cancel();
-
-                        PostDeleteResponse postDeleteResponse = response.body();
-                        isSucess = postDeleteResponse.getSuccess();
-                        Log.d(TAG, "onResponse: " + isSucess);
-                        event_list.remove(event_list.get(position).getId());
-                        notifyDataSetChanged();
-
-
-                        if (isSucess == true) {
-
-
-                            final AlertDialog alertDialog = new AlertDialog.Builder(
-                                    context).create();
-
-                            // Setting Dialog Title
-                            alertDialog.setTitle("                 Alert!");
-
-                            // Setting Dialog Message
-                            alertDialog.setMessage("            Post Deleted Successfully");
-
-                            // Setting Icon to Dialog
-
-
-                            // Setting OK Button
-                            alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    //                                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                                    //                                    intent.addCategory(Intent.CATEGORY_APP_EMAIL);
-                                    //                                    startActivity(intent);
-                                    // Write your code here to execute after dialog closed
-                                    // alertDialog.dismiss();
-                                    // Toast.makeText(getApplicationContext(), "You clicked on OK", Toast.LENGTH_LONG).show();
-
-                                    // verifyEmail();
-                                    // saveData();
-                                   // notifyDataSetChanged();
-                                    alertDialog.dismiss();
-
-                                }
-                            });
-
-                            // Showing Alert Message
-                            alertDialog.show();
-
-                        } else if (isSucess == false) {
-
-                            final AlertDialog alertDialog = new AlertDialog.Builder(
-                                    context).create();
-                            // saveData();
-                            // Setting Dialog Title
-                            alertDialog.setTitle("                 Alert!");
-
-                            // Setting Dialog Message
-                            alertDialog.setMessage("    Please Try Again");
-
-                            // Setting Icon to Dialog
-
-
-                            // Setting OK Button
-                            alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    //                                    Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                                    //                                    emailIntent.setType("text/plain");
-                                    //                                    startActivity(emailIntent);
-
-                                    // Write your code here to execute after dialog closed
-                                    alertDialog.dismiss();
-                                }
-                            });
-
-                            // Showing Alert Message
-                            alertDialog.show();
+                case R.id.user_name:
+                    if(listner !=null){
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listner.onUserImageClick(position-1);
                         }
                     }
 
+            }
+        }
+
+        public MyViewHolder(View view, final OnItemClickListner onItemClickListner) {
+            super(view);
+            this.listner = onItemClickListner;
+            ButterKnife.bind(this, view);
+
+        }
+
+        public void bind(final FeedPostData post) {
+            noOfLikes.setText(post.getLikes() + "");
+            noOfDislikes.setText(post.getDislikes() + "");
+
+            if (post.getLikes() > 0)
+                imageLike.setImageResource(R.drawable.like);
+            else
+                imageLike.setImageResource(R.drawable.like_gray);
+            if (post.getDislikes() > 0)
+                imageDislike.setImageResource(R.drawable.dislike);
+            else
+                imageDislike.setImageResource(R.drawable.dislike_grey);
+
+            Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/user/" + post.getUser().getImage())
+                    .thumbnail(0.5f)
+                    .crossFade()
+                    .placeholder(0)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(userImage);
+
+
+//            userImage.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    if(user_id.equals(feedPostData.get(position).getUser_id())){
+//
+//                        userImage.setEnabled(false);
+//                    }
+//                    else {
+//
+//                        Intent intent=new Intent(context, OtherUserProfile.class);
+//                        intent.putExtra("user_url",event_list.get(position).user.getUrl());
+//                        intent.putExtra("user_image",event_list.get(position).user.getImage());
+//                        intent.putExtra("user_cover_image",event_list.get(position).user.getCover_image());
+//                        intent.putExtra("first_name",event_list.get(position).user.getFirst_name());
+//                        intent.putExtra("last_name",event_list.get(position).user.getLast_name());
+//
+//                        context.startActivity(intent);
+//                    }
+//                }
+//            });
+
+            userName.setText(post.getUser().getFullName());
+            post_id = post.getId() + "";
+            postText.setText(post.getMessage());
+            postTiming.setText(post.getCreatedAt());
+
+            if (post.getType().contains("video")) {
+
+                Log.i("video", "video");
+
+                postImage.setVisibility(View.INVISIBLE);
+                videorelative.setVisibility(View.VISIBLE);
+                audiorelative.setVisibility(View.INVISIBLE);
+
+                try {
+
+                    String videoUrl = "http://emergingncr.com/mangalcity/public/images/post/post_video/" + post.getValue();
+                    BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+                    TrackSelector trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory(bandwidthMeter));
+                    exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
+
+                    Uri videoURI = Uri.parse(videoUrl);
+
+                    DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory("exoplayer_video");
+                    ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+                    MediaSource mediaSource = new ExtractorMediaSource(videoURI, dataSourceFactory, extractorsFactory, null, null);
+
+                    exoPlayerView.setPlayer(exoPlayer);
+                    exoPlayer.prepare(mediaSource);
+                    exoPlayer.setPlayWhenReady(false);
+
+                } catch (Exception e) {
+                    Log.e("PostVideo", " exoplayer error " + e.toString());
+                }
+
+
+            } else if (post.getType().equalsIgnoreCase("image")) {
+
+                Log.i("image", "image");
+
+                postImage.setVisibility(View.VISIBLE);
+                videorelative.setVisibility(View.INVISIBLE);
+                audiorelative.setVisibility(View.INVISIBLE);
+
+
+                Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/post/post_image/" + post.getValue())
+                        .thumbnail(0.5f)
+                        .crossFade()
+                        .placeholder(R.drawable.anu)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(postImage);
+
+
+                postImage.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onFailure(Call<PostDeleteResponse> call, Throwable t) {
+                    public void onClick(View view) {
+
+                        Intent intent = new Intent(context, OpenImageActivity.class);
+                        intent.putExtra("postimage", post.getValue());
+                        intent.putExtra("posttext", post.getMessage());
+
+                        context.startActivity(intent);
+
 
                     }
                 });
 
 
+            } else if (post.getType().contains("audio")) {
+
+                Log.i("audio", "audio");
+
+                postImage.setVisibility(View.INVISIBLE);
+                videorelative.setVisibility(View.INVISIBLE);
+                audiorelative.setVisibility(View.VISIBLE);
+
+                try {
+
+                    String videoUrl = "http://emergingncr.com/mangalcity/public/images/post/post_audio/" + post.getValue();
+                    BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+                    TrackSelector trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory(bandwidthMeter));
+                    exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
+
+                    Uri videoURI = Uri.parse(videoUrl);
+
+                    DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory("exoplayer_video");
+                    ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+                    MediaSource mediaSource = new ExtractorMediaSource(videoURI, dataSourceFactory, extractorsFactory, null, null);
+
+                    exoPlayerView_audio.setPlayer(exoPlayer);
+                    exoPlayer.prepare(mediaSource);
+                    exoPlayer.setPlayWhenReady(false);
+                } catch (Exception e) {
+                    Log.e("PostVideo", " exoplayer error " + e.toString());
+                }
+
+
+            } else if (post.getType().equalsIgnoreCase("")) {
+
+                postImage.setVisibility(View.GONE);
+                videorelative.setVisibility(View.GONE);
+                audiorelative.setVisibility(View.GONE);
+
+                ViewGroup.LayoutParams params = relativ1.getLayoutParams();
+                params.height = 0;
+                params.width = 0;
+
+                RelativeLayout innerLayout2 = new RelativeLayout(context);
+                LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT, 1f);
+                innerLayout2.setLayoutParams(layoutParams2);
+
+
+                ViewGroup.LayoutParams params1 = relativeImage.getLayoutParams();
+
+                params1.height = 510;
+                // params1.width = 1000;
+
+
             }
-        });
+
+        }}
+
+    public PostAdapter(Context context) {
+        this.context = context;
+        feedPostData = new ArrayList<>();
+        LoginPrefrences = context.getSharedPreferences("net.clamour.mangalcity.profile.LoginActivity", MODE_PRIVATE);
+        userToken = LoginPrefrences.getString("userToken", "");
+        user_id = LoginPrefrences.getString("user_id", "");
+        profile_image = LoginPrefrences.getString("profileImage", "");
+
+    }
 
 
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        RecyclerView.ViewHolder viewHolder = null;
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
-        // if button is clicked, close the custom dialog
-//        cross_dialog.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                alertDialog.dismiss();
-//            }
-//        });
+        switch (viewType) {
+            case FORMPOST:
+                viewHolder = getPostViewHolder(parent, inflater);
+                break;
+            case ITEM:
+                viewHolder = getViewHolder(parent, inflater);
+                break;
+            case LOADING:
+                View v2 = inflater.inflate(R.layout.item_progress, parent, false);
+                viewHolder = new LoadingVH(v2);
+                break;
+        }
+        return viewHolder;
+    }
 
-        alertDialog.show();}
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        switch (getItemViewType(position)) {
+            case FORMPOST:
+                myPostViewHolder = (MyPostViewHolder) holder;
+
+                break;
+            case ITEM:
+                MyViewHolder myViewHolder = (MyViewHolder) holder;
+                //Log.d(TAG, "onBindViewHolder: "+position);
+                FeedPostData feedPostDataList = feedPostData.get(position-1);
+                //Log.d(TAG, "onBindViewHolder: "+feedPostDataList.toString());
+                myViewHolder.bind(feedPostDataList);
+                break;
+            case LOADING:
+//                Do nothing
+                break;
+
+        }
+
+
+    }
+
+    @NonNull
+    private RecyclerView.ViewHolder getViewHolder(ViewGroup parent, LayoutInflater inflater) {
+        RecyclerView.ViewHolder viewHolder;
+        View v1 = inflater.inflate(R.layout.postlistitems, parent, false);
+        viewHolder = new MyViewHolder(v1, itemClickListner);
+        return viewHolder;
+    }
+
+    @NonNull
+    private RecyclerView.ViewHolder getPostViewHolder(ViewGroup parent, LayoutInflater inflater) {
+        RecyclerView.ViewHolder viewHolder;
+        View v1 = inflater.inflate(R.layout.form_layout, parent, false);
+        viewHolder = new MyPostViewHolder(v1, onPostClickListner);
+        return viewHolder;
+    }
+
+    @Override
+    public int getItemCount() {
+        return feedPostData == null ? 0 : feedPostData.size();
+    }
+
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == 0) {
+            return FORMPOST;
+        }
+        if (position == feedPostData.size() - 1 && isLoadingAdded) {
+            return LOADING;
+        } else {
+            return ITEM;
+        }
+
+    }
+
+
+    public FeedPostData getItem(int position) {
+        return feedPostData.get(position);
+    }
+
+    public void refreshAdapter(List<FeedPostData> newList) {
+        isLoadingAdded = true;
+        //restForm();
+        feedPostData.clear();
+        feedPostData.addAll(newList);
+        notifyDataSetChanged();
+    }
+
+    public void add(FeedPostData r) {
+        feedPostData.add(r);
+        notifyItemInserted(feedPostData.size() - 1);
+        //notifyDataSetChanged();
+    }
+
+    public void replace(int position , FeedPostData r) {
+        feedPostData.set(position,r);
+        notifyItemChanged(position+1);
+        // notifyDataSetChanged();
+    }
+    public void addAll(List<FeedPostData> moveResults) {
+        for (FeedPostData result : moveResults) {
+            add(result);
+        }
+    }
+
+    public void remove(FeedPostData r) {
+        int position = feedPostData.indexOf(r);
+        if (position > -1) {
+            feedPostData.remove(position);
+            notifyItemRemoved(position+1);
+            //notifyDataSetChanged();
+        }
+    }
+
+    public void clear() {
+
+//        isLoadingAdded = false;
+//        while (getItemCount() > 0) {
+//            remove(getItem(0));
+//        }
+
+    }
+
+    public boolean isEmpty() {
+        return getItemCount() == 0;
+    }
+
+
+    public void addLoadingFooter() {
+        isLoadingAdded = true;
+        add(new FeedPostData());
+    }
+
+    public void removeLoadingFooter() {
+        isLoadingAdded = false;
+
+        int position = feedPostData.size() - 1;
+        FeedPostData result = getItem(position);
+
+        if (result != null) {
+            feedPostData.remove(position);
+            notifyItemRemoved(position);
+        }
+    }
+
+    public void setImageUri(Uri url) {
+        this.uri = url;
+        myPostViewHolder.bindFormData(uri);
+    }
+
+    public void restForm() {
+        this.uri = null;
+        myPostViewHolder.resetFormData();
+    }
 
 }

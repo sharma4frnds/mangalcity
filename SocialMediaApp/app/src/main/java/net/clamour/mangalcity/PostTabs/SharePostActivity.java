@@ -16,14 +16,29 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.extractor.ExtractorsFactory;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.upstream.BandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 
 import net.clamour.mangalcity.Home.PostActivity;
 import net.clamour.mangalcity.R;
@@ -43,17 +58,17 @@ public class SharePostActivity extends AppCompatActivity {
     private static final String TAG = "SharePostActivity";
 
     @BindView(R.id.post_text)
-    TextView postText;
+    EditText postText;
     @BindView(R.id.post_image)
     ImageView postImage;
-    @BindView(R.id.post_video)
-    VideoView postVideo;
+  //  @BindView(R.id.post_video)
+  //  VideoView postVideo;
     @BindView(R.id.share_post)
     Button sharePost;
     @BindView(R.id.profile_image)
     ImageView profile_image;
 
-    String post_text_st, post_image_st, post_video_st, userToken, postId,profile_image_st;
+    String post_text_st, post_image_st, post_video_st, userToken, postId,profile_image_st,post_audio_st;
     ProgressDialog pDialog;
     ApiInterface apiInterface;
     Boolean isSucess;
@@ -61,6 +76,13 @@ public class SharePostActivity extends AppCompatActivity {
     RelativeLayout relativeImagevideo;
     @BindView(R.id.relative_complete)
     RelativeLayout relativeComplete;
+    @BindView(R.id.audiorelative)
+    RelativeLayout audiorelative;
+
+    RelativeLayout videorelative;
+
+    SimpleExoPlayerView exoPlayerView,exoPlayerView_audio;
+    SimpleExoPlayer exoPlayer;
 
     SharedPreferences LoginPrefrences;
     String pro;
@@ -86,20 +108,28 @@ public class SharePostActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         LoginPrefrences = this.getSharedPreferences("net.clamour.mangalcity.profile.LoginActivity", MODE_PRIVATE);
-        pro=LoginPrefrences.getString("profileImage","");
-        Log.i("profile",pro);
-
+        pro = LoginPrefrences.getString("profileImage", "");
+        Log.i("profile", pro);
 
 
         Intent intent = getIntent();
         post_text_st = intent.getStringExtra("text");
+        Log.d(TAG, "onCreate: " + post_text_st);
         post_image_st = intent.getStringExtra("image");
         post_video_st = intent.getStringExtra("video");
         userToken = intent.getStringExtra("token");
         postId = intent.getStringExtra("post_id");
-        profile_image_st=intent.getStringExtra("profileimage");
+        Log.d(TAG, "onCreate: " + postId);
+        profile_image_st = intent.getStringExtra("profileimage");
+        post_audio_st=intent.getStringExtra("audio");
+        Log.d(TAG, "onCreate: "+post_audio_st);
 
-        Glide.with(SharePostActivity.this).load("http://emergingncr.com/mangalcity/public/images/user/"+pro)
+        exoPlayerView = (SimpleExoPlayerView) findViewById(R.id.exo_player_view);
+        videorelative = (RelativeLayout) findViewById(R.id.videorelative);
+        exoPlayerView_audio = (SimpleExoPlayerView) findViewById(R.id.exo_player_view_audio);
+
+
+        Glide.with(SharePostActivity.this).load("http://emergingncr.com/mangalcity/public/images/user/" + pro)
                 .thumbnail(0.5f)
                 .crossFade()
                 .placeholder(0)
@@ -107,8 +137,7 @@ public class SharePostActivity extends AppCompatActivity {
                 .into(profile_image);
 
 
-
-        if (post_image_st == null && post_video_st == null) {
+        if (post_image_st == null && post_video_st == null && post_audio_st == null) {
 
             ViewGroup.LayoutParams params = relativeImagevideo.getLayoutParams();
             params.height = 0;
@@ -116,46 +145,78 @@ public class SharePostActivity extends AppCompatActivity {
 
             ViewGroup.LayoutParams params1 = relativeComplete.getLayoutParams();
 
-            params1.height = 200;
-            params1.width = 700;
+            params1.height = 400;
 
 
             postText.setText(post_text_st);
 
-        }
+        } else if (post_image_st == null && post_text_st != null) {
 
-        else if(post_image_st==null){
-
-            postVideo.setVisibility(View.VISIBLE);
             postImage.setVisibility(View.INVISIBLE);
+            videorelative.setVisibility(View.VISIBLE);
+            postText.setText(post_text_st);
 
-            Uri uri = Uri.parse("http://emergingncr.com/mangalcity/public/images/post/post_video/" +post_video_st);
-            postVideo.setVideoURI(uri);
+            try {
 
-            MediaController mediaController = new
-                    MediaController(SharePostActivity.this);
-            mediaController.setAnchorView(postVideo);
-            postVideo.setMediaController(mediaController);
-            postVideo.pause();
-            postVideo.seekTo(100);
+                String videoUrl = "http://emergingncr.com/mangalcity/public/images/post/post_video/" + post_video_st;
+                BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+                TrackSelector trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory(bandwidthMeter));
+                exoPlayer = ExoPlayerFactory.newSimpleInstance(SharePostActivity.this, trackSelector);
 
-        }
+                Uri videoURI = Uri.parse(videoUrl);
 
-        else if(post_video_st==null){
+                DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory("exoplayer_video");
+                ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+                MediaSource mediaSource = new ExtractorMediaSource(videoURI, dataSourceFactory, extractorsFactory, null, null);
+
+                exoPlayerView.setPlayer(exoPlayer);
+                exoPlayer.prepare(mediaSource);
+                exoPlayer.setPlayWhenReady(true);
+            } catch (Exception e) {
+                Log.e("SharePost", " exoplayer error " + e.toString());
+            }
+
+        } else if (post_video_st == null && post_text_st != null) {
 
             postImage.setVisibility(View.VISIBLE);
-            postVideo.setVisibility(View.INVISIBLE);
+            videorelative.setVisibility(View.INVISIBLE);
+            postText.setText(post_text_st);
 
-            Glide.with(SharePostActivity.this).load("http://emergingncr.com/mangalcity/public/images/post/post_image/"+post_image_st)
+            Glide.with(SharePostActivity.this).load("http://emergingncr.com/mangalcity/public/images/post/post_image/" + post_image_st)
                     .thumbnail(0.5f)
                     .crossFade()
                     .placeholder(0)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(postImage);
 
+        } else if (post_image_st == null && post_video_st == null && post_text_st != null) {
+
+            postImage.setVisibility(View.INVISIBLE);
+            videorelative.setVisibility(View.INVISIBLE);
+            audiorelative.setVisibility(View.VISIBLE);
+            postText.setText(post_text_st);
+
+            try {
+            String videoUrl = "http://emergingncr.com/mangalcity/public/images/post/post_audio/"+post_audio_st;
+            BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+            TrackSelector trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory(bandwidthMeter));
+            exoPlayer = ExoPlayerFactory.newSimpleInstance(SharePostActivity.this, trackSelector);
+
+            Uri videoURI = Uri.parse(videoUrl);
+
+            DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory("exoplayer_video");
+            ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+            MediaSource mediaSource = new ExtractorMediaSource(videoURI, dataSourceFactory, extractorsFactory, null, null);
+
+            exoPlayerView_audio.setPlayer(exoPlayer);
+            exoPlayer.prepare(mediaSource);
+            exoPlayer.setPlayWhenReady(false);
+
+        } catch(Exception e){
+            Log.e("PostVideo", " exoplayer error " + e.toString());
+
         }
-
-
+    }
         sharePost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -173,9 +234,13 @@ public class SharePostActivity extends AppCompatActivity {
         pDialog.setCancelable(true);
         pDialog.show();
 
+        post_text_st=postText.getText().toString();
+        Log.d(TAG, "sharePostData: "+post_text_st+""+postId);
+
+
         apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
 
-        Call<PostShareresponse> call = apiInterface.share_post(userToken, postId);
+        Call<PostShareresponse> call = apiInterface.share_post(userToken, postId,post_text_st);
 
         call.enqueue(new Callback<PostShareresponse>() {
             @Override
@@ -189,41 +254,43 @@ public class SharePostActivity extends AppCompatActivity {
 
                 if (isSucess == true) {
 
-
-                    final AlertDialog alertDialog = new AlertDialog.Builder(
-                            SharePostActivity.this).create();
-
-                    // Setting Dialog Title
-                    alertDialog.setTitle("                 Alert!");
-
-                    // Setting Dialog Message
-                    alertDialog.setMessage("            Successfully Posted ");
-
-                    // Setting Icon to Dialog
+                    Toast.makeText(getApplicationContext(),"sucessfully posted",Toast.LENGTH_SHORT).show();
 
 
-                    // Setting OK Button
-                    alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            //                                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                            //                                    intent.addCategory(Intent.CATEGORY_APP_EMAIL);
-                            //                                    startActivity(intent);
-                            // Write your code here to execute after dialog closed
-                            // alertDialog.dismiss();
-                            // Toast.makeText(getApplicationContext(), "You clicked on OK", Toast.LENGTH_LONG).show();
-
-                            // verifyEmail();
-                            // saveData();
-                            alertDialog.dismiss();
-
-                            Intent intent=new Intent(SharePostActivity.this, PostActivity.class);
-                            startActivity(intent);
-
-                        }
-                    });
+//                    final AlertDialog alertDialog = new AlertDialog.Builder(
+//                            SharePostActivity.this).create();
+//
+//                    // Setting Dialog Title
+//                    alertDialog.setTitle("                 Alert!");
+//
+//                    // Setting Dialog Message
+//                    alertDialog.setMessage("            Successfully Posted ");
+//
+//                    // Setting Icon to Dialog
+//
+//
+//                    // Setting OK Button
+//                    alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            //                                    Intent intent = new Intent(Intent.ACTION_MAIN);
+//                            //                                    intent.addCategory(Intent.CATEGORY_APP_EMAIL);
+//                            //                                    startActivity(intent);
+//                            // Write your code here to execute after dialog closed
+//                            // alertDialog.dismiss();
+//                            // Toast.makeText(getApplicationContext(), "You clicked on OK", Toast.LENGTH_LONG).show();
+//
+//                            // verifyEmail();
+//                            // saveData();
+//                            alertDialog.dismiss();
+//
+//                            Intent intent=new Intent(SharePostActivity.this, PostActivity.class);
+//                            startActivity(intent);
+//
+//                        }
+//                    });
 
                     // Showing Alert Message
-                    alertDialog.show();
+                 //   alertDialog.show();
                 }
 //
 //                } else if (isSucess == false) {

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EDEEEE"
+    android:id="@+id/pop"
+
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:background="@drawable/search_layout"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="5dp"
+        android:layout_height="58dp"
+        android:id="@+id/relativeLayout9">
+        <EditText
+            android:id="@+id/looking_for_dialog"
+            android:layout_width="280dp"
+            android:layout_height="40dp"
+
+            android:layout_marginTop="6dp"
+            android:layout_marginLeft="20dp"
+            android:background="@drawable/text_box"
+            android:hint="What are you looking for?"
+            android:textColorHint="#B8BABC" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/ic_search_black_24dp"
+            android:layout_alignParentRight="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#fff"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/relativeLayout14"
+        android:layout_centerHorizontal="true"
+
+        android:id="@+id/relativeLayout33">
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:id="@+id/list_search">
+
+        </ListView>
+    </RelativeLayout>
+
+</LinearLayout>

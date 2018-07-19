@@ -66,6 +66,8 @@ public class ChangePassword extends DrawerBaseActivity {
         setSupportActionBar(toolbar1);
         setDrawer();
 
+        oldPassword.setSelection(0);
+
         LoginPrefrences = this.getSharedPreferences("net.clamour.mangalcity.profile.LoginActivity", MODE_PRIVATE);
         UserToken=LoginPrefrences.getString("userToken","");
         Log.i("token",UserToken);
