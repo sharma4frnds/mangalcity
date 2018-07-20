@@ -7,17 +7,22 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -42,7 +47,16 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.DownloadListener;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.HashMap;
@@ -50,6 +64,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.clamour.mangalcity.MainActivity;
 import net.clamour.mangalcity.PostTabs.FeedBackActivity;
 import net.clamour.mangalcity.PostTabs.PostAdapter;
 import net.clamour.mangalcity.PostTabs.SharePostActivity;
@@ -121,6 +136,10 @@ public class PostActivity extends DrawerBaseActivity implements EasyPermissions.
     String name,city,image;
     AlertDialog.Builder builder;
     AlertDialog alertDialog_search;
+    Button btn_cancel,reportspam,delete_sheet,download;
+
+    private AsyncTask mMyTask;
+
 
 
 //    @BindView(R.id.swipe_refresh_layout)
@@ -138,6 +157,7 @@ public class PostActivity extends DrawerBaseActivity implements EasyPermissions.
     private String message = "";
     private String audiopath = "";
     JSONArray jsonArray, filtered_array;
+    BottomSheetDialog dialog;
 
     LinearLayoutManager linearLayoutManager;
 
@@ -160,6 +180,10 @@ public class PostActivity extends DrawerBaseActivity implements EasyPermissions.
     Boolean isSucessSearch;
     Boolean isEXist=false;
 
+    String url = "http://ichef.bbci.co.uk/onesport/cps/480/cpsprodpb/11136/production/_95324996_defoe_rex.jpg";
+    File file;
+    String dirPath, fileName;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,6 +205,7 @@ public class PostActivity extends DrawerBaseActivity implements EasyPermissions.
         Log.i("UserToken", UserToken);
         user_id = LoginPrefrences.getString("user_id", "");
         profile_image = LoginPrefrences.getString("profileImage", "");
+
 
         search_icon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -523,7 +548,9 @@ public class PostActivity extends DrawerBaseActivity implements EasyPermissions.
             @Override
             public void onDotClick(int position) {
                 Log.d(TAG, "onDotClick: " + position);
-                openDialog(position);
+
+                init_modal_bottomsheet(position);
+               // openDialog(position);
 
             }
 
@@ -1321,7 +1348,214 @@ public class PostActivity extends DrawerBaseActivity implements EasyPermissions.
 
     }
 
+    public void init_modal_bottomsheet(final int position) {
+        View modalbottomsheet = getLayoutInflater().inflate(R.layout.modal_bottomsheet, null);
+
+
+        dialog = new BottomSheetDialog(this);
+        dialog.setContentView(modalbottomsheet);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
+        dialog.show();
+
+
+        btn_cancel = (Button) modalbottomsheet.findViewById(R.id.btn_cancel);
+        reportspam = (Button) modalbottomsheet.findViewById(R.id.ReportSpam);
+        delete_sheet = (Button) modalbottomsheet.findViewById(R.id.Delete);
+        download = (Button) modalbottomsheet.findViewById(R.id.DownLoad);
+
+//    if(!nextList.get(position).user.getId().equals(user_id)){
+//
+//       delete.setEnabled(false);
+//       delete.setTextColor(Color.parseColor("#808080"));
+//
+//    }
+
+
+        reportspam.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: "+position+""+nextList.get(position).getId());
+                Intent intent = new Intent(PostActivity.this, FeedBackActivity.class);
+                intent.putExtra("postid",String.valueOf(postDataList.get(position).getId()));
+                startActivity(intent);
+                dialog.hide();
+
+
+            }
+        });
+
+        delete_sheet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                android.support.v7.app.AlertDialog.Builder alertDialogBuilder = new android.support.v7.app.AlertDialog.Builder(
+                        PostActivity.this);
+
+                // set title
+                alertDialogBuilder.setTitle("                    Alert!");
+
+                // set dialog message
+                alertDialogBuilder
+                        .setMessage("      Are you surely want to delete")
+                        .setCancelable(false)
+                        .setPositiveButton("YES",new DialogInterface.OnClickListener() {
+                            public void onClick(final DialogInterface dialog, int id) {
+
+                                pDialog = new ProgressDialog(PostActivity.this);
+                                pDialog.setMessage("Please wait...");
+                                pDialog.setCancelable(true);
+                                pDialog.show();
+
+                                apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+
+                                Call<PostDeleteResponse> call = apiInterface.deltePost(UserToken, String.valueOf(postDataList.get(position).getId()));
+
+                                call.enqueue(new Callback<PostDeleteResponse>() {
+                                    @Override
+                                    public void onResponse(Call<PostDeleteResponse> call, Response<PostDeleteResponse> response) {
+                                        pDialog.cancel();
+
+                                        PostDeleteResponse postDeleteResponse = response.body();
+                                        isSucess = postDeleteResponse.getSuccess();
+                                        Log.d(TAG, "onResponse: " + isSucess);
+                                        //  notifyItemRangeChanged(position, event_list.size());
+
+
+                                        if (isSucess == true) {
+
+                                            nextList.remove(position);
+                                            postAdapter.notifyItemRemoved(position);
+                                            dialog.dismiss();
+                                         //   alertDialog.dismiss();
+                                            //dialog.dismiss();
+
+                                            Toast.makeText(PostActivity.this,"Deleted Successfully",Toast.LENGTH_SHORT).show();
+                                        } else if (isSucess == false) {
+
+                                            Toast.makeText(PostActivity.this,"Please Try Again",Toast.LENGTH_SHORT).show();
+                                           // dialog.dismiss();
+
+                                        }
+
+
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<PostDeleteResponse> call, Throwable t) {
+
+
+                                    }
+                                });
+
+
+
+
+
+
+                            }
+                        })
+                        .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // if this button is clicked, just close
+                                // the dialog box and do nothing
+                                dialog.cancel();
+
+                            }
+                        });
+
+                // create alert dialog
+                android.support.v7.app.AlertDialog alertDialog = alertDialogBuilder.create();
+
+                // show it
+                alertDialog.show();
+
+
+
+            }
+            });
+
+        // alertDialog.show();
+
+
+        download.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Toast.makeText(PostActivity.this, "DownLoad Complete", Toast.LENGTH_SHORT).show();
+
+                if (EasyPermissions.hasPermissions(PostActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    Glide.with(PostActivity.this)
+                            .load("http://emergingncr.com/mangalcity/public/images/post/post_image/"+postDataList.get(position).getValue())
+                            .asBitmap()
+                            .into(new SimpleTarget<Bitmap>(100,100) {
+                                @Override
+                                public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation)  {
+                                    saveImage(resource);
+                                }
+                            });
+                }
+                else {
+                    EasyPermissions.requestPermissions(PostActivity.this, getString(R.string.read_file), READ_REQUEST_CODE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+                }
+
+
+            }
+        });
+
+
+
+
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.hide();
+            }
+        });
+    }
+
+    private String saveImage(Bitmap image) {
+        String savedImagePath = null;
+
+        String imageFileName = "JPEG_" + "FILE_NAME" + ".jpg";
+        File storageDir = new File(            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                + "Mangal");
+        boolean success = true;
+        if (!storageDir.exists()) {
+            success = storageDir.mkdirs();
+        }
+        if (success) {
+            File imageFile = new File(storageDir, imageFileName);
+            savedImagePath = imageFile.getAbsolutePath();
+            try {
+                OutputStream fOut = new FileOutputStream(imageFile);
+                image.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+                fOut.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // Add the image to the system gallery
+            galleryAddPic(savedImagePath);
+            Toast.makeText(PostActivity.this, "IMAGE SAVED", Toast.LENGTH_LONG).show();
+        }
+        return savedImagePath;
+    }
+
+    private void galleryAddPic(String imagePath) {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(imagePath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        sendBroadcast(mediaScanIntent);
+    }
+
+
 }
+
+
+
 
 
 

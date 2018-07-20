@@ -170,10 +170,13 @@
                             android:background="@null"
                             android:inputType="number"
                             android:maxLength="10"
+                            android:focusableInTouchMode="false"
+                            android:clickable="false"
                             android:fontFamily="@font/pt_sans_web_regular"
                             android:hint="Mobile No."
                             android:textSize="15sp" />
                         <ImageView
+                            android:id="@+id/image_mob"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/ic_create_black_24dp"
@@ -202,11 +205,14 @@
                             android:layout_marginLeft="22dp"
                             android:layout_marginStart="22dp"
                             android:background="@null"
+                            android:focusableInTouchMode="false"
                             android:fontFamily="@font/pt_sans_web_regular"
                             android:hint="Email Id"
+                            android:clickable="false"
                             android:inputType="textEmailAddress"
                             android:textSize="15sp" />
                         <ImageView
+                            android:id="@+id/image_email"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/ic_create_black_24dp"
@@ -235,11 +241,14 @@
                             android:layout_marginLeft="22dp"
                             android:layout_marginStart="22dp"
                             android:background="@null"
+                            android:focusableInTouchMode="false"
+                            android:clickable="false"
                             android:inputType="text"
                             android:fontFamily="@font/pt_sans_web_regular"
                             android:hint="Full Address"
                             android:textSize="15sp" />
                         <ImageView
+                            android:id="@+id/image_address"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/ic_create_black_24dp"
@@ -269,10 +278,13 @@
                             android:layout_marginStart="22dp"
                             android:background="@null"
                             android:inputType="text"
+                            android:focusableInTouchMode="false"
+                            android:clickable="false"
                             android:fontFamily="@font/pt_sans_web_regular"
                             android:hint="Proffession"
                             android:textSize="15sp" />
                         <ImageView
+                            android:id="@+id/image_proffession"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/ic_create_black_24dp"
@@ -351,10 +363,14 @@
                             android:layout_marginLeft="22dp"
                             android:layout_marginStart="22dp"
                             android:background="@null"
+                            android:focusableInTouchMode="false"
+                            android:contextClickable="false"
                             android:fontFamily="@font/pt_sans_web_regular"
                             android:hint="dob"
+                            android:clickable="false"
                             android:textSize="15sp" />
                         <ImageView
+                            android:id="@+id/image_dob"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/ic_create_black_24dp"
@@ -510,7 +526,7 @@
                         android:layout_marginTop="20dp"
                         android:text="Set your home location as current location"
                         android:layout_below="@+id/texthome"
-                        android:onClick="itemClicked"
+
                         android:layout_marginBottom="200dp"
 
                         />

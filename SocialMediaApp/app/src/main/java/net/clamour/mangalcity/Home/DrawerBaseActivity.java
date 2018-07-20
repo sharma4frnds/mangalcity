@@ -16,7 +16,9 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 
 import net.clamour.mangalcity.PostTabs.ActivityLog;
@@ -75,9 +77,13 @@ public class DrawerBaseActivity extends AppCompatActivity {
         // toolbar1.setTitleTextColor(Color.WHITE);
         //toolbar1.setTitle("My Healthy Host");
 
+
+
         lt.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+
                 if(position==1){
 
                     Intent intent=new Intent(DrawerBaseActivity.this,PostActivity.class);
@@ -279,5 +285,4 @@ public class DrawerBaseActivity extends AppCompatActivity {
         });
 
 
-    }
-}
+    }}

@@ -117,7 +117,7 @@ public class ActivityLog extends AppCompatActivity {
 
         progressBar = (ProgressBar) findViewById(R.id.main_progress);
         recyclerView=(RecyclerView)findViewById(R.id.recyclerview);
-
+nextList=new ArrayList<>();
         actvitylog_array=new ArrayList<>();
         linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -254,6 +254,8 @@ public class ActivityLog extends AppCompatActivity {
 
     private List<ActivityPost> fetchResults(Response<ActivityResponse> response) {
         ActivityResponse body = response.body();
+        String isSucess=body.getSuccess().toString();
+        Log.d(TAG, "fetchResults: "+isSucess);
         return nextList;
     }
     private Call<ActivityResponse> callFeedApi() {

@@ -373,6 +373,7 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             post_id = post.getId() + "";
             postText.setText(post.getMessage());
             postTiming.setText(post.getCreatedAt());
+            Log.d(TAG, "bind: "+post.getUser().getImage());
 
             if (post.getType().contains("video")) {
 
@@ -482,7 +483,7 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                 ViewGroup.LayoutParams params1 = relativeImage.getLayoutParams();
 
-                params1.height = 510;
+                params1.height = 530;
                 // params1.width = 1000;
 
 

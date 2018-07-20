@@ -15,6 +15,7 @@
         android:layout_marginBottom="16dp"
         android:scaleType="centerCrop"
         android:layout_gravity="center"
+        android:onClick="itemClicked"
         android:src="@drawable/user"
         />
 
