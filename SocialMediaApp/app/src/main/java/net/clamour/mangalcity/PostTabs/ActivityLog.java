@@ -1,67 +1,68 @@
 package net.clamour.mangalcity.PostTabs;
 
-        import android.app.ProgressDialog;
-        import android.content.SharedPreferences;
-        import android.support.design.widget.BottomSheetDialog;
-        import android.support.v7.app.AppCompatActivity;
-        import android.os.Bundle;
-        import android.support.v7.widget.LinearLayoutManager;
-        import android.support.v7.widget.RecyclerView;
-        import android.view.View;
-        import android.widget.Button;
-        import android.widget.ProgressBar;
+import android.app.ProgressDialog;
+import android.content.SharedPreferences;
+import android.support.design.widget.BottomSheetDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
 
-        import net.clamour.mangalcity.Activity.ActivityPost;
-        import net.clamour.mangalcity.Activity.ActivityResponse;
-        import net.clamour.mangalcity.R;
-        import net.clamour.mangalcity.ResponseModal.CityPostResponse;
-        import net.clamour.mangalcity.webservice.ApiInterface;
+import net.clamour.mangalcity.Activity.ActivityData;
+import net.clamour.mangalcity.Activity.ActivityPost;
+import net.clamour.mangalcity.Activity.ActivityResponse;
+import net.clamour.mangalcity.R;
+import net.clamour.mangalcity.ResponseModal.CityPostResponse;
+import net.clamour.mangalcity.webservice.ApiInterface;
 
-        import java.util.List;
+import java.util.List;
 
 
-        import android.app.AlertDialog;
-        import android.app.ProgressDialog;
-        import android.content.DialogInterface;
-        import android.content.Intent;
-        import android.content.SharedPreferences;
-        import android.graphics.Color;
-        import android.graphics.PorterDuff;
-        import android.graphics.drawable.Drawable;
-        import android.support.design.widget.BottomSheetDialog;
-        import android.support.v7.app.AppCompatActivity;
-        import android.os.Bundle;
-        import android.support.v7.widget.DefaultItemAnimator;
-        import android.support.v7.widget.LinearLayoutManager;
-        import android.support.v7.widget.RecyclerView;
-        import android.support.v7.widget.Toolbar;
-        import android.util.Log;
-        import android.view.MenuItem;
-        import android.view.View;
-        import android.widget.Button;
-        import android.widget.ProgressBar;
-        import android.widget.Toast;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.support.design.widget.BottomSheetDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
-        import net.clamour.mangalcity.Home.PaginationScrollListener;
-        import net.clamour.mangalcity.Home.PostActivity;
-        import net.clamour.mangalcity.PostTabs.FeedBackActivity;
-        import net.clamour.mangalcity.PostTabs.ItemClickListener;
-        import net.clamour.mangalcity.PostTabs.PostAdapter;
-        import net.clamour.mangalcity.R;
-        import net.clamour.mangalcity.ResponseModal.CityPostResponse;
-        import net.clamour.mangalcity.ResponseModal.CountryMainResponse;
-        import net.clamour.mangalcity.ResponseModal.CountryPostResponse;
-        import net.clamour.mangalcity.ResponseModal.FeedsResponse;
-        import net.clamour.mangalcity.ResponseModal.PostDeleteResponse;
-        import net.clamour.mangalcity.webservice.ApiClient;
-        import net.clamour.mangalcity.webservice.ApiInterface;
+import net.clamour.mangalcity.Home.PaginationScrollListener;
+import net.clamour.mangalcity.Home.PostActivity;
+import net.clamour.mangalcity.PostTabs.FeedBackActivity;
+import net.clamour.mangalcity.PostTabs.ItemClickListener;
+import net.clamour.mangalcity.PostTabs.PostAdapter;
+import net.clamour.mangalcity.R;
+import net.clamour.mangalcity.ResponseModal.CityPostResponse;
+import net.clamour.mangalcity.ResponseModal.CountryMainResponse;
+import net.clamour.mangalcity.ResponseModal.CountryPostResponse;
+import net.clamour.mangalcity.ResponseModal.FeedsResponse;
+import net.clamour.mangalcity.ResponseModal.PostDeleteResponse;
+import net.clamour.mangalcity.webservice.ApiClient;
+import net.clamour.mangalcity.webservice.ApiInterface;
 
-        import java.util.ArrayList;
-        import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 
-        import retrofit2.Call;
-        import retrofit2.Callback;
-        import retrofit2.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class ActivityLog extends AppCompatActivity {
@@ -95,7 +96,7 @@ public class ActivityLog extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log);
 
-                Toolbar toolbar1 = (Toolbar) findViewById(R.id.main_page_toolbar);
+        Toolbar toolbar1 = (Toolbar) findViewById(R.id.main_page_toolbar);
         toolbar1.setTitleTextColor(Color.parseColor("#ffffff"));
         toolbar1.setTitle("AcctivityLog");
 
@@ -117,7 +118,7 @@ public class ActivityLog extends AppCompatActivity {
 
         progressBar = (ProgressBar) findViewById(R.id.main_progress);
         recyclerView=(RecyclerView)findViewById(R.id.recyclerview);
-nextList=new ArrayList<>();
+        nextList=new ArrayList<>();
         actvitylog_array=new ArrayList<>();
         linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -131,7 +132,7 @@ nextList=new ArrayList<>();
         recyclerView.addOnScrollListener(new PaginationScrollListener(linearLayoutManager) {
             @Override
             protected void showForm() {
-               // formLayout.setVisibility(View.VISIBLE);
+                // formLayout.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -232,7 +233,7 @@ nextList=new ArrayList<>();
                 for (ActivityPost activityPost:nextList){
 
                     post_id=activityPost.getId();
-                   // Log.d(TAG, "onResponseidddactivity: "+post_id+cityPostResponse.getCreated_at());
+                    // Log.d(TAG, "onResponseidddactivity: "+post_id+cityPostResponse.getCreated_at());
                 }
 
                 activityAdapter.addAll(nextList);
@@ -256,7 +257,12 @@ nextList=new ArrayList<>();
         ActivityResponse body = response.body();
         String isSucess=body.getSuccess().toString();
         Log.d(TAG, "fetchResults: "+isSucess);
-        return nextList;
+        List<ActivityData>  list = body.getActivity().getData();
+        List<ActivityPost> poatList = new ArrayList<>();
+        for(ActivityData data : list){
+            poatList.add(data.getPost());
+        }
+        return poatList;
     }
     private Call<ActivityResponse> callFeedApi() {
         return apiInterface.activityLogs(UserToken,currentPage+"");
@@ -284,4 +290,4 @@ nextList=new ArrayList<>();
 
     }
 
-    }
+}

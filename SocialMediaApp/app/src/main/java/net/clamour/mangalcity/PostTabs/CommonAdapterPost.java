@@ -1,10 +1,8 @@
 package net.clamour.mangalcity.PostTabs;
 
-/**
- * Created by clamour_5 on 7/16/2018.
- */
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -36,52 +34,8 @@ import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 
-import net.clamour.mangalcity.R;
-import net.clamour.mangalcity.feed.FeedPostData;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import de.hdodenhof.circleimageview.CircleImageView;
-
-import static android.content.Context.MODE_PRIVATE;
-
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.extractor.ExtractorsFactory;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelector;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
-import com.google.android.exoplayer2.upstream.BandwidthMeter;
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
-
+import net.clamour.mangalcity.Home.OpenImageActivity;
+import net.clamour.mangalcity.Home.OtherUserProfile;
 import net.clamour.mangalcity.R;
 import net.clamour.mangalcity.feed.FeedPostData;
 
@@ -98,17 +52,18 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final String TAG = "CommonAdapterPost";
+    private static final String TAG = "PostAdapter";
 
 
     private String post_id;
     private String userToken;
     private String user_id;
     private SharedPreferences LoginPrefrences;
-    private SimpleExoPlayer exoPlayer;
-    private static final int FORMPOST = 0;
-    private static final int ITEM = 1;
-    private static final int LOADING = 2;
+    private SimpleExoPlayer exoPlayer,exoPlayerView_audio;
+
+    private static final int ITEM = 0;
+    private static final int LOADING = 1;
+    android.support.v7.app.AlertDialog alertDialog;
 
 
     private boolean isLoadingAdded = false;
@@ -119,7 +74,7 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
     private OnPostClickListner onPostClickListner;
     private String profile_image;
     private Uri uri;
-  //  private MyPostViewHolder myPostViewHolder;
+    private MyPostViewHolder myPostViewHolder;
 
 
     public interface OnItemClickListner {
@@ -133,6 +88,8 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         void onDotClick(int position);
 
+        void onUserImageClick(int position);
+
 
 
     }
@@ -143,6 +100,8 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
         void onImageButttonClick();
 
         void onVideoButttonClick();
+
+        void onAudioButtonClick();
     }
 
     public void setOnPostClickListner(OnPostClickListner postClickListner) {
@@ -160,72 +119,80 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-//    public class MyPostViewHolder extends RecyclerView.ViewHolder {
-//        @BindView(R.id.editText_textpost)
-//        EditText editTextTextpost;
-//        @BindView(R.id.person_profile_image)
-//        ImageView personProfileImage;
-//        @BindView(R.id.gallery_upload)
-//        ImageView galleryUpload;
-//        @BindView(R.id.video_upload)
-//        ImageView video_upload;
-//        @BindView(R.id.imagepreview)
-//        ImageView imagepreview;
-//        @BindView(R.id.post_buttonnn)
-//        Button post_button;
-//        private OnPostClickListner postClickListner;
-//
-//        public MyPostViewHolder(View itemView, final OnPostClickListner listner) {
-//            super(itemView);
-//            this.postClickListner = listner;
-//            ButterKnife.bind(this, itemView);
-//            Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/user/" + profile_image)
-//                    .thumbnail(0.5f)
-//                    .crossFade()
-//                    .placeholder(0)
-//                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-//                    .into(personProfileImage);
-//
-//        }
-//
-//        @OnClick({R.id.gallery_upload, R.id.video_upload, R.id.post_buttonnn})
-//        public void onViewClicked(View view) {
-//            switch (view.getId()) {
-//                case R.id.gallery_upload:
-//                    postClickListner.onImageButttonClick();
-//                    if (uri != null)
-//                        imagepreview.setImageURI(null);
-//                    break;
-//                case R.id.video_upload:
-//                    postClickListner.onVideoButttonClick();
-//                    break;
-//                case R.id.post_buttonnn:
-//                    String message = editTextTextpost.getText().toString();
-//                    postClickListner.onPostButtonClick(message);
-//                    if (message != null)
-//                        editTextTextpost.getText().clear();
-//                    break;
-//            }
-//        }
-//
-//        private void bindFormData(Uri uri) {
-//            imagepreview.setImageURI(uri);
-//        }
-//
-//        private void resetFormData() {
-//            imagepreview.setImageResource(0);
-//            editTextTextpost.getText().clear();
-//            notifyItemChanged(0);
-//        }
-//
-//
-//    }
+    public class MyPostViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.editText_textpost)
+        EditText editTextTextpost;
+        @BindView(R.id.person_profile_image)
+        ImageView personProfileImage;
+        @BindView(R.id.gallery_upload)
+        ImageView galleryUpload;
+        @BindView(R.id.video_upload)
+        ImageView video_upload;
+        @BindView(R.id.audio_upload)
+        ImageView audio_upload;
+        @BindView(R.id.imagepreview)
+        ImageView imagepreview;
+        @BindView(R.id.post_buttonnn)
+        Button post_button;
+        private OnPostClickListner postClickListner;
+
+        public MyPostViewHolder(View itemView, final OnPostClickListner listner) {
+            super(itemView);
+            this.postClickListner = listner;
+            ButterKnife.bind(this, itemView);
+            Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/user/" + profile_image)
+                    .thumbnail(0.5f)
+                    .crossFade()
+                    .placeholder(0)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(personProfileImage);
+
+        }
+
+        @OnClick({R.id.gallery_upload, R.id.video_upload,R.id.audio_upload, R.id.post_buttonnn})
+        public void onViewClicked(View view) {
+            switch (view.getId()) {
+                case R.id.gallery_upload:
+                    postClickListner.onImageButttonClick();
+                    if (uri != null)
+                        imagepreview.setImageURI(null);
+                    break;
+                case R.id.video_upload:
+                    postClickListner.onVideoButttonClick();
+                    break;
+                case R.id.audio_upload:
+                    postClickListner.onAudioButtonClick();
+                    break;
+
+                case R.id.post_buttonnn:
+                    String message = editTextTextpost.getText().toString();
+                    postClickListner.onPostButtonClick(message);
+                    if (message != null)
+                        editTextTextpost.getText().clear();
+                    break;
+            }
+        }
+
+        private void bindFormData(Uri uri) {
+            imagepreview.setImageURI(uri);
+        }
+
+        private void resetFormData() {
+            imagepreview.setImageResource(0);
+            editTextTextpost.getText().clear();
+            notifyItemChanged(0);
+        }
+
+
+    }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.post_image)
         ImageView postImage;
         @BindView(R.id.exo_player_view)
         SimpleExoPlayerView exoPlayerView;
+        @BindView(R.id.exo_player_view_audio)
+        SimpleExoPlayerView exoPlayerView_audio;
         @BindView(R.id.videorelative)
         RelativeLayout videorelative;
         @BindView(R.id.relativ1)
@@ -260,10 +227,12 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
         ImageView dots;
         @BindView(R.id.relative_image)
         RelativeLayout relativeImage;
+        @BindView(R.id.audiorelative)
+        RelativeLayout audiorelative;
 
         private OnItemClickListner listner;
 
-        @OnClick({R.id.image_like, R.id.image_dislike, R.id.image_comment, R.id.image_share, R.id.no_of_likes, R.id.no_of_dislikes, R.id.share_text, R.id.dots })
+        @OnClick({R.id.image_like, R.id.image_dislike, R.id.image_comment, R.id.image_share, R.id.no_of_likes, R.id.no_of_dislikes, R.id.share_text, R.id.dots ,R.id.user_name})
         public void onViewClicked(View view) {
             switch (view.getId()) {
                 case R.id.image_like:
@@ -339,6 +308,15 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
                     }
                     break;
 
+
+                case R.id.user_name:
+                    if(listner !=null){
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listner.onUserImageClick(position);
+                        }
+                    }
+
             }
         }
 
@@ -349,7 +327,7 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         }
 
-        public void bind(FeedPostData post) {
+        public void bind(final FeedPostData post) {
             noOfLikes.setText(post.getLikes() + "");
             noOfDislikes.setText(post.getDislikes() + "");
 
@@ -369,17 +347,41 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(userImage);
 
+
+//            userImage.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    if(user_id.equals(feedPostData.get(position).getUser_id())){
+//
+//                        userImage.setEnabled(false);
+//                    }
+//                    else {
+//
+//                        Intent intent=new Intent(context, OtherUserProfile.class);
+//                        intent.putExtra("user_url",event_list.get(position).user.getUrl());
+//                        intent.putExtra("user_image",event_list.get(position).user.getImage());
+//                        intent.putExtra("user_cover_image",event_list.get(position).user.getCover_image());
+//                        intent.putExtra("first_name",event_list.get(position).user.getFirst_name());
+//                        intent.putExtra("last_name",event_list.get(position).user.getLast_name());
+//
+//                        context.startActivity(intent);
+//                    }
+//                }
+//            });
+
             userName.setText(post.getUser().getFullName());
             post_id = post.getId() + "";
             postText.setText(post.getMessage());
             postTiming.setText(post.getCreatedAt());
+            Log.d(TAG, "bind: "+post.getUser().getImage());
 
-            if (post.getType().equalsIgnoreCase("video")) {
+            if (post.getType().contains("video")) {
 
                 Log.i("video", "video");
 
-                postImage.setVisibility(View.GONE);
+                postImage.setVisibility(View.INVISIBLE);
                 videorelative.setVisibility(View.VISIBLE);
+                audiorelative.setVisibility(View.INVISIBLE);
 
                 try {
 
@@ -396,7 +398,8 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
 
                     exoPlayerView.setPlayer(exoPlayer);
                     exoPlayer.prepare(mediaSource);
-                    exoPlayer.setPlayWhenReady(true);
+                    exoPlayer.setPlayWhenReady(false);
+
                 } catch (Exception e) {
                     Log.e("PostVideo", " exoplayer error " + e.toString());
                 }
@@ -407,21 +410,67 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
                 Log.i("image", "image");
 
                 postImage.setVisibility(View.VISIBLE);
-                videorelative.setVisibility(View.GONE);
+                videorelative.setVisibility(View.INVISIBLE);
+                audiorelative.setVisibility(View.INVISIBLE);
 
 
                 Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/post/post_image/" + post.getValue())
                         .thumbnail(0.5f)
                         .crossFade()
-                        .placeholder(0)
+                        .placeholder(R.drawable.anu)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(postImage);
 
 
-            }else if (post.getType().equalsIgnoreCase("")) {
+                postImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        Intent intent = new Intent(context, OpenImageActivity.class);
+                        intent.putExtra("postimage", post.getValue());
+                        intent.putExtra("posttext", post.getMessage());
+
+                        context.startActivity(intent);
+
+
+                    }
+                });
+
+
+            } else if (post.getType().contains("audio")) {
+
+                Log.i("audio", "audio");
+
+                postImage.setVisibility(View.INVISIBLE);
+                videorelative.setVisibility(View.INVISIBLE);
+                audiorelative.setVisibility(View.VISIBLE);
+
+                try {
+
+                    String videoUrl = "http://emergingncr.com/mangalcity/public/images/post/post_audio/" + post.getValue();
+                    BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+                    TrackSelector trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory(bandwidthMeter));
+                    exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
+
+                    Uri videoURI = Uri.parse(videoUrl);
+
+                    DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory("exoplayer_video");
+                    ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+                    MediaSource mediaSource = new ExtractorMediaSource(videoURI, dataSourceFactory, extractorsFactory, null, null);
+
+                    exoPlayerView_audio.setPlayer(exoPlayer);
+                    exoPlayer.prepare(mediaSource);
+                    exoPlayer.setPlayWhenReady(false);
+                } catch (Exception e) {
+                    Log.e("PostVideo", " exoplayer error " + e.toString());
+                }
+
+
+            } else if (post.getType().equalsIgnoreCase("")) {
 
                 postImage.setVisibility(View.GONE);
                 videorelative.setVisibility(View.GONE);
+                audiorelative.setVisibility(View.GONE);
 
                 ViewGroup.LayoutParams params = relativ1.getLayoutParams();
                 params.height = 0;
@@ -434,17 +483,13 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
 
                 ViewGroup.LayoutParams params1 = relativeImage.getLayoutParams();
 
-                params1.height = 510;
+                params1.height = 530;
                 // params1.width = 1000;
 
 
             }
 
-
-        }
-
-
-    }
+        }}
 
     public CommonAdapterPost(Context context) {
         this.context = context;
@@ -463,9 +508,7 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
         switch (viewType) {
-//            case FORMPOST:
-//                viewHolder = getPostViewHolder(parent, inflater);
-//                break;
+
             case ITEM:
                 viewHolder = getViewHolder(parent, inflater);
                 break;
@@ -480,10 +523,9 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         switch (getItemViewType(position)) {
-//            case FORMPOST:
-//                myPostViewHolder = (MyPostViewHolder) holder;
-//
-//                break;
+
+
+
             case ITEM:
                 MyViewHolder myViewHolder = (MyViewHolder) holder;
                 //Log.d(TAG, "onBindViewHolder: "+position);
@@ -508,13 +550,13 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
         return viewHolder;
     }
 
-//    @NonNull
-//    private RecyclerView.ViewHolder getPostViewHolder(ViewGroup parent, LayoutInflater inflater) {
-//        RecyclerView.ViewHolder viewHolder;
-//        View v1 = inflater.inflate(R.layout.form_layout, parent, false);
-//        viewHolder = new MyPostViewHolder(v1, onPostClickListner);
-//        return viewHolder;
-//    }
+    @NonNull
+    private RecyclerView.ViewHolder getPostViewHolder(ViewGroup parent, LayoutInflater inflater) {
+        RecyclerView.ViewHolder viewHolder;
+        View v1 = inflater.inflate(R.layout.form_layout, parent, false);
+        viewHolder = new MyPostViewHolder(v1, onPostClickListner);
+        return viewHolder;
+    }
 
     @Override
     public int getItemCount() {
@@ -524,10 +566,8 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemViewType(int position) {
-//        if (position == 0) {
-//            return FORMPOST;
-//        }
-        if (position == feedPostData.size() && isLoadingAdded) {
+
+        if (position == feedPostData.size() - 1 && isLoadingAdded) {
             return LOADING;
         } else {
             return ITEM;
@@ -550,13 +590,13 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public void add(FeedPostData r) {
         feedPostData.add(r);
-        notifyItemInserted(feedPostData.size());
+        notifyItemInserted(feedPostData.size() - 1);
         //notifyDataSetChanged();
     }
 
     public void replace(int position , FeedPostData r) {
         feedPostData.set(position,r);
-        notifyItemChanged(position+1);
+        notifyItemChanged(position);
         // notifyDataSetChanged();
     }
     public void addAll(List<FeedPostData> moveResults) {
@@ -567,7 +607,7 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public void remove(FeedPostData r) {
         int position = feedPostData.indexOf(r);
-        if (position > 0) {
+        if (position > -1) {
             feedPostData.remove(position);
             notifyItemRemoved(position);
             //notifyDataSetChanged();
@@ -575,10 +615,12 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public void clear() {
-        isLoadingAdded = false;
-        while (getItemCount() > 0) {
-            remove(getItem(0));
-        }
+
+//        isLoadingAdded = false;
+//        while (getItemCount() > 0) {
+//            remove(getItem(0));
+//        }
+
     }
 
     public boolean isEmpty() {
@@ -594,7 +636,7 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void removeLoadingFooter() {
         isLoadingAdded = false;
 
-        int position = feedPostData.size();
+        int position = feedPostData.size() - 1;
         FeedPostData result = getItem(position);
 
         if (result != null) {
@@ -603,14 +645,14 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-//    public void setImageUri(Uri url) {
-//        this.uri = url;
-//        myPostViewHolder.bindFormData(uri);
-//    }
-//
-//    public void restForm() {
-//        this.uri = null;
-//        myPostViewHolder.resetFormData();
-//    }
+    public void setImageUri(Uri url) {
+        this.uri = url;
+        myPostViewHolder.bindFormData(uri);
+    }
+
+    public void restForm() {
+        this.uri = null;
+        myPostViewHolder.resetFormData();
+    }
 
 }

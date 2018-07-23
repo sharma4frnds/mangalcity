@@ -118,41 +118,41 @@ public class OtherUserProfile extends AppCompatActivity {
         user_url = intent.getStringExtra("user_url");
         Log.d(TAG, "onCreate: "+user_url);
 
-        search_send=intent.getStringExtra("searchsend");
+        search_send=intent.getStringExtra("bypost");
 
-//        if(search_send.equals("searchsend")){
-//
-//            OtherUserProfileApi();
-//
-//        }
+        if(search_send.equals("searchsend")){
 
-//        else if(search_send.equals(""))
-//            {
+            OtherUserProfileApi();
 
-        user_image_st = intent.getStringExtra("user_image");
-        user_coverImage_st = intent.getStringExtra("user_cover_image");
-        first_name_st = intent.getStringExtra("first_name");
-        last_name_st = intent.getStringExtra("last_name");
-        email_st=intent.getStringExtra("email");
-        dob_st=intent.getStringExtra("dob");
-        profession_st=intent.getStringExtra("profession");
-        gender_st=intent.getStringExtra("gender");
-        mobile_st=intent.getStringExtra("mobile");
-        maritalstatus_st=intent.getStringExtra("marital");
-        address_st=intent.getStringExtra("address");
+        }
 
-     //   }
+        else if(search_send.equals("postsend"))
+        {
+
+            user_image_st = intent.getStringExtra("user_image");
+            user_coverImage_st = intent.getStringExtra("user_cover_image");
+            first_name_st = intent.getStringExtra("first_name");
+            last_name_st = intent.getStringExtra("last_name");
+            email_st=intent.getStringExtra("email");
+            dob_st=intent.getStringExtra("dob");
+            profession_st=intent.getStringExtra("profession");
+            gender_st=intent.getStringExtra("gender");
+            mobile_st=intent.getStringExtra("mobile");
+            maritalstatus_st=intent.getStringExtra("marital");
+            address_st=intent.getStringExtra("address");
+
+        }
 
 
 
-           userName.setText(first_name_st + " " + last_name_st);
-           email.setText(email_st);
-           mobile.setText(mobile_st);
-           profession.setText(profession_st);
-           gender.setText(gender_st);
-           marital.setText(maritalstatus_st);
-           address.setText(address_st);
-           dob.setText(dob_st);
+        userName.setText(first_name_st + " " + last_name_st);
+        email.setText(email_st);
+        mobile.setText(mobile_st);
+        profession.setText(profession_st);
+        gender.setText(gender_st);
+        marital.setText(maritalstatus_st);
+        address.setText(address_st);
+        dob.setText(dob_st);
 
 
 
@@ -193,7 +193,7 @@ public class OtherUserProfile extends AppCompatActivity {
 
     public void OtherUserProfileApi(){
 
-                pDialog = new ProgressDialog(OtherUserProfile.this);
+        pDialog = new ProgressDialog(OtherUserProfile.this);
         pDialog.setMessage("Please wait...");
         pDialog.setCancelable(true);
         pDialog.show();
@@ -215,19 +215,49 @@ public class OtherUserProfile extends AppCompatActivity {
                 data=feedsResponse.getCityPosts().getData();
                 Log.d(TAG, "onResponse: " + data);
 
+                for(FeedPostData feedPostData:data){
+
+                    email_st=feedPostData.getUser().getEmail();
+                    Log.d(TAG, "onResponse: "+email_st);
+                    mobile_st=feedPostData.getUser().getMobile();
+                    dob_st=feedPostData.getUser().getDob();
+                    gender_st=feedPostData.getUser().getGender();
+                    maritalstatus_st=feedPostData.getUser().getMaritalStatus();
+                    profession_st=feedPostData.getUser().getProfession();
+                    first_name_st=feedPostData.getUser().getFirstName();
+                    last_name_st=feedPostData.getUser().getLastName();
+                    user_coverImage_st=feedPostData.getUser().getCoverImage();
+                    user_image_st=feedPostData.getUser().getImage();
+                    address_st=feedPostData.getUser().getAddress();
+
+
+                }
 
 
 
-//                for ( PostFeedResponse feedsResponse:data){
-//
-//                    String hfdh=countryPostResponse.getCreated_at();
-//                    Log.d(TAG, "onResponse: "+hfdh);
-//
-//                    String fjdsfj=countryPostResponse.user.getFirst_name();
-//                    Log.d(TAG, "onResponse: "+fjdsfj);
-//
-//                }
 
+                userName.setText(first_name_st + " " + last_name_st);
+                email.setText(email_st);
+                mobile.setText(mobile_st);
+                profession.setText(profession_st);
+                gender.setText(gender_st);
+                marital.setText(maritalstatus_st);
+                address.setText(address_st);
+                dob.setText(dob_st);
+
+                Glide.with(OtherUserProfile.this).load("http://emergingncr.com/mangalcity/public/images/user/" + user_image_st)
+                        .thumbnail(0.5f)
+                        .crossFade()
+                        .placeholder(0)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(personProfileImage);
+
+                Glide.with(OtherUserProfile.this).load("http://emergingncr.com/mangalcity/public/images/user/cover/" + user_coverImage_st)
+                        .thumbnail(0.5f)
+                        .crossFade()
+                        .placeholder(0)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(coverImageOther);
 
 
 

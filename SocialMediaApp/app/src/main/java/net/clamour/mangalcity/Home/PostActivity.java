@@ -14,6 +14,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -22,6 +23,7 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -32,6 +34,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -158,6 +161,7 @@ public class PostActivity extends DrawerBaseActivity implements EasyPermissions.
     private String audiopath = "";
     JSONArray jsonArray, filtered_array;
     BottomSheetDialog dialog;
+    BottomSheetBehavior bottomSheetBehavior;
 
     LinearLayoutManager linearLayoutManager;
 
@@ -550,7 +554,7 @@ public class PostActivity extends DrawerBaseActivity implements EasyPermissions.
                 Log.d(TAG, "onDotClick: " + position);
 
                 init_modal_bottomsheet(position);
-               // openDialog(position);
+                // openDialog(position);
 
             }
 
@@ -576,6 +580,7 @@ public class PostActivity extends DrawerBaseActivity implements EasyPermissions.
                 intent.putExtra("mobile", postDataList.get(position).getUser().getMobile());
                 intent.putExtra("marital", postDataList.get(position).getUser().getMaritalStatus());
                 intent.putExtra("address", postDataList.get(position).getUser().getAddress());
+                intent.putExtra("bypost","postsend");
 
                 startActivity(intent);
                 //    }
@@ -1104,16 +1109,16 @@ public class PostActivity extends DrawerBaseActivity implements EasyPermissions.
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
 
 
-                                name = jsonObject.getString("name");
-                                Log.i("namesearchhh",name);
-                                city=jsonObject.getString("city");
-                                image=jsonObject.getString("image");
+                            name = jsonObject.getString("name");
+                            Log.i("namesearchhh",name);
+                            city=jsonObject.getString("city");
+                            image=jsonObject.getString("image");
                             Log.d(TAG, "getView: "+image);
 
 
-                                if(name.toLowerCase().contains(character_dialog.toLowerCase())){
+                            if(name.toLowerCase().contains(character_dialog.toLowerCase())){
 
-                                    isEXist=true;
+                                isEXist=true;
 
 
 
@@ -1158,7 +1163,7 @@ public class PostActivity extends DrawerBaseActivity implements EasyPermissions.
                 }
 
 
-                }
+            }
 
 
 
@@ -1174,7 +1179,7 @@ public class PostActivity extends DrawerBaseActivity implements EasyPermissions.
         Drawable drawable = getResources().getDrawable(R.mipmap.ic_launcher);
 
 
-         builder = new AlertDialog.Builder(this);
+        builder = new AlertDialog.Builder(this);
 
         builder.setView(subView);
         alertDialog_search = builder.create();
@@ -1252,8 +1257,8 @@ public class PostActivity extends DrawerBaseActivity implements EasyPermissions.
                         if (filtered_array.length() == 0) {
 
                             Toast.makeText(getApplicationContext(),"No Result Found",Toast.LENGTH_SHORT).show();
-                           // final android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(
-                           //         PostActivity.this).create();
+                            // final android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(
+                            //         PostActivity.this).create();
 
                             // Setting Dialog Title
 //                            alertDialog.setTitle("                 Alert!");
@@ -1328,13 +1333,19 @@ public class PostActivity extends DrawerBaseActivity implements EasyPermissions.
                     JSONObject object = arr.getJSONObject(position);
                     Intent intent=new Intent(PostActivity.this,OtherUserProfile.class);
                     intent.putExtra("user_url",object.getString("url"));
-                    intent.putExtra("searchsend","searchsend");
+                    intent.putExtra("bypost","searchsend");
                     startActivity(intent);
+                    alertDialog_search.dismiss();
+                    //alertDialog_search.cancel();
+                    // alertDialog.dismiss();
                 }
                 catch (Exception e){
 
 
                 }
+                alertDialog_search.dismiss();
+                //  alertDialog_search.cancel();
+                // alertDialog.dismiss();
 
 
 
@@ -1354,8 +1365,8 @@ public class PostActivity extends DrawerBaseActivity implements EasyPermissions.
 
         dialog = new BottomSheetDialog(this);
         dialog.setContentView(modalbottomsheet);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.setCancelable(true);
         dialog.show();
 
 
@@ -1428,14 +1439,14 @@ public class PostActivity extends DrawerBaseActivity implements EasyPermissions.
                                             nextList.remove(position);
                                             postAdapter.notifyItemRemoved(position);
                                             dialog.dismiss();
-                                         //   alertDialog.dismiss();
+                                            //   alertDialog.dismiss();
                                             //dialog.dismiss();
 
                                             Toast.makeText(PostActivity.this,"Deleted Successfully",Toast.LENGTH_SHORT).show();
                                         } else if (isSucess == false) {
 
                                             Toast.makeText(PostActivity.this,"Please Try Again",Toast.LENGTH_SHORT).show();
-                                           // dialog.dismiss();
+                                            // dialog.dismiss();
 
                                         }
 
@@ -1474,7 +1485,7 @@ public class PostActivity extends DrawerBaseActivity implements EasyPermissions.
 
 
             }
-            });
+        });
 
         // alertDialog.show();
 

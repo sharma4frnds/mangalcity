@@ -117,14 +117,14 @@ public interface ApiInterface {
 
     @POST("district_feeds")
     @FormUrlEncoded
-    Call<DistrictMainResponse>getDistrictFeeds(@Field("token") String token ,@Field("page") String page);
+    Call<PostFeedResponse>getDistrictFeeds(@Field("token") String token ,@Field("page") String page);
     @POST("country_feeds")
     @FormUrlEncoded
-    Call<CountryMainResponse>getCountryFeeds(@Field("token") String token,@Field("page") String page);
+    Call<PostFeedResponse>getCountryFeeds(@Field("token") String token,@Field("page") String page);
 
     @POST("state_feeds")
     @FormUrlEncoded
-    Call<StateMainResponse>getStateFeeds(@Field("token") String token,@Field("page") String page);
+    Call<PostFeedResponse>getStateFeeds(@Field("token") String token,@Field("page") String page);
 
     @POST("profile")
     @FormUrlEncoded
