@@ -66,7 +66,7 @@ public class CityAdapter extends BaseAdapter {
         TextView names = (TextView) view.findViewById(R.id.textView);
 
 //        names.setText(countryNames[i]);
-        names.setText(countryDataStorages.get(i).getDistrictname());
+        names.setText(countryDataStorages.get(i).getCityname());
         return view;
     }
 }

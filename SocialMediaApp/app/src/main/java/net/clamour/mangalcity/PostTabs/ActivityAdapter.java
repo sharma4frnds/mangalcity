@@ -7,6 +7,7 @@ package net.clamour.mangalcity.PostTabs;
 
 
 
+        import android.app.Activity;
         import android.app.AlertDialog;
         import android.app.ProgressDialog;
         import android.content.Context;
@@ -36,7 +37,9 @@ package net.clamour.mangalcity.PostTabs;
         import com.bumptech.glide.Glide;
         import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+        import net.clamour.mangalcity.Activity.ActivityData;
         import net.clamour.mangalcity.Activity.ActivityPost;
+        import net.clamour.mangalcity.Home.OpenImageActivity;
         import net.clamour.mangalcity.Home.OtherUserProfile;
         import net.clamour.mangalcity.Home.PostActivity;
         import net.clamour.mangalcity.R;
@@ -54,6 +57,7 @@ package net.clamour.mangalcity.PostTabs;
         import java.util.ArrayList;
         import java.util.List;
 
+        import butterknife.BindView;
         import retrofit2.Call;
         import retrofit2.Callback;
         import retrofit2.Response;
@@ -87,19 +91,28 @@ public class ActivityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
 
     ItemClickListener clickListener;
-    private String post_id;
+
+    private String username,gender;
     private String userToken;
     private String user_id;
     private SharedPreferences LoginPrefrences;
 
 
-    TextView status,time;
+    TextView message,createdtime,user_name,sharepost;
+    RelativeLayout relative_image,relative_video,relative_audio;
+    ImageView postImage;
+    private SimpleExoPlayer exoPlayer;
     private static final int ITEM = 0;
     private static final int LOADING = 1;
     private boolean isLoadingAdded = false;
 
     private Context context;
-    public List<ActivityPost> event_list;
+    public List<ActivityData> event_list;
+ //   public List<ActivityData>activityData;
+ @BindView(R.id.exo_player_view)
+ SimpleExoPlayerView exoPlayerView;
+    @BindView(R.id.exo_player_view_audio)
+    SimpleExoPlayerView exoPlayerView_audio;
 
     protected class LoadingVH extends RecyclerView.ViewHolder {
 
@@ -114,10 +127,13 @@ public class ActivityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public MyViewHolder(View view) {
             super(view);
 
-            status=(TextView)view.findViewById(R.id.status);
-            time=(TextView)view.findViewById(R.id.time);
-
-
+            message=(TextView)view.findViewById(R.id.message);
+            createdtime=(TextView)view.findViewById(R.id.created_time);
+            relative_video=(RelativeLayout)view.findViewById(R.id.videorelative);
+            relative_audio=(RelativeLayout)view.findViewById(R.id.audiorelative);
+            relative_image=(RelativeLayout)view.findViewById(R.id.relative_image);
+            postImage=(ImageView) view.findViewById(R.id.post_image);
+            sharepost=(TextView)view.findViewById(R.id.share_post);
 
 
             view.setTag(view);
@@ -163,7 +179,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder,final int position) {
-         ActivityPost activityPost = event_list.get(position);
+         ActivityData activityData = event_list.get(position);
         switch (getItemViewType(position)) {
             case ITEM:
                 LoginPrefrences = context.getSharedPreferences("net.clamour.mangalcity.profile.LoginActivity", MODE_PRIVATE);
@@ -174,7 +190,147 @@ public class ActivityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 Log.i("userid", user_id);
 
 
-                status.setText(activityPost.getMessage());
+
+                if (activityData.post.getType().equalsIgnoreCase("video")) {
+
+                    Log.i("video", "video");
+
+                    relative_image.setVisibility(View.INVISIBLE);
+                    relative_video.setVisibility(View.VISIBLE);
+                    relative_audio.setVisibility(View.INVISIBLE);
+
+                    try {
+
+                        String videoUrl = "http://emergingncr.com/mangalcity/public/images/post/post_video/" + activityData.post.getValue();
+                        BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+                        TrackSelector trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory(bandwidthMeter));
+                        exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
+
+                        Uri videoURI = Uri.parse(videoUrl);
+
+                        DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory("exoplayer_video");
+                        ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+                        MediaSource mediaSource = new ExtractorMediaSource(videoURI, dataSourceFactory, extractorsFactory, null, null);
+
+                        exoPlayerView.setPlayer(exoPlayer);
+                        exoPlayer.prepare(mediaSource);
+                        exoPlayer.setPlayWhenReady(false);
+
+                    } catch (Exception e) {
+                        Log.e("PostVideo", " exoplayer error " + e.toString());
+                    }
+
+
+                } else if (activityData.post.getType().equalsIgnoreCase("image")) {
+
+                    Log.i("image", "image");
+
+                    relative_image.setVisibility(View.VISIBLE);
+                    relative_video.setVisibility(View.INVISIBLE);
+                    relative_audio.setVisibility(View.INVISIBLE);
+                   // Log.d(TAG, "onBindViewHolder: "+activityData.post.);
+
+
+                    Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/post/post_image/" + activityData.post.getValue())
+                            .thumbnail(0.5f)
+                            .crossFade()
+                            .placeholder(R.drawable.anu)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(postImage);
+
+
+//                    postImage.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View view) {
+//
+//                            Intent intent = new Intent(context, OpenImageActivity.class);
+//                            intent.putExtra("postimage", post.getValue());
+//                            intent.putExtra("posttext", post.getMessage());
+//
+//                            context.startActivity(intent);
+//
+//
+//                        }
+//                    });
+
+
+                } else if (activityData.post.getType().equalsIgnoreCase("audio")) {
+
+                    Log.i("audio", "audio");
+
+                    relative_image.setVisibility(View.INVISIBLE);
+                    relative_video.setVisibility(View.INVISIBLE);
+                    relative_audio.setVisibility(View.VISIBLE);
+
+                    try {
+
+                        String videoUrl = "http://emergingncr.com/mangalcity/public/images/post/post_audio/" + activityData.post.getValue();
+                        BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+                        TrackSelector trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory(bandwidthMeter));
+                        exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
+
+                        Uri videoURI = Uri.parse(videoUrl);
+
+                        DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory("exoplayer_video");
+                        ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+                        MediaSource mediaSource = new ExtractorMediaSource(videoURI, dataSourceFactory, extractorsFactory, null, null);
+
+                        exoPlayerView_audio.setPlayer(exoPlayer);
+                        exoPlayer.prepare(mediaSource);
+                        exoPlayer.setPlayWhenReady(false);
+                    } catch (Exception e) {
+                        Log.e("PostVideo", " exoplayer error " + e.toString());
+                    }
+
+
+                } else if (activityData.post.getType().equalsIgnoreCase("")) {
+
+                    relative_image.setVisibility(View.INVISIBLE);
+                    relative_video.setVisibility(View.VISIBLE);
+                    relative_audio.setVisibility(View.INVISIBLE);
+
+//                    ViewGroup.LayoutParams params = relativ1.getLayoutParams();
+//                    params.height = 0;
+//                    params.width = 0;
+//
+//                    RelativeLayout innerLayout2 = new RelativeLayout(context);
+//                    LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT, 1f);
+//                    innerLayout2.setLayoutParams(layoutParams2);
+//
+//
+//                    ViewGroup.LayoutParams params1 = relativeImage.getLayoutParams();
+//
+//                    params1.height = 540;
+                    // params1.width = 1000;
+
+
+                }
+
+
+
+
+               createdtime.setText(activityData.post.getCreated_at());
+                message.setText(activityData.post.getMessage());
+                gender=activityData.post.getUser().getGender();
+
+                if(activityData.getType()=="comment" && gender=="female"){
+sharepost.setText(activityData.post.getUser().getFirstName()+" "+activityData.post.getUser().getLastName()+"commented on her Own Status");
+
+                }
+                else if(activityData.getType()=="comment" && gender=="male"){
+                    sharepost.setText(activityData.post.getUser().getFirstName()+" "+activityData.post.getUser().getLastName()+"commented on his Own Status");
+
+                }
+                else if (activityData.getType()=="like"){
+
+                }
+                else if (activityData.getType()=="dislike"){
+
+                }
+
+                else if (activityData.getType()=="post"){
+
+                }
 
 
 
@@ -213,23 +369,23 @@ public class ActivityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
 
-    public ActivityPost getItem(int position) {
+    public ActivityData getItem(int position) {
         return event_list.get(position);
     }
 
-    public void refreshAdapter(List<ActivityPost> newList) {
+    public void refreshAdapter(List<ActivityData> newList) {
         event_list.clear();
         event_list.addAll(newList);
         notifyDataSetChanged();
     }
 
-    public void add(ActivityPost r) {
+    public void add(ActivityData r) {
         event_list.add(r);
         notifyItemInserted(event_list.size());
     }
 
-    public void addAll(List<ActivityPost> moveResults) {
-        for (ActivityPost result : moveResults) {
+    public void addAll(List<ActivityData> moveResults) {
+        for (ActivityData result : moveResults) {
             add(result);
         }
     }
@@ -259,14 +415,14 @@ public class ActivityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public void addLoadingFooter() {
         isLoadingAdded = true;
-        add(new ActivityPost());
+        add(new ActivityData());
     }
 
     public void removeLoadingFooter() {
         isLoadingAdded = false;
 
         int position = event_list.size() - 1;
-        ActivityPost result = getItem(position);
+        ActivityData result = getItem(position);
 
         if (result != null) {
             event_list.remove(position);

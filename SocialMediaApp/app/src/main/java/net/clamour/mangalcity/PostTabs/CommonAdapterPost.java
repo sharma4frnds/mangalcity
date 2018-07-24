@@ -34,6 +34,7 @@ import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 
+import net.clamour.mangalcity.Home.GetTimeAgo;
 import net.clamour.mangalcity.Home.OpenImageActivity;
 import net.clamour.mangalcity.Home.OtherUserProfile;
 import net.clamour.mangalcity.R;
@@ -372,8 +373,17 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
             userName.setText(post.getUser().getFullName());
             post_id = post.getId() + "";
             postText.setText(post.getMessage());
-            postTiming.setText(post.getCreatedAt());
+           // postTiming.setText(post.getCreatedAt());
             Log.d(TAG, "bind: "+post.getUser().getImage());
+
+            GetTimeAgo getTimeAgo = new GetTimeAgo();
+            String time=post.getCreatedAt();
+
+            // long lastTime = Long.parseLong(post.getCreatedAt());
+
+            String lastSeenTime = getTimeAgo.getTimeAgo(time,context);
+
+            postTiming.setText(lastSeenTime);
 
             if (post.getType().contains("video")) {
 

@@ -72,7 +72,7 @@ public class ActivityLog extends AppCompatActivity {
     ApiInterface apiInterface;
     Boolean isSucess;
     private static final String TAG = "CountryPost";
-    List<ActivityPost> actvitylog_array;
+    List<ActivityData> actvitylog_array;
 
     ActivityAdapter activityAdapter;
     private RecyclerView recyclerView;
@@ -85,7 +85,7 @@ public class ActivityLog extends AppCompatActivity {
     private boolean isLastPage = false;
     private int TOTAL_PAGES = 15;
     private int currentPage = PAGE_START;
-    List<ActivityPost> nextList;
+    List<ActivityData> nextList;
     String post_id;
     Button btn_cancel,reportspam,delete,download;
     BottomSheetDialog dialog;
@@ -230,11 +230,11 @@ public class ActivityLog extends AppCompatActivity {
                 activityAdapter.removeLoadingFooter();
                 isLoading = false;
                 nextList =fetchResults(response);
-                for (ActivityPost activityPost:nextList){
-
-                    post_id=activityPost.getId();
-                    // Log.d(TAG, "onResponseidddactivity: "+post_id+cityPostResponse.getCreated_at());
-                }
+//                for (ActivityPost activityPost:nextList){
+//
+//                    post_id=activityPost.getId();
+//                    // Log.d(TAG, "onResponseidddactivity: "+post_id+cityPostResponse.getCreated_at());
+//                }
 
                 activityAdapter.addAll(nextList);
 
@@ -253,7 +253,7 @@ public class ActivityLog extends AppCompatActivity {
 
     }
 
-    private List<ActivityPost> fetchResults(Response<ActivityResponse> response) {
+    private List<ActivityData> fetchResults(Response<ActivityResponse> response) {
         ActivityResponse body = response.body();
         String isSucess=body.getSuccess().toString();
         Log.d(TAG, "fetchResults: "+isSucess);
@@ -262,7 +262,7 @@ public class ActivityLog extends AppCompatActivity {
         for(ActivityData data : list){
             poatList.add(data.getPost());
         }
-        return poatList;
+        return body.getActivity().getData();
     }
     private Call<ActivityResponse> callFeedApi() {
         return apiInterface.activityLogs(UserToken,currentPage+"");

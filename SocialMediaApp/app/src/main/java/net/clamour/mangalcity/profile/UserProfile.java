@@ -291,7 +291,15 @@ public class UserProfile extends DrawerBaseActivity {
         profile_update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveProfile();
+
+                if(!checkBox.isChecked()){
+                    saveProfileHome();
+                }
+                if(checkBox.isChecked()){
+                    saveProfile();
+
+                }
+
             }
         });
 
@@ -304,12 +312,19 @@ public class UserProfile extends DrawerBaseActivity {
         // checkBox.setChecked(true);
         if (!checkBox.isChecked()) {
 
-            layout_homelocation.setVisibility(View.VISIBLE);
+           // layout_homelocation.setVisibility(View.VISIBLE);
+            layout_homelocation.getLayoutParams().height = 500;
+            //   ll.getLayoutParams().width = 200;
+            layout_homelocation.requestLayout();
             current_location = "inactive";
+
 
         } else if (checkBox.isChecked()) {
 
-            layout_homelocation.setVisibility(View.INVISIBLE);
+           // layout_homelocation.setVisibility(View.INVISIBLE);
+            layout_homelocation.getLayoutParams().height = 0;
+            //   ll.getLayoutParams().width = 200;
+            layout_homelocation.requestLayout();
             current_location = "active";
 
             //
@@ -673,15 +688,15 @@ public class UserProfile extends DrawerBaseActivity {
 
     public void setBlockHomeSpinner() {
 
-        DistrictAdapter customAdapter_state = new DistrictAdapter(UserProfile.this, Block_array);
+        CityAdapter customAdapter_state = new CityAdapter(UserProfile.this, Block_array);
         blockSpinnerHome.setAdapter(customAdapter_state);
 
         blockSpinnerHome.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                //  city_id = Block_ArrayModal.get(position).getCity_id();
-                // city_name = Block_ArrayModal.get(position).getCity_name();
+//                city_id = Block_ArrayModal.get(position).getCity_id();
+                //              city_name = Block_ArrayModal.get(position).getCity_name();
                 //  Log.i("state_name", state_name);
                 //  Log.i("ci", city_id);
 
@@ -692,6 +707,7 @@ public class UserProfile extends DrawerBaseActivity {
 
             }
         });
+
 
 
     }
@@ -1137,7 +1153,7 @@ public class UserProfile extends DrawerBaseActivity {
             @Override
             public Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("id", district_id);
+                params.put("id", "707");
                 params.put("token", UserToken);
 
 
@@ -1176,6 +1192,9 @@ public class UserProfile extends DrawerBaseActivity {
 
                             JSONObject jsonObject = new JSONObject(response);
                             isSucessget = jsonObject.getBoolean("success");
+
+                            getProfileData();
+
 
                             location_checked_get = jsonObject.getString("current_location");
                             Log.i("locationchecked", location_checked_get);
@@ -1246,12 +1265,18 @@ public class UserProfile extends DrawerBaseActivity {
         if (location_checked_get.contains("active")) {
 
             checkBox.setChecked(true);
-            layout_homelocation.setVisibility(View.INVISIBLE);
+           // layout_homelocation.setVisibility(View.INVISIBLE);
+            layout_homelocation.getLayoutParams().height = 0;
+            //   ll.getLayoutParams().width = 200;
+            layout_homelocation.requestLayout();
             Log.i("checkkkk", "checkkk");
 
         } else if (location_checked_get.contains("inactive")) {
             checkBox.setChecked(false);
-            layout_homelocation.setVisibility(View.VISIBLE);
+          //  layout_homelocation.setVisibility(View.VISIBLE);
+            layout_homelocation.getLayoutParams().height = 500;
+            //   ll.getLayoutParams().width = 200;
+            layout_homelocation.requestLayout();
 
             Log.i("checkkkkinactivee", "checkkkkinactivee");
 
@@ -1602,6 +1627,9 @@ public class UserProfile extends DrawerBaseActivity {
                             JSONObject jsonObject = new JSONObject(response);
                             String sts = jsonObject.getString("success");
                             Log.d(TAG, "onResponse: " + sts);
+                            Toast.makeText(UserProfile.this, "updated sucessfully", Toast.LENGTH_LONG).show();
+                            getProfileData();
+
 //                            String res = jsonObject.getString("data");
 //                            Log.d(TAG, "onResponse: " + res);
 //
@@ -1629,7 +1657,7 @@ public class UserProfile extends DrawerBaseActivity {
                         } catch (Exception e) {
                         }
 
-                        setDistrictHomeSpinner();
+
 
 
                     }
@@ -1650,21 +1678,23 @@ public class UserProfile extends DrawerBaseActivity {
             public Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("token", UserToken);
-                params.put("first_name", firstname_st);
+                params.put("first_name", "pooja");
                 params.put("last_name", "gupta");
                 params.put("email", email_st);
                 params.put("country", "101");
-                params.put("state", "707");
-                params.put("district", "10");
-                params.put("city", "");
+                params.put("state", "10");
+                params.put("district", "707");
+                params.put("city", "1");
                 params.put("gender", "female");
-                params.put("marital_status", "single");
-                params.put("current_location", "inactive");
-                params.put("home_city", "");
-                params.put("home_country", "");
-                params.put("home_district", "");
-                params.put("home_state", "");
-                params.put("address", "");
+                params.put("marital_status", "yes");
+                params.put("current_location", "active");
+                params.put("home_city", "1");
+                params.put("home_country", "101");
+                params.put("home_district", "707");
+                params.put("home_state", "10");
+                params.put("address", fulladdress_st);
+                params.put("profession",proffession_st);
+                params.put("dob",dob_st);
 
 
                 return params;
@@ -1678,6 +1708,122 @@ public class UserProfile extends DrawerBaseActivity {
 
     }
 
+    public void saveProfileHome(){
+        pDialog = new ProgressDialog(UserProfile.this);
+        pDialog.setMessage("Please wait...");
+        pDialog.setCancelable(true);
+
+        Log.i("instatedata", "instatedata");
+
+        firstname_st = editText_name.getText().toString();
+        email_st = emailPro.getText().toString();
+        fulladdress_st = fulladdressPro.getText().toString();
+        proffession_st = proffessionPro.getText().toString();
+        dob_st = dobPro.getText().toString();
+
+
+        pDialog.show();
+
+        StringRequest stringRequest1 = new StringRequest(Request.Method.POST, "http://emergingncr.com/mangalcity/api/userprofile",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+
+                        Log.i("responprofileresponse", response);
+
+
+                        //   arrayList=new ArrayList<>();
+
+                        if (pDialog.isShowing())
+                            pDialog.dismiss();
+                        Log.e("response=", response);
+
+
+                        try {
+
+
+                            JSONObject jsonObject = new JSONObject(response);
+                            String sts = jsonObject.getString("success");
+                            Log.d(TAG, "onResponse: " + sts);
+                            Toast.makeText(UserProfile.this, "updated sucessfully", Toast.LENGTH_LONG).show();
+//                            String res = jsonObject.getString("data");
+//                            Log.d(TAG, "onResponse: " + res);
+//
+//                            JSONArray jsonArray = new JSONArray(res);
+//
+//                            for (int i = 0; i <= jsonArray.length(); i++) {
+//                                JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+//                                CountryDataStorage countryDataStorage = new CountryDataStorage();
+//                                ModalClassName modalClassName = new ModalClassName();
+//
+//                                district_name = jsonObject1.getString("name");
+//                                Log.i("statename", district_name);
+//                                district_id = jsonObject1.getString("id");
+//                                Log.i("state_id", district_id);
+//
+//                                countryDataStorage.setDistrict_id(district_id);
+//                                modalClassName.setDistrictname(district_name);
+//                                District_array.add(modalClassName);
+//                                districtarray_modal.add(countryDataStorage);
+//
+//
+//                            }
+
+
+                        } catch (Exception e) {
+                        }
+
+
+
+
+                    }
+
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //Toast.makeText(JobDetails.this, error.toString(), Toast.LENGTH_LONG).show();
+                        Log.i("errorr", error.toString());
+                    }
+                })
+
+        {
+
+
+            @Override
+            public Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("token", UserToken);
+                params.put("first_name", "pooja");
+                params.put("last_name", "gupta");
+                params.put("email", email_st);
+                params.put("country", "101");
+                params.put("state", "10");
+                params.put("district", "707");
+                params.put("city", "1");
+                params.put("gender", "female");
+                params.put("marital_status", "yes");
+                params.put("current_location", "inactive");
+                 params.put("home_city", "1");
+                 params.put("home_country", "101");
+                  params.put("home_district", "707");
+                  params.put("home_state", "10");
+                params.put("address", fulladdress_st);
+                params.put("profession",proffession_st);
+                params.put("dob",dob_st);
+
+
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue1 = Volley.newRequestQueue(this);
+        requestQueue1.add(stringRequest1);
+
+
+    }
 }
 
 

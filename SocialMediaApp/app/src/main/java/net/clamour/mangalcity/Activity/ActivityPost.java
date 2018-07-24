@@ -1,5 +1,7 @@
 package net.clamour.mangalcity.Activity;
 
+import net.clamour.mangalcity.feed.User;
+
 /**
  * Created by clamour_5 on 7/19/2018.
  */
@@ -12,7 +14,27 @@ public class ActivityPost {
     private String updated_at;
     private String type;
     private String value;
+    private String created_at;
 
+    private User user;
+
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getCreated_at() {
+        return created_at;
+
+    }
+
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
+    }
 
     public String getId() {
         return id;
