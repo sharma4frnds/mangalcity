@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -47,6 +48,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
+import nl.changer.audiowife.AudioWife;
+import uk.co.jakelee.vidsta.VidstaPlayer;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -190,16 +193,18 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public class MyViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.post_image)
         ImageView postImage;
-        @BindView(R.id.exo_player_view)
-        SimpleExoPlayerView exoPlayerView;
+//        @BindView(R.id.audiolayout)
+//        LinearLayout audiolayout;
         @BindView(R.id.exo_player_view_audio)
         SimpleExoPlayerView exoPlayerView_audio;
-        @BindView(R.id.videorelative)
-        RelativeLayout videorelative;
-        @BindView(R.id.relativ1)
-        RelativeLayout relativ1;
-        @BindView(R.id.view)
-        View view;
+        @BindView(R.id.videoplayer)
+        VidstaPlayer player;
+//        @BindView(R.id.videorelative)
+//        RelativeLayout videorelative;
+//        @BindView(R.id.relativ1)
+//        RelativeLayout relativ1;
+//        @BindView(R.id.view)
+//        View view;
         @BindView(R.id.image_like)
         ImageView imageLike;
         @BindView(R.id.image_dislike)
@@ -212,8 +217,8 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         TextView noOfLikes;
         @BindView(R.id.no_of_dislikes)
         TextView noOfDislikes;
-        @BindView(R.id.textView11)
-        TextView textView11;
+//        @BindView(R.id.textView11)
+//        TextView textView11;
         @BindView(R.id.share_text)
         TextView shareText;
         @BindView(R.id.user_image)
@@ -224,12 +229,26 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         TextView postTiming;
         @BindView(R.id.post_text)
         TextView postText;
-        @BindView(R.id.dots)
-        ImageView dots;
-        @BindView(R.id.relative_image)
-        RelativeLayout relativeImage;
-        @BindView(R.id.audiorelative)
-        RelativeLayout audiorelative;
+//        @BindView(R.id.dots)
+//        ImageView dots;
+//        @BindView(R.id.play)
+//        View mPlayMedia;
+//        @BindView(R.id.pause)
+//        View mPauseMedia;
+//        @BindView(R.id.media_seekbar)
+//        SeekBar mMediaSeekBar;
+//        @BindView(R.id.run_time)
+//        TextView mRunTime ;
+//        @BindView(R.id.total_time)
+//        TextView mTotalTime;
+
+
+
+
+//        @BindView(R.id.relative_image)
+//        RelativeLayout relativeImage;
+//        @BindView(R.id.audiorelative)
+//        RelativeLayout audiorelative;
 
         private OnItemClickListner listner;
 
@@ -390,30 +409,45 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                 Log.i("video", "video");
 
-                postImage.setVisibility(View.INVISIBLE);
-                videorelative.setVisibility(View.VISIBLE);
-                audiorelative.setVisibility(View.INVISIBLE);
+                postImage.setVisibility(View.GONE);
+                player.setVisibility(View.VISIBLE);
+                exoPlayerView_audio.setVisibility(View.GONE);
 
                 try {
-
-                    String videoUrl = "http://emergingncr.com/mangalcity/public/images/post/post_video/" + post.getValue();
-                    BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-                    TrackSelector trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory(bandwidthMeter));
-                    exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
-
-                    Uri videoURI = Uri.parse(videoUrl);
-
-                    DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory("exoplayer_video");
-                    ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-                    MediaSource mediaSource = new ExtractorMediaSource(videoURI, dataSourceFactory, extractorsFactory, null, null);
-
-                    exoPlayerView.setPlayer(exoPlayer);
-                    exoPlayer.prepare(mediaSource);
-                    exoPlayer.setPlayWhenReady(false);
-
-                } catch (Exception e) {
-                    Log.e("PostVideo", " exoplayer error " + e.toString());
+                    player.setVideoSource("http://emergingncr.com/mangalcity/public/images/post/post_video/" + post.getValue());
+                    player.setAutoLoop(false);
+                    player.setAutoPlay(false);
+                   // player.setFullScreen(true);
+                 //   player.setFullScreenButtonVisible(true);
                 }
+                catch (Exception e){
+
+
+                }
+
+//                videorelative.setVisibility(View.VISIBLE);
+//                audiorelative.setVisibility(View.INVISIBLE);
+//
+//                try {
+//
+//                    String videoUrl = "http://emergingncr.com/mangalcity/public/images/post/post_video/" + post.getValue();
+//                    BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+//                    TrackSelector trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory(bandwidthMeter));
+//                    exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
+//
+//                    Uri videoURI = Uri.parse(videoUrl);
+//
+//                    DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory("exoplayer_video");
+//                    ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+//                    MediaSource mediaSource = new ExtractorMediaSource(videoURI, dataSourceFactory, extractorsFactory, null, null);
+//
+//                    exoPlayerView.setPlayer(exoPlayer);
+//                    exoPlayer.prepare(mediaSource);
+//                    exoPlayer.setPlayWhenReady(false);
+//
+//                } catch (Exception e) {
+//                    Log.e("PostVideo", " exoplayer error " + e.toString());
+//                }
 
 
             } else if (post.getType().contains("image")) {
@@ -421,8 +455,10 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 Log.i("image", "image");
 
                 postImage.setVisibility(View.VISIBLE);
-                videorelative.setVisibility(View.INVISIBLE);
-                audiorelative.setVisibility(View.INVISIBLE);
+                player.setVisibility(View.GONE);
+                exoPlayerView_audio.setVisibility(View.GONE);
+//                videorelative.setVisibility(View.INVISIBLE);
+//                audiorelative.setVisibility(View.INVISIBLE);
 
 
                 Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/post/post_image/" + post.getValue())
@@ -452,9 +488,29 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                 Log.i("audio", "audio");
 
-                postImage.setVisibility(View.INVISIBLE);
-                videorelative.setVisibility(View.INVISIBLE);
-                audiorelative.setVisibility(View.VISIBLE);
+                postImage.setVisibility(View.GONE);
+                player.setVisibility(View.GONE);
+                exoPlayerView_audio.setVisibility(View.VISIBLE);
+
+
+//                try {
+//                    AudioWife.getInstance()
+//                            .init(context,"http://emergingncr.com/mangalcity/public/images/post/post_audio/" + post.getValue())
+//                            .setPlayView(mPlayMedia)
+//                            .setPauseView(mPauseMedia)
+//                            .setSeekBar(mMediaSeekBar)
+//                            .setRuntimeView(mRunTime)
+//                            .setTotalTimeView(mTotalTime);
+//
+//                }
+//                catch (Exception e){
+//
+//
+//                }
+
+
+//                videorelative.setVisibility(View.INVISIBLE);
+//                audiorelative.setVisibility(View.VISIBLE);
 
                 try {
 
@@ -478,23 +534,26 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
             } else if (post.getType().equalsIgnoreCase("")) {
-
                 postImage.setVisibility(View.GONE);
-                videorelative.setVisibility(View.GONE);
-                audiorelative.setVisibility(View.GONE);
+                player.setVisibility(View.GONE);
+                exoPlayerView_audio.setVisibility(View.GONE);
 
-                ViewGroup.LayoutParams params = relativ1.getLayoutParams();
-                params.height = 0;
-                params.width = 0;
+              //  postImage.setVisibility(View.GONE);
+//                videorelative.setVisibility(View.GONE);
+//                audiorelative.setVisibility(View.GONE);
 
-                RelativeLayout innerLayout2 = new RelativeLayout(context);
-                LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT, 1f);
-                innerLayout2.setLayoutParams(layoutParams2);
+//                ViewGroup.LayoutParams params = relativ1.getLayoutParams();
+//                params.height = 0;
+//                params.width = 0;
+//
+//                RelativeLayout innerLayout2 = new RelativeLayout(context);
+//                LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT, 1f);
+//                innerLayout2.setLayoutParams(layoutParams2);
 
 
-                ViewGroup.LayoutParams params1 = relativeImage.getLayoutParams();
+              //  ViewGroup.LayoutParams params1 = relativeImage.getLayoutParams();
 
-                params1.height = 540;
+               // params1.height = 540;
                 // params1.width = 1000;
 
 
@@ -559,7 +618,7 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @NonNull
     private RecyclerView.ViewHolder getViewHolder(ViewGroup parent, LayoutInflater inflater) {
         RecyclerView.ViewHolder viewHolder;
-        View v1 = inflater.inflate(R.layout.postlistitems, parent, false);
+        View v1 = inflater.inflate(R.layout.newpostitems, parent, false);
         viewHolder = new MyViewHolder(v1, itemClickListner);
         return viewHolder;
     }

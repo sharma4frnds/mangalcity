@@ -14,6 +14,23 @@
     <color name="white_trans">#99FFFFFF</color>
 
 
+    <color name="primary">#0097D3</color>
+    <color name="primary_dark">#005B7F</color>
+    <color name="primary_light">#D7CCC8</color>
+    <color name="dart_transparent">#81000000</color>
+
+    <color name="primary_dark_text">#28333D</color>
+    <color name="secondary_text">#434343</color>
+    <color name="secondary_light">#979797</color>
+
+    <color name="icons">#FFFFFF</color>
+    <color name="divider">#BDBDBD</color>
+
+    <color name="custom_divider_color">#dfdfdf</color>
+    <color name="highlight_text">#17a1d7</color>
+
+
+
 
 
 

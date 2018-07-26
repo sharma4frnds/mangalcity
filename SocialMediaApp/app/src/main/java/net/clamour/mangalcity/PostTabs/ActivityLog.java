@@ -98,7 +98,7 @@ public class ActivityLog extends AppCompatActivity {
 
         Toolbar toolbar1 = (Toolbar) findViewById(R.id.main_page_toolbar);
         toolbar1.setTitleTextColor(Color.parseColor("#ffffff"));
-        toolbar1.setTitle("AcctivityLog");
+        toolbar1.setTitle("Activity Log");
 
 
         setSupportActionBar(toolbar1);

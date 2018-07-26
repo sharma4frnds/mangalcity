@@ -432,12 +432,15 @@ public void getProfileData() {
 
 }
 public void setData(){
-    Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/user/" + profileimage_get)
-            .thumbnail(0.5f)
-            .crossFade()
-            .placeholder(0)
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .into(profile);
+//    Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/user/" + profileimage_get)
+//            .thumbnail(0.5f)
+//            .crossFade()
+//            .placeholder(0)
+//            .diskCacheStrategy(DiskCacheStrategy.ALL)
+//            .into(profile);
+
+    Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/user/"  +  profileimage_get).into(profile);
+
 
     name.setText(firstname_get+" "+lastname_get);
 

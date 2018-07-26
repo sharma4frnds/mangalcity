@@ -108,12 +108,12 @@
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="1dp"
+                            android:layout_height="0dp"
                             android:layout_marginTop="5dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
                             android:layout_below="@+id/email"
-                            android:background="@color/appBlue"
+                            android:background="@color/white"
                             android:id="@+id/view6" />
 
                         <TextView
@@ -140,12 +140,12 @@
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="1dp"
+                            android:layout_height="0dp"
                             android:layout_marginTop="5dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
                             android:layout_below="@+id/mobile"
-                            android:background="@color/appBlue"
+                            android:background="@color/white"
                             android:id="@+id/view7" />
 
                         <TextView
@@ -175,12 +175,12 @@
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="1dp"
+                            android:layout_height="0dp"
                             android:layout_marginTop="5dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
                             android:layout_below="@+id/dob"
-                            android:background="@color/appBlue"
+                            android:background="@color/white"
                             android:id="@+id/view8" />
 
                         <TextView
@@ -210,12 +210,12 @@
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="1dp"
+                            android:layout_height="0dp"
                             android:layout_marginTop="5dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
                             android:layout_below="@+id/gender"
-                            android:background="@color/appBlue"
+                            android:background="@color/white"
                             android:id="@+id/view9" />
 
                         <TextView
@@ -245,12 +245,12 @@
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="1dp"
+                            android:layout_height="0dp"
                             android:layout_marginTop="5dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
                             android:layout_below="@+id/marital"
-                            android:background="@color/appBlue"
+                            android:background="@color/white"
                             android:id="@+id/view10" />
 
 
@@ -281,12 +281,12 @@
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="1dp"
+                            android:layout_height="0dp"
                             android:layout_marginTop="5dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
                             android:layout_below="@+id/profession"
-                            android:background="@color/appBlue"
+                            android:background="@color/white"
                             android:id="@+id/view11" />
 
                         <TextView
@@ -316,22 +316,22 @@
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="1dp"
+                            android:layout_height="0dp"
                             android:layout_marginTop="5dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
                             android:layout_below="@+id/address"
-                            android:background="@color/appBlue"
+                            android:background="@color/white"
                             android:id="@+id/view13" />
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="1dp"
+                            android:layout_height="0dp"
                             android:layout_marginTop="5dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
                             android:layout_below="@+id/email"
-                            android:background="@color/appBlue"
+                            android:background="@color/white"
                             android:id="@+id/view12" />
 
                         <TextView

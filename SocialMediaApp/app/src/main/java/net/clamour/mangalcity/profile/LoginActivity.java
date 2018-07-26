@@ -1,5 +1,6 @@
 package net.clamour.mangalcity.profile;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -11,6 +12,7 @@ import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
@@ -60,6 +62,7 @@ import org.json.JSONObject;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,7 +73,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback,
+        PermissionUtils.PermissionResultCallback {
 
     private static final String TAG = "LoginActivity";
     @BindView(R.id.user_mobile)
@@ -113,6 +117,12 @@ public class LoginActivity extends AppCompatActivity {
     Button reset_mob, reset_pass;
     String mobile_no_forget,otp_forget_st,newpassword_forget_st,confirm_password_forget_st,mobile_no_otpresponsedialog;
 
+    ArrayList<String> permissions = new ArrayList<>();
+    PermissionUtils permissionUtils;
+
+    boolean isPermissionGranted;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
     FacebookSdk.sdkInitialize(getApplicationContext());
@@ -121,6 +131,15 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+
+        permissionUtils = new PermissionUtils(LoginActivity.this);
+        permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        permissions.add(Manifest.permission.CAMERA);
+
+
+        permissionUtils.check_permission(permissions, "Need permission for Write External Storage permission allows us to do store documents", 1);
+
 
         LoginPrefrences = this.getSharedPreferences("net.clamour.mangalcity.profile.LoginActivity", MODE_PRIVATE);
 
@@ -931,4 +950,36 @@ else {
 
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        // redirects to utils
+        permissionUtils.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+    }
+
+
+    @Override
+    public void PermissionGranted(int request_code) {
+
+        isPermissionGranted = true;
+    }
+
+    @Override
+    public void PartialPermissionGranted(int request_code, ArrayList<String> granted_permissions) {
+
+        isPermissionGranted = false;
+    }
+
+    @Override
+    public void PermissionDenied(int request_code) {
+
+        isPermissionGranted = false;
+    }
+
+    @Override
+    public void NeverAskAgain(int request_code) {
+
+        isPermissionGranted = false;
+    }
 }

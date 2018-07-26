@@ -240,89 +240,32 @@ public class SharePostActivity extends AppCompatActivity {
 
         apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
 
-        Call<PostShareresponse> call = apiInterface.share_post(userToken, postId,post_text_st);
+        Call<PostShareresponse> call = apiInterface.share_post(userToken,postId,post_text_st);
 
         call.enqueue(new Callback<PostShareresponse>() {
             @Override
             public void onResponse(Call<PostShareresponse> call, Response<PostShareresponse> response) {
                 pDialog.cancel();
 
-                PostShareresponse postDeleteResponse = response.body();
-                isSucess = postDeleteResponse.getSuccess();
-                Log.d(TAG, "onResponse: " + isSucess);
+                try {
+                    PostShareresponse postDeleteResponse = response.body();
 
 
-                if (isSucess == true) {
+                    isSucess = postDeleteResponse.getSuccess();
+                    Log.d(TAG, "onResponse: " + isSucess);
 
-                    Toast.makeText(getApplicationContext(),"sucessfully posted",Toast.LENGTH_SHORT).show();
+
+                    if (isSucess == true) {
+
+                        Toast.makeText(getApplicationContext(),"sucessfully posted",Toast.LENGTH_SHORT).show();
 
 
-//                    final AlertDialog alertDialog = new AlertDialog.Builder(
-//                            SharePostActivity.this).create();
-//
-//                    // Setting Dialog Title
-//                    alertDialog.setTitle("                 Alert!");
-//
-//                    // Setting Dialog Message
-//                    alertDialog.setMessage("            Successfully Posted ");
-//
-//                    // Setting Icon to Dialog
-//
-//
-//                    // Setting OK Button
-//                    alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            //                                    Intent intent = new Intent(Intent.ACTION_MAIN);
-//                            //                                    intent.addCategory(Intent.CATEGORY_APP_EMAIL);
-//                            //                                    startActivity(intent);
-//                            // Write your code here to execute after dialog closed
-//                            // alertDialog.dismiss();
-//                            // Toast.makeText(getApplicationContext(), "You clicked on OK", Toast.LENGTH_LONG).show();
-//
-//                            // verifyEmail();
-//                            // saveData();
-//                            alertDialog.dismiss();
-//
-//                            Intent intent=new Intent(SharePostActivity.this, PostActivity.class);
-//                            startActivity(intent);
-//
-//                        }
-//                    });
-
-                    // Showing Alert Message
-                 //   alertDialog.show();
+                    }
                 }
-//
-//                } else if (isSucess == false) {
-//
-//                    final AlertDialog alertDialog = new AlertDialog.Builder(
-//                            context).create();
-//                    // saveData();
-//                    // Setting Dialog Title
-//                    alertDialog.setTitle("                 Alert!");
-//
-//                    // Setting Dialog Message
-//                    alertDialog.setMessage("    Invalid Credentials");
-//
-//                    // Setting Icon to Dialog
-//
-//
-//                    // Setting OK Button
-//                    alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            //                                    Intent emailIntent = new Intent(Intent.ACTION_SEND);
-//                            //                                    emailIntent.setType("text/plain");
-//                            //                                    startActivity(emailIntent);
-//
-//                            // Write your code here to execute after dialog closed
-//                            alertDialog.dismiss();
-//                        }
-//                    });
-//
-//                    // Showing Alert Message
-//                    alertDialog.show();
-//                }
-            }
+                catch (Exception e){
+
+                }
+               }
 
             @Override
             public void onFailure(Call<PostShareresponse> call, Throwable t) {
@@ -339,11 +282,13 @@ public class SharePostActivity extends AppCompatActivity {
 
             case android.R.id.home:
                 // Respond to the action bar's Up/Home button
+              Intent intent=new Intent(SharePostActivity.this,PostActivity.class);
+                startActivity(intent);
 
 
                 // adapter.notifyDataSetChanged();
 
-                finish();
+              //  finish();
                 // NavUtils.navigateUpFromSameTask(this);
                 return true;
 
@@ -354,5 +299,11 @@ public class SharePostActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent=new Intent(SharePostActivity.this,PostActivity.class);
+        startActivity(intent);
+    }
 }
 

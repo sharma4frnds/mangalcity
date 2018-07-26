@@ -45,7 +45,8 @@ dependencies {
     compile 'com.google.android.gms:play-services-auth:15.0.1'
     implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
 
-
+    compile 'uk.co.jakelee:vidsta:1.0.0'
+    compile 'net.the4thdimension:audio-wife:1.0.3'
 
     compile 'com.github.bumptech.glide:glide:3.7.0'
     implementation 'pub.devrel:easypermissions:0.2.0'

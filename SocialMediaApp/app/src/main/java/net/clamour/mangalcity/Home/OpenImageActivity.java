@@ -3,6 +3,7 @@ package net.clamour.mangalcity.Home;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,6 +22,8 @@ public class OpenImageActivity extends AppCompatActivity {
     ImageView postImage;
     @BindView(R.id.post_text)
     TextView post_text;
+    @BindView(R.id.cross_image)
+    ImageView crossImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,20 +35,25 @@ public class OpenImageActivity extends AppCompatActivity {
         postImage_st = intent.getStringExtra("postimage");
         postText_st = intent.getStringExtra("posttext");
 
+        crossImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
 
-        Glide.with(OpenImageActivity.this).load("http://emergingncr.com/mangalcity/public/images/post/post_image/"+postImage_st)
+        Glide.with(OpenImageActivity.this).load("http://emergingncr.com/mangalcity/public/images/post/post_image/" + postImage_st)
                 .thumbnail(0.5f)
                 .crossFade()
                 .placeholder(0)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(postImage);
 
-        if(postText_st.isEmpty()){
+        if (postText_st.isEmpty()) {
 
             post_text.setText("");
-        }
-        else {
+        } else {
 
             post_text.setText(postText_st);
         }

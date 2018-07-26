@@ -54,6 +54,15 @@
                 android:layout_marginLeft="20dp"
                 android:textColor="@color/black" />
 
+            <ImageView
+                android:id="@+id/cross_image"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignTop="@+id/post_text"
+                android:layout_marginEnd="20dp"
+                app:srcCompat="@drawable/cross" />
+
 
         </RelativeLayout>
 
