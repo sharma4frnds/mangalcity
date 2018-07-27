@@ -1,99 +1,71 @@
 package net.clamour.mangalcity.districtpost;
 
-import android.Manifest;
+/**
+ * Created by clamour_5 on 7/27/2018.
+ */
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialog;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.AdapterView;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
-
-import net.clamour.mangalcity.Home.DrawerBaseActivity;
-import net.clamour.mangalcity.Home.FilePath;
 import net.clamour.mangalcity.Home.OtherUserProfile;
 import net.clamour.mangalcity.Home.PaginationScrollListener;
-import net.clamour.mangalcity.Home.SearchAdapter;
-import net.clamour.mangalcity.MainActivity;
 import net.clamour.mangalcity.PostTabs.CommonAdapterPost;
 import net.clamour.mangalcity.PostTabs.FeedBackActivity;
-import net.clamour.mangalcity.PostTabs.PostAdapter;
 import net.clamour.mangalcity.PostTabs.SharePostActivity;
 import net.clamour.mangalcity.R;
-
 import net.clamour.mangalcity.ResponseModal.District_Posts;
-import net.clamour.mangalcity.ResponseModal.FeedsResponse;
 import net.clamour.mangalcity.ResponseModal.LikeResponse;
 import net.clamour.mangalcity.ResponseModal.PostDeleteResponse;
-
-
-
 import net.clamour.mangalcity.feed.FeedPostData;
 import net.clamour.mangalcity.feed.PostFeedResponse;
-
 import net.clamour.mangalcity.webservice.ApiClient;
 import net.clamour.mangalcity.webservice.ApiInterface;
 
-import org.json.JSONArray;
-
-
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-
 
 import pub.devrel.easypermissions.EasyPermissions;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.content.Context.MODE_PRIVATE;
 
+/**
+ * Created by clamour_5 on 7/27/2018.
+ */
 
-public class DistrictPost extends DrawerBaseActivity  {
-
-
-
+public class DistrictTab extends android.support.v4.app.Fragment {
 
     ProgressDialog pDialog;
     ApiInterface apiInterface;
@@ -146,30 +118,14 @@ public class DistrictPost extends DrawerBaseActivity  {
     List<FeedPostData> nextList;
 
 
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_district_post);
-        getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
-        );
-
-        Toolbar toolbar1 = (Toolbar) findViewById(R.id.main_page_toolbar);
-        toolbar1.setTitleTextColor(Color.parseColor("#ffffff"));
-        toolbar1.setTitle("District Posts");
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.activity_district_post, container, false);
 
 
-        setSupportActionBar(toolbar1);
-
-        final Drawable upArrow = getResources().getDrawable(R.drawable.ic_arrow_back_black_24dp);
-        upArrow.setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
-
-        getSupportActionBar().setHomeAsUpIndicator(upArrow);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-
-        LoginPrefrences = this.getSharedPreferences("net.clamour.mangalcity.profile.LoginActivity", MODE_PRIVATE);
+        LoginPrefrences = getActivity().getSharedPreferences("net.clamour.mangalcity.profile.LoginActivity", MODE_PRIVATE);
         UserToken = LoginPrefrences.getString("userToken", "");
         Log.i("UserToken", UserToken);
         user_id = LoginPrefrences.getString("user_id", "");
@@ -177,11 +133,8 @@ public class DistrictPost extends DrawerBaseActivity  {
 
 
 
-
-
-
-        progressBar = (ProgressBar) findViewById(R.id.main_progress);
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+        progressBar = (ProgressBar)v.findViewById(R.id.main_progress);
+        recyclerView = (RecyclerView)v.findViewById(R.id.recyclerview);
 //        swipeRefreshLayout.setOnRefreshListener(this);
 //        swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent,
 //                android.R.color.holo_green_dark,
@@ -189,10 +142,10 @@ public class DistrictPost extends DrawerBaseActivity  {
 //                android.R.color.holo_blue_dark);
 
         postDataList = new ArrayList<>();
-        linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        postAdapter = new CommonAdapterPost(DistrictPost.this);
+        postAdapter = new CommonAdapterPost(getActivity());
         recyclerView.setAdapter(postAdapter);
 
         recyclerView.addOnScrollListener(new PaginationScrollListener(linearLayoutManager) {
@@ -253,7 +206,7 @@ public class DistrictPost extends DrawerBaseActivity  {
                 Log.d(TAG, "onLikeClick: " + position);
                 final FeedPostData feedPostData = postDataList.get(position);
                 try {
-                    pDialog = new ProgressDialog(DistrictPost.this);
+                    pDialog = new ProgressDialog(getActivity());
                     pDialog.setMessage("Please wait...");
                     pDialog.setCancelable(true);
                     pDialog.show();
@@ -280,7 +233,7 @@ public class DistrictPost extends DrawerBaseActivity  {
                             } else if (likeResponse.getSuccess() == false) {
 
                                 final AlertDialog alertDialog = new AlertDialog.Builder(
-                                        DistrictPost.this).create();
+                                        getActivity()).create();
 
                                 alertDialog.setTitle("                 Alert!");
 
@@ -313,7 +266,7 @@ public class DistrictPost extends DrawerBaseActivity  {
             @Override
             public void onDislikeClick(final int position) {
                 Log.d(TAG, "onDislikeClick: " + position);
-                pDialog = new ProgressDialog(DistrictPost.this);
+                pDialog = new ProgressDialog(getActivity());
                 pDialog.setMessage("Please wait...");
                 pDialog.setCancelable(true);
                 pDialog.show();
@@ -339,7 +292,7 @@ public class DistrictPost extends DrawerBaseActivity  {
                             } else if (likeResponse.getSuccess() == false) {
 
                                 final AlertDialog alertDialog = new AlertDialog.Builder(
-                                        DistrictPost.this).create();
+                                        getActivity()).create();
 
                                 alertDialog.setTitle("                 Alert!");
 
@@ -373,7 +326,7 @@ public class DistrictPost extends DrawerBaseActivity  {
             public void onSharePostClick(int position) {
                 Log.d(TAG, "onSharePostClick: " + position);
 
-                Intent intent = new Intent(DistrictPost.this, SharePostActivity.class);
+                Intent intent = new Intent(getActivity(), SharePostActivity.class);
 
                 if (postDataList.get(position).getType().contains("image")) {
 
@@ -411,7 +364,7 @@ public class DistrictPost extends DrawerBaseActivity  {
             public void onShareImageClick(int position) {
                 Log.d(TAG, "onShareImageClick: " + position);
 
-                Intent intent = new Intent(DistrictPost.this, SharePostActivity.class);
+                Intent intent = new Intent(getActivity(), SharePostActivity.class);
 
                 if (postDataList.get(position).getType().contains("image")) {
 
@@ -462,7 +415,7 @@ public class DistrictPost extends DrawerBaseActivity  {
             public void onUserImageClick(int position) {
 
 
-                Intent intent = new Intent(DistrictPost.this, OtherUserProfile.class);
+                Intent intent = new Intent(getActivity(), OtherUserProfile.class);
                 intent.putExtra("user_url", postDataList.get(position).getUser().getUrl());
                 intent.putExtra("user_image", postDataList.get(position).getUser().getImage());
                 intent.putExtra("user_cover_image", postDataList.get(position).getUser().getCoverImage());
@@ -484,7 +437,7 @@ public class DistrictPost extends DrawerBaseActivity  {
             }
         });
 
-
+return v;
     }
 
 
@@ -496,7 +449,7 @@ public class DistrictPost extends DrawerBaseActivity  {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, DistrictPost.this);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, getActivity());
     }
 
     public void loadFirstPage() {
@@ -603,7 +556,7 @@ public class DistrictPost extends DrawerBaseActivity  {
         View modalbottomsheet = getLayoutInflater().inflate(R.layout.modal_bottomsheet, null);
 
 
-        dialog = new BottomSheetDialog(this);
+        dialog = new BottomSheetDialog(getActivity());
         dialog.setContentView(modalbottomsheet);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(false);
@@ -627,7 +580,7 @@ public class DistrictPost extends DrawerBaseActivity  {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: "+position+""+nextList.get(position).getId());
-                Intent intent = new Intent(DistrictPost.this, FeedBackActivity.class);
+                Intent intent = new Intent(getActivity(), FeedBackActivity.class);
                 intent.putExtra("postid",String.valueOf(postDataList.get(position).getId()));
                 startActivity(intent);
                 dialog.hide();
@@ -642,7 +595,7 @@ public class DistrictPost extends DrawerBaseActivity  {
 
 
                 android.support.v7.app.AlertDialog.Builder alertDialogBuilder = new android.support.v7.app.AlertDialog.Builder(
-                        DistrictPost.this);
+                        getActivity());
 
                 // set title
                 alertDialogBuilder.setTitle("                    Alert!");
@@ -654,7 +607,7 @@ public class DistrictPost extends DrawerBaseActivity  {
                         .setPositiveButton("YES",new DialogInterface.OnClickListener() {
                             public void onClick(final DialogInterface dialog, int id) {
 
-                                pDialog = new ProgressDialog(DistrictPost.this);
+                                pDialog = new ProgressDialog(getActivity());
                                 pDialog.setMessage("Please wait...");
                                 pDialog.setCancelable(true);
                                 pDialog.show();
@@ -682,10 +635,10 @@ public class DistrictPost extends DrawerBaseActivity  {
                                             //   alertDialog.dismiss();
                                             //dialog.dismiss();
 
-                                            Toast.makeText(DistrictPost.this,"Deleted Successfully",Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getActivity(),"Deleted Successfully",Toast.LENGTH_SHORT).show();
                                         } else if (isSucess == false) {
 
-                                            Toast.makeText(DistrictPost.this,"Please Try Again",Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getActivity(),"Please Try Again",Toast.LENGTH_SHORT).show();
                                             // dialog.dismiss();
 
                                         }
@@ -735,8 +688,8 @@ public class DistrictPost extends DrawerBaseActivity  {
             public void onClick(View view) {
                 //Toast.makeText(PostActivity.this, "DownLoad Complete", Toast.LENGTH_SHORT).show();
 
-                if (EasyPermissions.hasPermissions(DistrictPost.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    Glide.with(DistrictPost.this)
+                if (EasyPermissions.hasPermissions(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    Glide.with(getActivity())
                             .load("http://emergingncr.com/mangalcity/public/images/post/post_image/"+postDataList.get(position).getValue())
                             .asBitmap()
                             .into(new SimpleTarget<Bitmap>(100,100) {
@@ -747,7 +700,7 @@ public class DistrictPost extends DrawerBaseActivity  {
                             });
                 }
                 else {
-                    EasyPermissions.requestPermissions(DistrictPost.this, getString(R.string.read_file), READ_REQUEST_CODE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                    EasyPermissions.requestPermissions(getActivity(), getString(R.string.read_file), READ_REQUEST_CODE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
                 }
 
@@ -789,7 +742,7 @@ public class DistrictPost extends DrawerBaseActivity  {
 
             // Add the image to the system gallery
             galleryAddPic(savedImagePath);
-            Toast.makeText(DistrictPost.this, "IMAGE SAVED", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "IMAGE SAVED", Toast.LENGTH_LONG).show();
         }
         return savedImagePath;
     }
@@ -799,25 +752,8 @@ public class DistrictPost extends DrawerBaseActivity  {
         File f = new File(imagePath);
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
-        sendBroadcast(mediaScanIntent);
+       getActivity(). sendBroadcast(mediaScanIntent);
     }
-    @Override
 
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-
-            case android.R.id.home:
-                // Respond to the action bar's Up/Home button
-                // adapter.notifyDataSetChanged();
-
-                finish();
-                // NavUtils.navigateUpFromSameTask(this);
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-
-    }
 
 }

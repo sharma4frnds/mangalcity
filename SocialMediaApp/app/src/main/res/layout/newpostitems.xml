@@ -27,7 +27,6 @@
             android:layout_height="match_parent">
 
 
-
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/user_image"
                 android:layout_width="60dp"
@@ -36,7 +35,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_alignStart="@+id/view"
                 android:layout_marginTop="10dp"
-                android:layout_marginLeft="15dp"
+                android:layout_marginLeft="10dp"
                 android:background="@drawable/user" />
 
 
@@ -44,19 +43,19 @@
                 android:id="@+id/user_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/intrinsic_padding"
-                android:paddingRight="@dimen/intrinsic_padding"
-                android:layout_marginBottom="@dimen/intrinsic_padding"
                 android:layout_alignParentLeft="true"
+                android:layout_marginBottom="@dimen/intrinsic_padding"
                 android:layout_marginLeft="80dp"
                 android:layout_marginTop="20dp"
                 android:ellipsize="end"
-                android:maxLines="1"
                 android:fontFamily="@font/pt_sans_web_bold"
+                android:maxLines="1"
+                android:paddingLeft="@dimen/intrinsic_padding"
+                android:paddingRight="@dimen/intrinsic_padding"
                 android:text="Anushka Sharma"
-                android:textColor="@color/appBlue"
+                android:textAppearance="@style/TextAppearance.Title"
 
-                android:textAppearance="@style/TextAppearance.Title" />
+                android:textColor="@color/appBlue" />
 
             <TextView
                 android:id="@+id/post_timing"
@@ -66,90 +65,86 @@
                 android:layout_below="@+id/dots"
                 android:ellipsize="end"
                 android:maxLines="1"
+                android:layout_marginTop="10dp"
                 android:paddingLeft="@dimen/intrinsic_padding"
                 android:paddingRight="@dimen/intrinsic_padding"
                 android:text="hsdjkfhgjkhgj"
-                android:textAppearance="@style/TextAppearance.Second" />
+                android:textAppearance="@style/TextAppearance.Second"
+                android:textSize="10sp" />
 
-            <View
-                android:id="@+id/view"
+
+
+            <RelativeLayout
+                android:id="@+id/relative"
                 android:layout_width="match_parent"
-                android:layout_height="0.1dp"
-                android:layout_below="@+id/user_image"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="5dp"
-                android:background="@color/appBlue" />
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/relative">
-    <TextView
-        android:id="@+id/post_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="86dp"
-        android:layout_marginLeft="18dp"
-        android:fontFamily="@font/pt_sans_web_regular"
-        android:textColor="@color/text_grey"
-        android:text="TextView" />
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/post_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginTop="80dp"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/pt_sans_web_regular"
+                    android:maxLines="1"
+                    android:text="TextView"
+                    android:textColor="@color/text_grey" />
 
 
-    <ImageView
-                android:id="@+id/post_image"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/post_list_item_image_height"
-                android:layout_marginBottom="@dimen/intrinsic_padding"
-                android:scaleType="centerCrop"
-                android:layout_marginTop="125dp"
-                android:visibility="invisible"
+                <ImageView
+                    android:id="@+id/post_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="190dp"
+                    android:layout_marginBottom="@dimen/intrinsic_padding"
+                    android:layout_marginTop="105dp"
+                    android:scaleType="centerCrop"
+                    android:visibility="invisible"
 
 
-                />
+                    />
 
-            <com.google.android.exoplayer2.ui.SimpleExoPlayerView
-                android:id="@+id/exo_player_view_audio"
-                android:layout_width="match_parent"
-                android:layout_height="190dp"
-                android:layout_marginTop="125dp"
-                android:visibility="invisible"
+                <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+                    android:id="@+id/exo_player_view_audio"
+                    android:layout_width="match_parent"
+                    android:layout_height="190dp"
+                    android:layout_marginTop="105dp"
+                    android:visibility="invisible"
 
-                >
+                    >
 
-            </com.google.android.exoplayer2.ui.SimpleExoPlayerView>
-
-
-            <uk.co.jakelee.vidsta.VidstaPlayer
-                android:id="@+id/videoplayer"
-                android:layout_width="match_parent"
-                android:layout_height="190dp"
-                android:layout_marginTop="125dp"
-                android:background="@drawable/anu"
-                android:visibility="invisible"
+                </com.google.android.exoplayer2.ui.SimpleExoPlayerView>
 
 
-                />
-</RelativeLayout>
+                <uk.co.jakelee.vidsta.VidstaPlayer
+                    android:id="@+id/videoplayer"
+                    android:layout_width="match_parent"
+                    android:layout_height="190dp"
+                    android:layout_marginTop="105dp"
+                    android:background="@drawable/anu"
+
+
+
+
+                    />
+            </RelativeLayout>
 
             <include
                 android:id="@+id/countersContainer"
                 layout="@layout/counters_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
-                android:layout_marginRight="@dimen/intrinsic1"
-                android:layout_marginLeft="@dimen/intrinsic1"
                 android:layout_below="@+id/relative"
-                 />
+                android:layout_marginLeft="@dimen/intrinsic1"
+                android:layout_marginRight="@dimen/intrinsic1" />
 
 
             <ImageView
                 android:id="@+id/dots"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignTop="@+id/user_name"
-                android:layout_marginRight="20dp"
+                android:layout_alignEnd="@+id/countersContainer"
+                android:layout_alignTop="@+id/user_image"
                 android:background="@drawable/dots" />
 
         </RelativeLayout>

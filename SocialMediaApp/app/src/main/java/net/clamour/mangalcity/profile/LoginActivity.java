@@ -46,6 +46,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import net.clamour.mangalcity.Home.CommonBaseActivity;
 import net.clamour.mangalcity.Home.PostActivity;
 import net.clamour.mangalcity.PostTabs.CommonPostActivity;
 import net.clamour.mangalcity.R;
@@ -145,7 +146,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
 
         if (LoginPrefrences.contains("userToken")) {
 
-            Intent intent = new Intent(LoginActivity.this, PostActivity.class);
+            Intent intent = new Intent(LoginActivity.this, CommonBaseActivity.class);
             startActivity(intent);
             finish();
         }
@@ -292,7 +293,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
 
 
                     saveData();
-                    Intent i = new Intent(LoginActivity.this, PostActivity.class);
+                    Intent i = new Intent(LoginActivity.this, CommonBaseActivity.class);
                     i.putExtra("usertoken", userToken);
                     startActivity(i);
                     finish();
@@ -720,7 +721,7 @@ else {
                             Toast.makeText(getApplicationContext(),"Login Successful",Toast.LENGTH_SHORT).show();
 
                             saveData();
-                            Intent i = new Intent(LoginActivity.this,PostActivity.class);
+                            Intent i = new Intent(LoginActivity.this,CommonBaseActivity.class);
                             i.putExtra("usertoken", userToken);
 
                             startActivity(i);
@@ -840,7 +841,7 @@ else {
 
 
                             saveData();
-                            Intent i = new Intent(LoginActivity.this,PostActivity.class);
+                            Intent i = new Intent(LoginActivity.this,CommonBaseActivity.class);
                             i.putExtra("usertoken", userToken);
 
                             startActivity(i);

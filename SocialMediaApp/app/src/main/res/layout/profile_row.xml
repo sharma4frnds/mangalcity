@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="216dp"
     android:gravity="bottom"
-    android:background="#ededed"
+    android:background="#0076bc"
     android:orientation="vertical"
     android:padding="16dp"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
@@ -25,18 +25,20 @@
         android:layout_height="wrap_content"
         android:text="Test Test"
         android:layout_gravity="center"
-        android:textColor="@color/black"
+        android:textColor="#fff"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textStyle="bold"
+        android:fontFamily="@font/pt_sans_web_bold"
         />
 
     <TextView
         android:id="@+id/email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Welcome"
+        android:text="Welcome to Mangal City"
         android:layout_gravity="center"
-        android:textColor="@color/black"
+        android:textColor="#fff"
+        android:fontFamily="@font/pt_sans_web_regular"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         />
 

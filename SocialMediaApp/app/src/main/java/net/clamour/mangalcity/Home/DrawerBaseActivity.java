@@ -86,7 +86,7 @@ public class DrawerBaseActivity extends AppCompatActivity {
 
                 if(position==1){
 
-                    Intent intent=new Intent(DrawerBaseActivity.this,PostActivity.class);
+                    Intent intent=new Intent(DrawerBaseActivity.this,CommonBaseActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }

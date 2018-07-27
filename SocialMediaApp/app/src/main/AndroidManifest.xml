@@ -77,7 +77,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".profile.UserProfile"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".sidebar.ChangePassword"
             android:screenOrientation="portrait" />
@@ -114,7 +114,8 @@
         <activity android:name=".Home.BottomNavigationPostActivity" />
         <activity android:name=".Home.OpenImageActivity" />
         <activity android:name=".Home.SearchActivity" />
-        <activity android:name=".facebookplayer.VideoPlaying"></activity>
+        <activity android:name=".facebookplayer.VideoPlaying" />
+        <activity android:name=".Home.CommonBaseActivity"></activity>
     </application>
 
 </manifest>

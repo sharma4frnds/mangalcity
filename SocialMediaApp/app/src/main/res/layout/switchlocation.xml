@@ -7,14 +7,14 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/lightBlue">
+        android:background="@color/appBlue">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Switch to Home Location"
-            android:fontFamily="@font/pt_sans_web_regular"
-            android:textColor="@color/text_grey"
+            android:fontFamily="@font/roboto_bold"
+            android:textColor="@color/white"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"/>
     </RelativeLayout>
