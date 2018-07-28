@@ -116,6 +116,7 @@
         <activity android:name=".Home.SearchActivity" />
         <activity android:name=".facebookplayer.VideoPlaying" />
         <activity android:name=".Home.CommonBaseActivity"></activity>
+        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
     </application>
 
 </manifest>

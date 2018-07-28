@@ -318,36 +318,36 @@ public class PostActivity extends DrawerBaseActivity implements EasyPermissions.
 //        });
 
 
-        postAdapter.setOnPostClickListner(new PostAdapter.OnPostClickListner() {
-            @Override
-            public void onPostButtonClick(String msz) {
-                //message = editTextTextpost.getText().toString();
-                Log.d(TAG, "input : " + imagepath + "\n" + videopath + "\n" + message + "\n" + audiopath);
-                pjUploadMultiFile(msz, imagepath, videopath, audiopath);
-            }
-
-            @Override
-            public void onImageButttonClick() {
-                Intent openGalleryIntent = new Intent(Intent.ACTION_PICK);
-                openGalleryIntent.setType("image/*");
-                startActivityForResult(openGalleryIntent, REQUEST_IMAGE_CODE);
-            }
-
-            @Override
-            public void onVideoButttonClick() {
-                Intent openGalleryIntent = new Intent(Intent.ACTION_PICK);
-                openGalleryIntent.setType("video/*");
-                startActivityForResult(openGalleryIntent, REQUEST_VIDEO_CODE);
-            }
-
-            @Override
-            public void onAudioButtonClick() {
-                Intent intent = new Intent();
-                intent.setType("audio/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Select Audio"), REQUEST_AUDIO_CODE);
-            }
-        });
+//        postAdapter.setOnPostClickListner(new PostAdapter.OnPostClickListner() {
+//            @Override
+//            public void onPostButtonClick(String msz) {
+//                //message = editTextTextpost.getText().toString();
+//                Log.d(TAG, "input : " + imagepath + "\n" + videopath + "\n" + message + "\n" + audiopath);
+//                pjUploadMultiFile(msz, imagepath, videopath, audiopath);
+//            }
+//
+//            @Override
+//            public void onImageButttonClick() {
+//                Intent openGalleryIntent = new Intent(Intent.ACTION_PICK);
+//                openGalleryIntent.setType("image/*");
+//                startActivityForResult(openGalleryIntent, REQUEST_IMAGE_CODE);
+//            }
+//
+//            @Override
+//            public void onVideoButttonClick() {
+//                Intent openGalleryIntent = new Intent(Intent.ACTION_PICK);
+//                openGalleryIntent.setType("video/*");
+//                startActivityForResult(openGalleryIntent, REQUEST_VIDEO_CODE);
+//            }
+//
+//            @Override
+//            public void onAudioButtonClick() {
+//                Intent intent = new Intent();
+//                intent.setType("audio/*");
+//                intent.setAction(Intent.ACTION_GET_CONTENT);
+//                startActivityForResult(Intent.createChooser(intent, "Select Audio"), REQUEST_AUDIO_CODE);
+//            }
+//        });
 
 
         postAdapter.setOnItemClickListner(new PostAdapter.OnItemClickListner() {

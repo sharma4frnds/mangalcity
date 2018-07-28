@@ -315,38 +315,49 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
 //                loadFirstPage();
 //            }
 //        });
+postAdapter.setOnPostClickListner(new PostAdapter.OnPostClickListner() {
+    @Override
+    public void onPostButtonClick(String msz) {
+        //message = editTextTextpost.getText().toString();
+        Log.d(TAG, "input : " + imagepath + "\n" + videopath + "\n" + message + "\n" + audiopath);
+        if(msz.isEmpty()&&imagepath.isEmpty()&&videopath.isEmpty()&&audiopath.isEmpty()){
+            postAdapter.desableButton();
+        }
+        else {
+            postAdapter.enableButton();
+            pjUploadMultiFile(msz, imagepath, videopath, audiopath);}
+    }
 
+    @Override
+    public void onImageButttonClick() {
+        Intent openGalleryIntent = new Intent(Intent.ACTION_PICK);
+        openGalleryIntent.setType("image/*");
+        startActivityForResult(openGalleryIntent, REQUEST_IMAGE_CODE);
+    }
 
-        postAdapter.setOnPostClickListner(new PostAdapter.OnPostClickListner() {
-            @Override
-            public void onPostButtonClick(String msz) {
-                //message = editTextTextpost.getText().toString();
-                Log.d(TAG, "input : " + imagepath + "\n" + videopath + "\n" + message + "\n" + audiopath);
-                pjUploadMultiFile(msz, imagepath, videopath, audiopath);
-            }
+    @Override
+    public void onVideoButttonClick() {
+        Intent openGalleryIntent = new Intent(Intent.ACTION_PICK);
+        openGalleryIntent.setType("video/*");
+        startActivityForResult(openGalleryIntent, REQUEST_VIDEO_CODE);
+    }
 
-            @Override
-            public void onImageButttonClick() {
-                Intent openGalleryIntent = new Intent(Intent.ACTION_PICK);
-                openGalleryIntent.setType("image/*");
-                startActivityForResult(openGalleryIntent, REQUEST_IMAGE_CODE);
-            }
+    @Override
+    public void onAudioButtonClick() {
+        Intent intent = new Intent();
+        intent.setType("audio/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Audio"), REQUEST_AUDIO_CODE);
+    }
 
-            @Override
-            public void onVideoButttonClick() {
-                Intent openGalleryIntent = new Intent(Intent.ACTION_PICK);
-                openGalleryIntent.setType("video/*");
-                startActivityForResult(openGalleryIntent, REQUEST_VIDEO_CODE);
-            }
+    @Override
+    public void OnCrossImageClick() {
+        imagepath="";
+        videopath="";
+        audiopath="";
+    }
+});
 
-            @Override
-            public void onAudioButtonClick() {
-                Intent intent = new Intent();
-                intent.setType("audio/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Select Audio"), REQUEST_AUDIO_CODE);
-            }
-        });
 
 
         postAdapter.setOnItemClickListner(new PostAdapter.OnItemClickListner() {
@@ -407,6 +418,8 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
                     e.printStackTrace();
                 }
             }
+
+
 
 
             @Override
@@ -588,6 +601,8 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
             }
         });
 
+
+
 return v;
     }
 
@@ -741,19 +756,10 @@ return v;
                 if (selectedImageFileSize < maxFileSize) {
                     imagepath = imagepathSelected;
                     postAdapter.setImageUri(uri);
-//                    imagepreview.setImageURI(uri);
-//                    selected_file.setVisibility(View.VISIBLE);
-//                    selected_file.setText("Image Selected");
-//                    cross_image.setVisibility(View.VISIBLE);
-//                    cross_image.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View view) {
-//                            imagepath="";
-//                            selected_file.setVisibility(View.INVISIBLE);
-//                            imagepreview.setImageResource(0);
-//                            cross_image.setVisibility(View.INVISIBLE);
-//                        }
-//                    });
+                    postAdapter.setSelectionData();
+
+                //    postAdapter.cleanData(imagepath);
+
                 } else {
                     Toast.makeText(getActivity(), "File Size is greater than 2MB ", Toast.LENGTH_LONG).show();
                 }
@@ -773,6 +779,8 @@ return v;
                 double selectedVideoFileSize = getFileSizeMegaBytes(videoFile);
                 if (selectedVideoFileSize < maxFileSize) {
                     videopath = videopathSelected;
+                    Toast.makeText(getActivity(),videopath,Toast.LENGTH_SHORT).show();
+                    postAdapter.setSelectionDataVideo();
                     //  selected_file.setVisibility(View.VISIBLE);
                     //  selected_file.setText("Video Selected");
                     // imagepreview.setImageResource(0);
@@ -809,22 +817,8 @@ return v;
 
                 audiopath = selectedFilePath;
 
-//                selected_file.setVisibility(View.VISIBLE);
-//                selected_file.setText("Audio Selected");
-//                imagepreview.setImageResource(0);
-//                cross_image.setVisibility(View.VISIBLE);
-//                cross_image.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        audiopath="";
-//                        selected_file.setVisibility(View.INVISIBLE);
-//                        imagepreview.setImageResource(0);
-//                        cross_image.setVisibility(View.INVISIBLE);
-//                    }
-//                });
-
-
                 Toast.makeText(getActivity(), selectedFilePath, Toast.LENGTH_SHORT).show();
+                postAdapter.setSelectionDataAudio();
 
 
             } else {
@@ -907,10 +901,16 @@ return v;
                 pDialog.cancel();
                 // imagepreview.setImageResource(0);
                 //  postAdapter.restForm();
+try {
+    PostResponse postResponse = response.body();
+    isSucessPost = postResponse.getSuccess();
+    Log.i("sucesspost", isSucessPost.toString());
 
-                PostResponse postResponse = response.body();
-                isSucessPost = postResponse.getSuccess();
-                Log.i("sucesspost", isSucessPost.toString());
+}
+catch (Exception e){
+
+
+}
 
 
                 if (isSucessPost == true) {
@@ -920,6 +920,7 @@ return v;
                     audiopath = "";
                     videopath = "";
                     postAdapter.restForm();
+
                     loadFirstPage();
                     //  selected_file.setVisibility(View.INVISIBLE);
 
@@ -1435,8 +1436,8 @@ return v;
 
                                         if (isSucess == true) {
 
-                                            nextList.remove(position);
-                                            postAdapter.notifyItemRemoved(position);
+                                            postAdapter.remove(postDataList.get(position));
+                                            postDataList.remove(position);
                                             dialog.dismiss();
                                             //   alertDialog.dismiss();
                                             //dialog.dismiss();

@@ -14,7 +14,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import net.clamour.mangalcity.Home.CommonBaseActivity;
 import net.clamour.mangalcity.Home.DrawerBaseActivity;
 import net.clamour.mangalcity.Home.PostActivity;
 import net.clamour.mangalcity.R;
@@ -117,73 +119,33 @@ public class ChangePassword extends DrawerBaseActivity {
             public void onResponse(Call<changePasswordResponse> call, Response<changePasswordResponse> response) {
                 pDialog.cancel();
 
-                changePasswordResponse loginResponse = response.body();
-                isSucess = loginResponse.getSuccess();
-                Log.d(TAG, "onResponse: " + isSucess);
+                try {
+
+                    changePasswordResponse loginResponse = response.body();
+                    isSucess = loginResponse.getSuccess();
+                    Log.d(TAG, "onResponse: " + isSucess);
+                }
+                catch (Exception e){
+
+
+                }
 
                 if (isSucess == true) {
 
-                                       final AlertDialog alertDialog = new AlertDialog.Builder(
-                            ChangePassword.this).create();
+                    Toast.makeText(getApplicationContext(),"password changed sucessfully",Toast.LENGTH_SHORT).show();
+                    confirmPassword.getText().clear();
+                    newPassword.getText().clear();
+                    oldPassword.getText().clear();
 
-                    // Setting Dialog Title
-                    alertDialog.setTitle("                 Alert!");
-
-                    // Setting Dialog Message
-                    alertDialog.setMessage("             Updated Sucessfully");
-
-                    // Setting Icon to Dialog
+                    Intent intent=new Intent(ChangePassword.this, CommonBaseActivity.class);
+                    startActivity(intent);
+                }
 
 
-                    // Setting OK Button
-                    alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            //                                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                            //                                    intent.addCategory(Intent.CATEGORY_APP_EMAIL);
-                            //                                    startActivity(intent);
-                            // Write your code here to execute after dialog closed
-                            // alertDialog.dismiss();
-                            // Toast.makeText(getApplicationContext(), "You clicked on OK", Toast.LENGTH_LONG).show();
+                 else if (isSucess == false) {
 
-                            // verifyEmail();
-                            // saveData();
-                            confirmPassword.getText().clear();
-                            newPassword.getText().clear();
-                            oldPassword.getText().clear();
-                                                  }
-                    });
+                    Toast.makeText(getApplicationContext(),"Invalid Password",Toast.LENGTH_SHORT).show();
 
-                    // Showing Alert Message
-                    alertDialog.show();
-
-                } else if (isSucess == false) {
-
-                    final AlertDialog alertDialog = new AlertDialog.Builder(
-                            ChangePassword.this).create();
-                    // saveData();
-                    // Setting Dialog Title
-                    alertDialog.setTitle("                 Alert!");
-
-                    // Setting Dialog Message
-                    alertDialog.setMessage("           Invalid Password");
-
-                    // Setting Icon to Dialog
-
-
-                    // Setting OK Button
-                    alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            //                                    Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                            //                                    emailIntent.setType("text/plain");
-                            //                                    startActivity(emailIntent);
-
-                            // Write your code here to execute after dialog closed
-                            alertDialog.dismiss();
-                        }
-                    });
-
-                    // Showing Alert Message
-                    alertDialog.show();
                 }
             }
 

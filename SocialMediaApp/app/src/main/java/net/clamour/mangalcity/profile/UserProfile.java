@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
@@ -34,6 +35,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.soundcloud.android.crop.Crop;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import net.clamour.mangalcity.Home.DrawerBaseActivity;
@@ -45,6 +47,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -180,16 +183,14 @@ public class UserProfile extends DrawerBaseActivity {
         setContentView(R.layout.activity_user_profile);
         ButterKnife.bind(this);
 
-        getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
-
-        );
-
         Toolbar toolbar1 = (Toolbar) findViewById(R.id.main_page_toolbar);
         toolbar1.setTitleTextColor(Color.parseColor("#ffffff"));
         toolbar1.setTitle("Profile");
         setSupportActionBar(toolbar1);
         setDrawer();
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+        );
 
         LoginPrefrences = this.getSharedPreferences("net.clamour.mangalcity.profile.LoginActivity", MODE_PRIVATE);
         UserToken = LoginPrefrences.getString("userToken", "");
@@ -354,13 +355,17 @@ public class UserProfile extends DrawerBaseActivity {
                         // Get the path from the Uri
                         profilepath = getPathFromURI(selectedImageUri);
                         Log.i(TAG, "Image Path : " + profilepath);
+
+                        Uri destination = Uri.fromFile(new File(getCacheDir(), "cropped"));
+                        Crop.of(selectedImageUri, destination).asSquare().start(this);
+
                         // Set the image in ImageView
                         // profile_imagel.setImageURI(selectedImageUri);
-                        CropImage.activity(selectedImageUri)
-                                .setAspectRatio(1, 1)
-                                .setMinCropWindowSize(1000, 1000)
-                                .setMaxCropResultSize(1000, 1000)
-                                .start(this);
+//                        CropImage.activity(selectedImageUri)
+//                                .setAspectRatio(1, 1)
+//                                .setMinCropWindowSize(255, 150)
+//                                .setMaxCropResultSize(255, 150)
+//                                .start(this);
 
                         try {
                             //getting bitmap object from uri
@@ -391,12 +396,15 @@ public class UserProfile extends DrawerBaseActivity {
                         path = getPathFromURI(selectedImageUri);
                         Log.i(TAG, "Image Path : " + path);
 
-                        CropImage.activity(selectedImageUri)
-                                .setAspectRatio(1, 1)
-                                .setMinCropWindowSize(1000, 1000)
-                                .setMaxZoom(1000)
-                                .setMaxCropResultSize(1000, 1000)
-                                .start(this);
+                        Uri destination = Uri.fromFile(new File(getCacheDir(), "cropped"));
+                        Crop.of(selectedImageUri, destination).asSquare().start(this);
+
+//                        CropImage.activity(selectedImageUri)
+//                                .setAspectRatio(1, 1)
+//                                .setMinCropWindowSize(1000, 1000)
+//                                .setMaxZoom(1000)
+//                                .setMaxCropResultSize(1000, 1000)
+//                                .start(this);
 
 
                         // Set the image in ImageView
@@ -1172,6 +1180,7 @@ public class UserProfile extends DrawerBaseActivity {
         pDialog = new ProgressDialog(UserProfile.this);
         pDialog.setMessage("Please wait...");
         pDialog.setCancelable(true);
+        pDialog.show();
 
 
         StringRequest stringRequest1 = new StringRequest(Request.Method.POST, "http://emergingncr.com/mangalcity/api/getprofile",
@@ -1193,9 +1202,6 @@ public class UserProfile extends DrawerBaseActivity {
                             JSONObject jsonObject = new JSONObject(response);
                             isSucessget = jsonObject.getBoolean("success");
 
-                            getProfileData();
-
-
                             location_checked_get = jsonObject.getString("current_location");
                             Log.i("locationchecked", location_checked_get);
 
@@ -1216,6 +1222,7 @@ public class UserProfile extends DrawerBaseActivity {
                             dob_get = jsonObject1.getString("dob");
                             profileimage_get = jsonObject1.getString("image");
                             coverImageget = jsonObject1.getString("cover_image");
+                            Log.d(TAG, "onResponsecover: "+coverImageget);
 
 
                         } catch (Exception e) {
@@ -1262,6 +1269,21 @@ public class UserProfile extends DrawerBaseActivity {
         fulladdressPro.setText(fulladdress_get);
         dobPro.setText(dob_get);
         proffessionPro.setText(profession_get);
+
+        Glide.with(getApplicationContext()).load("http://emergingncr.com/mangalcity/public/images/user/" + profileimage_get)
+                .thumbnail(0.5f)
+                .crossFade()
+                .placeholder(0)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(personProfileImage);
+
+        Glide.with(getApplicationContext()).load("http://emergingncr.com/mangalcity/public/images/user/cover/" + coverImageget)
+                .thumbnail(0.5f)
+                .crossFade()
+                .placeholder(0)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(CoverImage);
+
         if (location_checked_get.contains("active")) {
 
             checkBox.setChecked(true);
@@ -1282,19 +1304,6 @@ public class UserProfile extends DrawerBaseActivity {
 
         }
         //proffessionPro.setText(prof);
-        Glide.with(UserProfile.this).load("http://emergingncr.com/mangalcity/public/images/user/" + profileimage_get)
-                .thumbnail(0.5f)
-                .crossFade()
-                .placeholder(0)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(personProfileImage);
-
-        Glide.with(UserProfile.this).load("http://emergingncr.com/mangalcity/public/images/user/cover/" + coverImageget)
-                .thumbnail(0.5f)
-                .crossFade()
-                .placeholder(0)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(CoverImage);
 
     }
 
@@ -1332,7 +1341,7 @@ public class UserProfile extends DrawerBaseActivity {
 
         pDialog = new ProgressDialog(UserProfile.this);
         pDialog.setMessage("Please wait...");
-        pDialog.setCancelable(true);
+        pDialog.setCancelable(false);
 
         pDialog.show();
 
@@ -1366,6 +1375,7 @@ public class UserProfile extends DrawerBaseActivity {
                 if ((isSucessprofile == true)) {
 
                     Toast.makeText(getApplicationContext(), "Successfully Updated", Toast.LENGTH_SHORT).show();
+                    getProfileData();
 
 
                 } else if (isSucessprofile == false) {
@@ -1440,7 +1450,11 @@ public class UserProfile extends DrawerBaseActivity {
             }
         };
 
+        multipartRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         Volley.newRequestQueue(this).add(multipartRequest);
+
 
     }
 
@@ -1482,6 +1496,8 @@ public class UserProfile extends DrawerBaseActivity {
                 if ((isSucesscover == true)) {
 
                     Toast.makeText(getApplicationContext(), "Successfully Updated", Toast.LENGTH_SHORT).show();
+
+                    getProfileData();
 
 
 //                    final AlertDialog alertDialog = new AlertDialog.Builder(

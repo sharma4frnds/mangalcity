@@ -96,6 +96,8 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
 
+
+
     }
 
     public interface OnPostClickListner {
@@ -106,6 +108,8 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void onVideoButttonClick();
 
         void onAudioButtonClick();
+
+        void OnCrossImageClick();
     }
 
     public void setOnPostClickListner(OnPostClickListner postClickListner) {
@@ -137,7 +141,12 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         @BindView(R.id.imagepreview)
         ImageView imagepreview;
         @BindView(R.id.post_buttonnn)
-        Button post_button;
+         Button post_button;
+        @BindView(R.id.cross_image)
+        ImageView cross_image;
+        @BindView(R.id.selected_file)
+        TextView selected_file;
+
         private OnPostClickListner postClickListner;
 
         public MyPostViewHolder(View itemView, final OnPostClickListner listner) {
@@ -153,7 +162,7 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         }
 
-        @OnClick({R.id.gallery_upload, R.id.video_upload,R.id.audio_upload, R.id.post_buttonnn})
+        @OnClick({R.id.gallery_upload, R.id.video_upload,R.id.audio_upload, R.id.post_buttonnn,R.id.cross_image})
         public void onViewClicked(View view) {
             switch (view.getId()) {
                 case R.id.gallery_upload:
@@ -171,9 +180,13 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 case R.id.post_buttonnn:
                     String message = editTextTextpost.getText().toString();
                     postClickListner.onPostButtonClick(message);
+
                     if (message != null)
                         editTextTextpost.getText().clear();
                     break;
+
+                case R.id.cross_image:
+                    postClickListner.OnCrossImageClick();
             }
         }
 
@@ -186,7 +199,10 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             editTextTextpost.getText().clear();
             notifyItemChanged(0);
         }
+public void disableButton(){
 
+
+}
 
     }
 
@@ -417,6 +433,7 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     player.setVideoSource("http://emergingncr.com/mangalcity/public/images/post/post_video/" + post.getValue());
                     player.setAutoLoop(false);
                     player.setAutoPlay(false);
+                    player.setFullScreenButtonVisible(false);
                    // player.setFullScreen(true);
                  //   player.setFullScreenButtonVisible(true);
                 }
@@ -697,7 +714,64 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 //        }
 
     }
+public void setSelectionData(){
 
+                       // myPostViewHolder.imagepreview.setImageURI(uri);
+                   myPostViewHolder.selected_file.setVisibility(View.VISIBLE);
+    myPostViewHolder.selected_file.setText("Image Selected");
+    myPostViewHolder.cross_image.setVisibility(View.VISIBLE);
+    myPostViewHolder.cross_image.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+
+                            myPostViewHolder.imagepreview.setImageResource(0);
+                            myPostViewHolder.cross_image.setVisibility(View.INVISIBLE);
+                            myPostViewHolder.selected_file.setVisibility(View.INVISIBLE);
+                            myPostViewHolder.post_button.setEnabled(false);
+
+                        }
+                    });
+}
+
+public void setSelectionDataVideo(){
+    myPostViewHolder.selected_file.setVisibility(View.VISIBLE);
+    myPostViewHolder.selected_file.setText("Video Selected");
+    myPostViewHolder.cross_image.setVisibility(View.VISIBLE);
+    myPostViewHolder.cross_image.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+
+
+            myPostViewHolder.cross_image.setVisibility(View.INVISIBLE);
+            myPostViewHolder.selected_file.setVisibility(View.INVISIBLE);
+            myPostViewHolder.post_button.setEnabled(false);
+
+        }
+    });
+
+}
+
+    public void setSelectionDataAudio(){
+
+        myPostViewHolder.selected_file.setVisibility(View.VISIBLE);
+        myPostViewHolder.selected_file.setText("Audio Selected");
+        myPostViewHolder.cross_image.setVisibility(View.VISIBLE);
+        myPostViewHolder.cross_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+
+                myPostViewHolder.cross_image.setVisibility(View.INVISIBLE);
+                myPostViewHolder.selected_file.setVisibility(View.INVISIBLE);
+                myPostViewHolder.post_button.setEnabled(false);
+
+            }
+        });
+
+}
     public boolean isEmpty() {
         return getItemCount() == 0;
     }
@@ -724,7 +798,12 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.uri = url;
         myPostViewHolder.bindFormData(uri);
     }
-
+public void desableButton(){
+myPostViewHolder.post_button.setEnabled(false);
+}
+public void enableButton(){
+    myPostViewHolder.post_button.setEnabled(true);
+}
     public void restForm() {
         this.uri = null;
         myPostViewHolder.resetFormData();

@@ -59,8 +59,6 @@ public class CustomAdapterDrawer extends ArrayAdapter<String> {
     Integer img[];
     Activity context;
     ProgressDialog pDialog;
-
-
     SharedPreferences LoginPrefrences;
     SharedPreferences Registration_preferences;
     String UserToken,profile_image,first_nameuser,last_nameuser;
@@ -118,7 +116,7 @@ public class CustomAdapterDrawer extends ArrayAdapter<String> {
              name=(TextView)rowView.findViewById(R.id.name);
             profile=(ImageView)rowView.findViewById(R.id.drawer_profile_image);
 
-            getProfileData();
+         //   getProfileData();
 
             //name.setText(first_nameuser+" "+last_nameuser);
 //            Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/user/"+profile_image)
@@ -357,92 +355,94 @@ public class CustomAdapterDrawer extends ArrayAdapter<String> {
 //        bitmap.compress(Bitmap.CompressFormat.PNG, 80, byteArrayOutputStream);
 //        return byteArrayOutputStream.toByteArray();
 //    }
-public void getProfileData() {
-
-    pDialog = new ProgressDialog(context);
-    pDialog.setMessage("Please wait...");
-    pDialog.setCancelable(true);
-
-
-    StringRequest stringRequest1 = new StringRequest(Request.Method.POST, "http://emergingncr.com/mangalcity/api/getprofile",
-            new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    //Toast.makeText(JobDetails.this, response, Toast.LENGTH_LONG).show();
-
-                    Log.i("responsegetProfile", response);
-
-
-                    if (pDialog.isShowing())
-                        pDialog.dismiss();
-                    Log.e("response=", response);
-
-
-                    try {
-
-                        JSONObject jsonObject = new JSONObject(response);
-                        Boolean isSucessget = jsonObject.getBoolean("success");
-
-                        getProfileData();
-
-
-
-
-                        JSONObject jsonObject1 = jsonObject.getJSONObject("user");
-                       firstname_get = jsonObject1.getString("first_name");
-                        Log.d(TAG, "onResponsefirsttt: " + firstname_get);
-                      lastname_get = jsonObject1.getString("last_name");
-
-                        profileimage_get = jsonObject1.getString("image");
-
-
-                    } catch (Exception e) {
-                    }
-                    setData();
-                    // saveUpdatedData();
-
-
-                }
-            },
-            new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    //Toast.makeText(JobDetails.this, error.toString(), Toast.LENGTH_LONG).show();
-                    Log.i("errorr", error.toString());
-                }
-            })
-
-    {
-
-
-        @Override
-        public Map<String, String> getParams() {
-            Map<String, String> params = new HashMap<String, String>();
-            params.put("token", UserToken);
-
-
-            return params;
-        }
-
-    };
-
-    RequestQueue requestQueue1 = Volley.newRequestQueue(context);
-    requestQueue1.add(stringRequest1);
-
-
-}
-public void setData(){
+//   public void getProfileData() {
+//
+//    pDialog = new ProgressDialog(context);
+//    pDialog.setMessage("Please wait...");
+//    pDialog.setCancelable(true);
+//
+//
+//    StringRequest stringRequest1 = new StringRequest(Request.Method.POST, "http://emergingncr.com/mangalcity/api/getprofile",
+//            new Response.Listener<String>() {
+//                @Override
+//                public void onResponse(String response) {
+//                    //Toast.makeText(JobDetails.this, response, Toast.LENGTH_LONG).show();
+//
+//                    Log.i("responsegetProfile", response);
+//
+//
+//                    if (pDialog.isShowing())
+//                        pDialog.dismiss();
+//                    Log.e("response=", response);
+//
+//
+//                    try {
+//
+//                        JSONObject jsonObject = new JSONObject(response);
+//                        Boolean isSucessget = jsonObject.getBoolean("success");
+//
+//                        getProfileData();
+//
+//
+//
+//
+//                        JSONObject jsonObject1 = jsonObject.getJSONObject("user");
+//                       firstname_get = jsonObject1.getString("first_name");
+//                        Log.d(TAG, "onResponsefirsttt: " + firstname_get);
+//                      lastname_get = jsonObject1.getString("last_name");
+//
+//                        profileimage_get = jsonObject1.getString("image");
+//
+//
+//                    } catch (Exception e) {
+//                    }
+//                    //setData();
+//
+//                    // saveUpdatedData();
+//
+//
+//
+//                }
+//            },
+//            new Response.ErrorListener() {
+//                @Override
+//                public void onErrorResponse(VolleyError error) {
+//                    //Toast.makeText(JobDetails.this, error.toString(), Toast.LENGTH_LONG).show();
+//                    Log.i("errorr", error.toString());
+//                }
+//            })
+//
+//    {
+//
+//
+//        @Override
+//        public Map<String, String> getParams() {
+//            Map<String, String> params = new HashMap<String, String>();
+//            params.put("token", UserToken);
+//
+//
+//            return params;
+//        }
+//
+//    };
+//
+//    RequestQueue requestQueue1 = Volley.newRequestQueue(context);
+//    requestQueue1.add(stringRequest1);
+//
+//
+//}
+//  public void setData(){
 //    Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/user/" + profileimage_get)
 //            .thumbnail(0.5f)
 //            .crossFade()
 //            .placeholder(0)
 //            .diskCacheStrategy(DiskCacheStrategy.ALL)
 //            .into(profile);
-
-    Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/user/"  +  profileimage_get).into(profile);
-
-
-    name.setText(firstname_get+" "+lastname_get);
-
-}
+//
+//
+//
+//
+//    name.setText(firstname_get+" "+lastname_get);
+//
+//}
 }
