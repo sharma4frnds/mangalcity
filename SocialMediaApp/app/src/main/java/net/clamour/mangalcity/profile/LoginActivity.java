@@ -97,9 +97,9 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
 
     String userMobile_st, userPassword_st;
     ApiInterface apiInterface;
-    Boolean isSucess;
+    Boolean isSucess,isSucessTokenValidity;
 
-    String userToken, id, first_name, last_name, mobile, email, country, state, district, city, verified, profile, user_id, profile_image,user_url;
+    String userToken, id, first_name, last_name, mobile, email, country, state, district, city, verified, profile, user_id, profile_image,user_url,user_verification,profile_identification;
     SharedPreferences LoginPrefrences;
     @BindView(R.id.imageView)
     ImageView imageView;
@@ -144,12 +144,20 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
 
         LoginPrefrences = this.getSharedPreferences("net.clamour.mangalcity.profile.LoginActivity", MODE_PRIVATE);
 
+
+
         if (LoginPrefrences.contains("userToken")) {
 
             Intent intent = new Intent(LoginActivity.this, CommonBaseActivity.class);
             startActivity(intent);
             finish();
         }
+//        else {
+//
+//            Toast.makeText(getApplicationContext(),"your Session Has been expired",Toast.LENGTH_SHORT).show();
+//            Intent intent=new Intent(LoginActivity.this,LoginActivity.class);
+//            startActivity(intent);
+//        }
 
         callbackManager = CallbackManager.Factory.create();
 
@@ -157,7 +165,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
             @Override
             public void onClick(View v) {
 
-                LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("public_profile", "user_friends", "email"));
+                LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("public_profile","email"));
 
 
             }
@@ -176,6 +184,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                     String  l_name=profile.getLastName();
                     String   full_name=profile.getName();
                     String  profile_image=profile.getProfilePictureUri(400, 400).toString();
+                  //  String acesstoken=profile.;
                 }
 
                 graphRequest(loginResult.getAccessToken());
@@ -289,16 +298,33 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                     Log.i("userid", user_id);
                     profile_image = loginResponse.data.user.image;
                     user_url=loginResponse.data.user.url;
+                    profile_identification=loginResponse.data.user.profile;
 
+
+
+                    Toast.makeText(getApplicationContext(),"Login Successful",Toast.LENGTH_SHORT).show();
 
 
                     saveData();
-                    Intent i = new Intent(LoginActivity.this, CommonBaseActivity.class);
-                    i.putExtra("usertoken", userToken);
-                    startActivity(i);
-                    finish();
+                   // getValidityToken();
+                    if(profile_identification.equals("1")){
 
-                    Toast.makeText(getApplicationContext(),"Login Successful",Toast.LENGTH_SHORT).show();
+                        Intent i = new Intent(LoginActivity.this, CommonBaseActivity.class);
+                        i.putExtra("usertoken", userToken);
+                        startActivity(i);
+                        finish();
+                    }
+
+                    else if(profile_identification.equals("0")){
+                        Intent i = new Intent(LoginActivity.this, UserProfile.class);
+                        i.putExtra("usertoken", userToken);
+                        startActivity(i);
+                        finish();
+
+                    }
+
+
+
 
                 }
 
@@ -614,6 +640,7 @@ else {
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
           //  updateUI(account);
             // Signed in successfully, show authenticated UI.
          //   if (account != null) {
@@ -627,7 +654,9 @@ else {
 
                 Uri personPhoto = account.getPhotoUrl();
                 String personIdToken = account.getIdToken();
+            Log.d(TAG, "handleSignInResult: "+personIdToken);
                 String personServerAuthCode =account.getServerAuthCode();
+            Log.d(TAG, "handleSignInResult: "+personServerAuthCode);
                 String resp = personName+"\n"+gmail_firstname+"\n"+gmail_last_name+"\n"+gmail_email+"\n"+gmail_uid+"\n"+personPhoto;
                 //  responceView.setText(resp);
                 Log.i("gmail_response",resp);
@@ -693,6 +722,7 @@ else {
                             email=jsonObject2.getString("email");
                             user_id=jsonObject2.getString("id");
                             profile_image=jsonObject2.getString("image");
+                            user_verification=jsonObject2.getString("verified");
 
 
 //                            firstname_get=jsonObject1.getString("first_name");
@@ -715,10 +745,19 @@ else {
                         }
                         catch (Exception e){
                         }
-                        if((isSucess==true)) {
+                        if(isSucess==true&&user_verification.equals("0")){
 
+                            Toast.makeText(getApplicationContext(),"Your Mobile is not Verified",Toast.LENGTH_SHORT).show();
+                            Intent intent=new Intent(LoginActivity.this,SocialMediaMobileIntegration.class);
+                            intent.putExtra("usertoken", userToken);
+                            startActivity(intent);
 
-                            Toast.makeText(getApplicationContext(),"Login Successful",Toast.LENGTH_SHORT).show();
+                        }
+
+                        else if((isSucess==true&&user_verification.equals("1"))) {
+
+                            Toast.makeText(getApplicationContext(),"Login Successfull",Toast.LENGTH_SHORT).show();
+
 
                             saveData();
                             Intent i = new Intent(LoginActivity.this,CommonBaseActivity.class);
@@ -728,14 +767,12 @@ else {
                             finish();
 
 
+
                         }
-
                         else if(isSucess==false) {
-
                             Toast.makeText(getApplicationContext(), "Invalid Credentials", Toast.LENGTH_SHORT).show();
 
                         }
-
 
 
                     }
@@ -785,11 +822,6 @@ else {
         pDialog.setMessage("Please wait...");
         pDialog.setCancelable(true);
 
-
-
-
-
-
         pDialog.show();
 
         StringRequest stringRequest1 = new StringRequest(Request.Method.POST,"http://emergingncr.com/mangalcity/api/auth/social_login",
@@ -828,6 +860,7 @@ else {
                             email=jsonObject2.getString("email");
                             user_id=jsonObject2.getString("id");
                             profile_image=jsonObject2.getString("image");
+                            user_verification=jsonObject2.getString("verified");
 
 
 
@@ -835,9 +868,18 @@ else {
                         }
                         catch (Exception e){
                         }
-                        if((isSucess==true)) {
 
-                            Toast.makeText(getApplicationContext(),"Login Successful",Toast.LENGTH_SHORT).show();
+                        if(isSucess==true&&user_verification.equals("0")){
+
+                            Toast.makeText(getApplicationContext(),"Your Mobile is not Verified",Toast.LENGTH_SHORT).show();
+                            Intent intent=new Intent(LoginActivity.this,SocialMediaMobileIntegration.class);
+                            startActivity(intent);
+
+                        }
+
+                        else if((isSucess==true&&user_verification.equals("1"))) {
+
+                            Toast.makeText(getApplicationContext(),"Login Successfull",Toast.LENGTH_SHORT).show();
 
 
                             saveData();
@@ -900,7 +942,10 @@ else {
             @Override
             public void onCompleted(JSONObject object, GraphResponse response) {
 
-
+                AccessToken token = AccessToken.getCurrentAccessToken();
+                Log.d("access only Token is", String.valueOf(token.getToken()));
+                String facebook_id_token = String.valueOf(token.getToken());
+                Log.d(TAG, "onCompletedfacebook: "+facebook_id_token);
 
                 Log.i("Responsefb",object.toString());
 
@@ -983,4 +1028,64 @@ else {
 
         isPermissionGranted = false;
     }
-}
+
+//    public void getValidityToken(){
+//        pDialog = new ProgressDialog(LoginActivity.this);
+//        pDialog.setMessage("Please wait...");
+//        pDialog.setCancelable(true);
+//        pDialog.show();
+//
+//
+//
+//        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+//
+//        Call<LogoutResponse> call = apiInterface.getValidity(userToken);
+//
+//        call.enqueue(new Callback<LogoutResponse>() {
+//            @Override
+//            public void onResponse(Call<LogoutResponse> call, Response<LogoutResponse> response) {
+//                pDialog.cancel();
+//
+//                try {
+//                    LogoutResponse logoutResponse = response.body();
+//                    isSucess = logoutResponse.getSuccess();
+//                    Log.d(TAG, "onResponse: " + isSucess);
+//
+//                }
+//                catch (Exception e){
+//
+//
+//                }
+//
+//
+//                if (isSucess == true) {
+//
+//                    saveTokenPrefrences();
+//
+//
+//                } else if (isSucess == false) {
+//
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<LogoutResponse> call, Throwable t) {
+//
+//            }
+//        });
+//
+//    }
+    public void saveTokenPrefrences(){
+
+        SharedPreferences.Editor editor = LoginPrefrences.edit();
+        editor.putString("tokenValidation","tokenvalidation");
+
+        editor.commit();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+}}

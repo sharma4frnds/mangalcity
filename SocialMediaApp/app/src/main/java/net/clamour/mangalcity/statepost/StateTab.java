@@ -7,11 +7,13 @@ package net.clamour.mangalcity.statepost;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -25,13 +27,19 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -96,6 +104,7 @@ public class StateTab extends android.support.v4.app.Fragment {
     Button btn_cancel, reportspam, delete_sheet, download;
 
     private AsyncTask mMyTask;
+    PopupWindow popWindow;
 
 
 //    @BindView(R.id.swipe_refresh_layout)
@@ -136,7 +145,7 @@ public class StateTab extends android.support.v4.app.Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.activity_state_post, container, false);
+        final View v = inflater.inflate(R.layout.activity_state_post, container, false);
 
         LoginPrefrences = getActivity().getSharedPreferences("net.clamour.mangalcity.profile.LoginActivity", MODE_PRIVATE);
                 UserToken = LoginPrefrences.getString("userToken", "");
@@ -174,14 +183,18 @@ public class StateTab extends android.support.v4.app.Fragment {
                     @Override
                     protected void onScrolledToEnd() {
                         Log.e("Position", "Last item reached");
+                        Log.d(TAG, "loadMoreItems: Loading");
+                        isLoading = true;
+                        currentPage += 1;
+                        loadNextPage();
                     }
 
                     @Override
                     protected void loadMoreItems() {
                         Log.d(TAG, "loadMoreItems: Loading");
-                        isLoading = true;
-                        currentPage += 1;
-                        loadNextPage();
+//                        isLoading = true;
+//                        currentPage += 1;
+//                        loadNextPage();
                     }
 
                     @Override
@@ -333,9 +346,13 @@ public class StateTab extends android.support.v4.app.Fragment {
                         }
                     }
 
+                    @Override
+                    public void onCommentImageClick(int position) {
+                        showCommentPopup(v,position);
+                    }
 
                     @Override
-                    public void onSharePostClick(int position) {
+                    public void onShareTextClick(int position) {
                         Log.d(TAG, "onSharePostClick: " + position);
 
                         Intent intent = new Intent(getActivity(), SharePostActivity.class);
@@ -370,7 +387,20 @@ public class StateTab extends android.support.v4.app.Fragment {
 
                         }
                         startActivity(intent);
+
                     }
+
+                    @Override
+                    public void OnCommentTextClick(int position) {
+                        showCommentPopup(v,position);
+
+                    }
+
+                    @Override
+                    public void onSharePostClick(int position) {
+                        Log.d(TAG, "onSharePostClick: " + position);
+
+                                         }
 
                     @Override
                     public void onShareImageClick(int position) {
@@ -748,4 +778,85 @@ return v;
                 mediaScanIntent.setData(contentUri);
                 getActivity().sendBroadcast(mediaScanIntent);
             }
-        }
+
+    public void showCommentPopup(View v,int position){
+
+        LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View subView = layoutInflater.inflate(R.layout.commentpopup, null);
+        // inflate the custom popup layout
+        // find the ListView in the popup layout
+        ListView listView = (ListView)subView.findViewById(R.id.commentsListView);
+        LinearLayout headerView = (LinearLayout)subView.findViewById(R.id.headerLayout);
+        // get device size
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        final Point size = new Point();
+        display.getSize(size);
+//        mDeviceHeight = size.y;
+        DisplayMetrics displayMetrics = getActivity().getResources().getDisplayMetrics();
+        int width = displayMetrics.widthPixels;
+        int height = displayMetrics.heightPixels;
+
+
+        // fill the data to the list items
+//    List<PostFeedResponse>olddd=new ArrayList<>();
+//    ArrayList<CommentShowData>showw=new ArrayList<>();
+//    for (PostFeedResponse postFeedResponse:olddd){
+//
+//        olddd.add(postFeedResponse.getCityPosts().getData)
+//    }
+//    List<FeedPostData>arrayList=nextList;
+//ArrayList<CommentShowData>commentShowData=new ArrayList<>();
+//CommentShowData commentShowData1=new CommentShowData();
+////        for (int index = 0; nextList.size()>=0; index++) {
+//   // ArrayList<FeedPostData>feedPostData_array=
+//for(FeedPostData feedPostData:arrayList){
+//
+//    commentShowData.add(feedPostData.getComment().)
+//
+//            String comm=nextList.get(position).getMessage();
+//    Log.d(TAG, "showCommentPopup: "+comm);
+//            Toast.makeText(getActivity(),comm,Toast.LENGTH_SHORT).show();
+//
+//
+//            commentShowData.add(commentShowData1);
+//    }
+//
+//    CommentAdapter commentAdapter=new CommentAdapter(getActivity(),commentShowData);
+//    listView.setAdapter(commentAdapter);
+
+
+//    PostFeedResponse postFeedResponse1=new PostFeedResponse();
+//    List<PostFeedResponse> comment_data = new ArrayList<>();
+//    comment_data=postFeedResponse1.getCityPosts().getData();
+//
+//
+//    for (PostFeedResponse postFeedResponse:comment_data){
+//
+//
+//            String commenttt=postFeedResponse.getCityPosts().getData();}
+//
+//
+////    for (int index = 0; index < 10; index++) {
+////        contactsList.add("I am @ index " + index + " today " + Calendar.getInstance().getTime().toString());
+////    }
+//
+//        listView.setAdapter(new ArrayAdapter<String>(MainActivity.this,
+//                R.layout.popup_list_item, android.R.id.text1, contactsList));
+
+
+        // set height depends on the device size
+        popWindow = new PopupWindow(subView, width,height-50, true );
+        // set a background drawable with rounders corners
+        popWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.screen_background));
+
+        popWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+        popWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+
+        popWindow.setAnimationStyle(R.style.PopupAnimation);
+
+        // show the popup at bottom of the screen and set some margin at bottom ie,
+        popWindow.showAtLocation(v, Gravity.BOTTOM, 0,100);
+
+    }
+
+}

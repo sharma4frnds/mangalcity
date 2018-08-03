@@ -247,242 +247,242 @@ public class DistrictPost extends DrawerBaseActivity  {
 //        });
 
 
-        postAdapter.setOnItemClickListner(new CommonAdapterPost.OnItemClickListner() {
-            @Override
-            public void onLikeClick(final int position) {
-                Log.d(TAG, "onLikeClick: " + position);
-                final FeedPostData feedPostData = postDataList.get(position);
-                try {
-                    pDialog = new ProgressDialog(DistrictPost.this);
-                    pDialog.setMessage("Please wait...");
-                    pDialog.setCancelable(true);
-                    pDialog.show();
-                    Call<LikeResponse> call = apiInterface.like_post(UserToken, feedPostData.getId() + "");
-                    call.enqueue(new Callback<LikeResponse>() {
-                        @Override
-                        public void onResponse(Call<LikeResponse> call, Response<LikeResponse> response) {
-
-                            LikeResponse likeResponse = response.body();
-                            Log.d(TAG, "onResponse: " + response.code() + " " +response.errorBody()+ " " +response.message() +" "+ response.headers());
-
-                            if (likeResponse.getSuccess() == true) {
-                                pDialog.cancel();
-                                Log.d(TAG, "pre: " + feedPostData.toString());
-                                feedPostData.setLikes(Long.valueOf(likeResponse.getLcount()));
-                                feedPostData.setDislikes(Long.valueOf(likeResponse.getDcount()));
-
-                                postDataList.set(position, feedPostData);
-                                Log.d(TAG, "post: " + feedPostData.toString());
-                                postAdapter.replace(position, feedPostData);
-                                postAdapter.notifyItemChanged(position);
-
-
-                            } else if (likeResponse.getSuccess() == false) {
-
-                                final AlertDialog alertDialog = new AlertDialog.Builder(
-                                        DistrictPost.this).create();
-
-                                alertDialog.setTitle("                 Alert!");
-
-
-                                alertDialog.setMessage("    Try Again");
-
-                                alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-
-                                        alertDialog.dismiss();
-                                    }
-                                });
-
-                                // Showing Alert Message
-                                alertDialog.show();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<LikeResponse> call, Throwable t) {
-
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-
-            @Override
-            public void onDislikeClick(final int position) {
-                Log.d(TAG, "onDislikeClick: " + position);
-                pDialog = new ProgressDialog(DistrictPost.this);
-                pDialog.setMessage("Please wait...");
-                pDialog.setCancelable(true);
-                pDialog.show();
-                try {
-                    final FeedPostData feedPostData = postDataList.get(position);
-                    Call<LikeResponse> call = apiInterface.dislike_post(UserToken, feedPostData.getId() + "");
-                    call.enqueue(new Callback<LikeResponse>() {
-                        @Override
-                        public void onResponse(Call<LikeResponse> call, Response<LikeResponse> response) {
-
-                            LikeResponse likeResponse = response.body();
-                            if (likeResponse.getSuccess() == true) {
-                                pDialog.cancel();
-                                Log.d(TAG, "pre: " + postDataList.toString());
-                                feedPostData.setLikes(Long.valueOf(likeResponse.getLcount()));
-                                feedPostData.setDislikes(Long.valueOf(likeResponse.getDcount()));
-                                postDataList.set(position, postDataList.get(position));
-                                Log.d(TAG, "post: " + postDataList.toString());
-                                postAdapter.replace(position, postDataList.get(position));
-                                postAdapter.notifyItemChanged(position);
-
-
-                            } else if (likeResponse.getSuccess() == false) {
-
-                                final AlertDialog alertDialog = new AlertDialog.Builder(
-                                        DistrictPost.this).create();
-
-                                alertDialog.setTitle("                 Alert!");
-
-
-                                alertDialog.setMessage("    Try Again");
-
-                                alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-
-                                        alertDialog.dismiss();
-                                    }
-                                });
-
-                                // Showing Alert Message
-                                alertDialog.show();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<LikeResponse> call, Throwable t) {
-
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-
-            @Override
-            public void onSharePostClick(int position) {
-                Log.d(TAG, "onSharePostClick: " + position);
-
-                Intent intent = new Intent(DistrictPost.this, SharePostActivity.class);
-
-                if (postDataList.get(position).getType().contains("image")) {
-
-                    intent.putExtra("image", postDataList.get(position).getValue());
-                    intent.putExtra("token", UserToken);
-                    intent.putExtra("post_id", postDataList.get(position).getId());
-                    intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
-
-                } else if (postDataList.get(position).getType().contains("video")) {
-                    intent.putExtra("video", postDataList.get(position).getValue());
-                    intent.putExtra("token", UserToken);
-                    intent.putExtra("post_id", postDataList.get(position).getId());
-                    intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
-
-
-                } else if (postDataList.get(position).getType().contains("audio")) {
-                    intent.putExtra("audio", postDataList.get(position).getValue());
-                    intent.putExtra("token", UserToken);
-                    intent.putExtra("post_id", postDataList.get(position).getId());
-                    intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
-
-
-                } else if (postDataList.get(position).getType().contains("")) {
-
-                    intent.putExtra("text", postDataList.get(position).getMessage());
-                    intent.putExtra("token", UserToken);
-                    intent.putExtra("post_id", postDataList.get(position).getId());
-                    intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
-
-                }
-                startActivity(intent);
-            }
-
-            @Override
-            public void onShareImageClick(int position) {
-                Log.d(TAG, "onShareImageClick: " + position);
-
-                Intent intent = new Intent(DistrictPost.this, SharePostActivity.class);
-
-                if (postDataList.get(position).getType().contains("image")) {
-
-                    intent.putExtra("image", postDataList.get(position).getValue());
-                    intent.putExtra("token", UserToken);
-                    intent.putExtra("post_id", String.valueOf(postDataList.get(position).getId()));
-                    intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
-                    intent.putExtra("text", postDataList.get(position).getMessage());
-
-                } else if (postDataList.get(position).getType().contains("video")) {
-                    intent.putExtra("video", postDataList.get(position).getValue());
-                    intent.putExtra("token", UserToken);
-                    intent.putExtra("post_id", String.valueOf(postDataList.get(position).getId()));
-                    intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
-                    intent.putExtra("text", postDataList.get(position).getMessage());
-
-
-                } else if (postDataList.get(position).getType().contains("audio")) {
-                    intent.putExtra("audio", postDataList.get(position).getValue());
-                    intent.putExtra("token", UserToken);
-                    intent.putExtra("post_id", String.valueOf(postDataList.get(position).getId()));
-                    intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
-                    intent.putExtra("text", postDataList.get(position).getMessage());
-
-
-                } else if (postDataList.get(position).getType().contains("")) {
-
-                    intent.putExtra("text", postDataList.get(position).getMessage());
-                    intent.putExtra("token", UserToken);
-                    intent.putExtra("post_id", String.valueOf(postDataList.get(position).getId()));
-                    intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
-
-                }
-                startActivity(intent);
-
-            }
-
-            @Override
-            public void onDotClick(int position) {
-                Log.d(TAG, "onDotClick: " + position);
-
-                init_modal_bottomsheet(position);
-                // openDialog(position);
-
-            }
-
-            @Override
-            public void onUserImageClick(int position) {
-
-
-                Intent intent = new Intent(DistrictPost.this, OtherUserProfile.class);
-                intent.putExtra("user_url", postDataList.get(position).getUser().getUrl());
-                intent.putExtra("user_image", postDataList.get(position).getUser().getImage());
-                intent.putExtra("user_cover_image", postDataList.get(position).getUser().getCoverImage());
-                intent.putExtra("first_name", postDataList.get(position).getUser().getFirstName());
-                intent.putExtra("last_name", postDataList.get(position).getUser().getLastName());
-                intent.putExtra("email", postDataList.get(position).getUser().getEmail());
-                intent.putExtra("dob", postDataList.get(position).getUser().getDob());
-                intent.putExtra("profession", postDataList.get(position).getUser().getProfession());
-                intent.putExtra("gender", postDataList.get(position).getUser().getGender());
-                intent.putExtra("mobile", postDataList.get(position).getUser().getMobile());
-                intent.putExtra("marital", postDataList.get(position).getUser().getMaritalStatus());
-                intent.putExtra("address", postDataList.get(position).getUser().getAddress());
-                intent.putExtra("bypost","postsend");
-
-                startActivity(intent);
-
-
-
-            }
-        });
+//        postAdapter.setOnItemClickListner(new CommonAdapterPost.OnItemClickListner() {
+//            @Override
+//            public void onLikeClick(final int position) {
+//                Log.d(TAG, "onLikeClick: " + position);
+//                final FeedPostData feedPostData = postDataList.get(position);
+//                try {
+//                    pDialog = new ProgressDialog(DistrictPost.this);
+//                    pDialog.setMessage("Please wait...");
+//                    pDialog.setCancelable(true);
+//                    pDialog.show();
+//                    Call<LikeResponse> call = apiInterface.like_post(UserToken, feedPostData.getId() + "");
+//                    call.enqueue(new Callback<LikeResponse>() {
+//                        @Override
+//                        public void onResponse(Call<LikeResponse> call, Response<LikeResponse> response) {
+//
+//                            LikeResponse likeResponse = response.body();
+//                            Log.d(TAG, "onResponse: " + response.code() + " " +response.errorBody()+ " " +response.message() +" "+ response.headers());
+//
+//                            if (likeResponse.getSuccess() == true) {
+//                                pDialog.cancel();
+//                                Log.d(TAG, "pre: " + feedPostData.toString());
+//                                feedPostData.setLikes(Long.valueOf(likeResponse.getLcount()));
+//                                feedPostData.setDislikes(Long.valueOf(likeResponse.getDcount()));
+//
+//                                postDataList.set(position, feedPostData);
+//                                Log.d(TAG, "post: " + feedPostData.toString());
+//                                postAdapter.replace(position, feedPostData);
+//                                postAdapter.notifyItemChanged(position);
+//
+//
+//                            } else if (likeResponse.getSuccess() == false) {
+//
+//                                final AlertDialog alertDialog = new AlertDialog.Builder(
+//                                        DistrictPost.this).create();
+//
+//                                alertDialog.setTitle("                 Alert!");
+//
+//
+//                                alertDialog.setMessage("    Try Again");
+//
+//                                alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
+//                                    public void onClick(DialogInterface dialog, int which) {
+//
+//                                        alertDialog.dismiss();
+//                                    }
+//                                });
+//
+//                                // Showing Alert Message
+//                                alertDialog.show();
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onFailure(Call<LikeResponse> call, Throwable t) {
+//
+//                        }
+//                    });
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//
+//            @Override
+//            public void onDislikeClick(final int position) {
+//                Log.d(TAG, "onDislikeClick: " + position);
+//                pDialog = new ProgressDialog(DistrictPost.this);
+//                pDialog.setMessage("Please wait...");
+//                pDialog.setCancelable(true);
+//                pDialog.show();
+//                try {
+//                    final FeedPostData feedPostData = postDataList.get(position);
+//                    Call<LikeResponse> call = apiInterface.dislike_post(UserToken, feedPostData.getId() + "");
+//                    call.enqueue(new Callback<LikeResponse>() {
+//                        @Override
+//                        public void onResponse(Call<LikeResponse> call, Response<LikeResponse> response) {
+//
+//                            LikeResponse likeResponse = response.body();
+//                            if (likeResponse.getSuccess() == true) {
+//                                pDialog.cancel();
+//                                Log.d(TAG, "pre: " + postDataList.toString());
+//                                feedPostData.setLikes(Long.valueOf(likeResponse.getLcount()));
+//                                feedPostData.setDislikes(Long.valueOf(likeResponse.getDcount()));
+//                                postDataList.set(position, postDataList.get(position));
+//                                Log.d(TAG, "post: " + postDataList.toString());
+//                                postAdapter.replace(position, postDataList.get(position));
+//                                postAdapter.notifyItemChanged(position);
+//
+//
+//                            } else if (likeResponse.getSuccess() == false) {
+//
+//                                final AlertDialog alertDialog = new AlertDialog.Builder(
+//                                        DistrictPost.this).create();
+//
+//                                alertDialog.setTitle("                 Alert!");
+//
+//
+//                                alertDialog.setMessage("    Try Again");
+//
+//                                alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
+//                                    public void onClick(DialogInterface dialog, int which) {
+//
+//                                        alertDialog.dismiss();
+//                                    }
+//                                });
+//
+//                                // Showing Alert Message
+//                                alertDialog.show();
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onFailure(Call<LikeResponse> call, Throwable t) {
+//
+//                        }
+//                    });
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//
+//            @Override
+//            public void onSharePostClick(int position) {
+//                Log.d(TAG, "onSharePostClick: " + position);
+//
+//                Intent intent = new Intent(DistrictPost.this, SharePostActivity.class);
+//
+//                if (postDataList.get(position).getType().contains("image")) {
+//
+//                    intent.putExtra("image", postDataList.get(position).getValue());
+//                    intent.putExtra("token", UserToken);
+//                    intent.putExtra("post_id", postDataList.get(position).getId());
+//                    intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
+//
+//                } else if (postDataList.get(position).getType().contains("video")) {
+//                    intent.putExtra("video", postDataList.get(position).getValue());
+//                    intent.putExtra("token", UserToken);
+//                    intent.putExtra("post_id", postDataList.get(position).getId());
+//                    intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
+//
+//
+//                } else if (postDataList.get(position).getType().contains("audio")) {
+//                    intent.putExtra("audio", postDataList.get(position).getValue());
+//                    intent.putExtra("token", UserToken);
+//                    intent.putExtra("post_id", postDataList.get(position).getId());
+//                    intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
+//
+//
+//                } else if (postDataList.get(position).getType().contains("")) {
+//
+//                    intent.putExtra("text", postDataList.get(position).getMessage());
+//                    intent.putExtra("token", UserToken);
+//                    intent.putExtra("post_id", postDataList.get(position).getId());
+//                    intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
+//
+//                }
+//                startActivity(intent);
+//            }
+//
+//            @Override
+//            public void onShareImageClick(int position) {
+//                Log.d(TAG, "onShareImageClick: " + position);
+//
+//                Intent intent = new Intent(DistrictPost.this, SharePostActivity.class);
+//
+//                if (postDataList.get(position).getType().contains("image")) {
+//
+//                    intent.putExtra("image", postDataList.get(position).getValue());
+//                    intent.putExtra("token", UserToken);
+//                    intent.putExtra("post_id", String.valueOf(postDataList.get(position).getId()));
+//                    intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
+//                    intent.putExtra("text", postDataList.get(position).getMessage());
+//
+//                } else if (postDataList.get(position).getType().contains("video")) {
+//                    intent.putExtra("video", postDataList.get(position).getValue());
+//                    intent.putExtra("token", UserToken);
+//                    intent.putExtra("post_id", String.valueOf(postDataList.get(position).getId()));
+//                    intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
+//                    intent.putExtra("text", postDataList.get(position).getMessage());
+//
+//
+//                } else if (postDataList.get(position).getType().contains("audio")) {
+//                    intent.putExtra("audio", postDataList.get(position).getValue());
+//                    intent.putExtra("token", UserToken);
+//                    intent.putExtra("post_id", String.valueOf(postDataList.get(position).getId()));
+//                    intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
+//                    intent.putExtra("text", postDataList.get(position).getMessage());
+//
+//
+//                } else if (postDataList.get(position).getType().contains("")) {
+//
+//                    intent.putExtra("text", postDataList.get(position).getMessage());
+//                    intent.putExtra("token", UserToken);
+//                    intent.putExtra("post_id", String.valueOf(postDataList.get(position).getId()));
+//                    intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
+//
+//                }
+//                startActivity(intent);
+//
+//            }
+//
+//            @Override
+//            public void onDotClick(int position) {
+//                Log.d(TAG, "onDotClick: " + position);
+//
+//                init_modal_bottomsheet(position);
+//                // openDialog(position);
+//
+//            }
+//
+//            @Override
+//            public void onUserImageClick(int position) {
+//
+//
+//                Intent intent = new Intent(DistrictPost.this, OtherUserProfile.class);
+//                intent.putExtra("user_url", postDataList.get(position).getUser().getUrl());
+//                intent.putExtra("user_image", postDataList.get(position).getUser().getImage());
+//                intent.putExtra("user_cover_image", postDataList.get(position).getUser().getCoverImage());
+//                intent.putExtra("first_name", postDataList.get(position).getUser().getFirstName());
+//                intent.putExtra("last_name", postDataList.get(position).getUser().getLastName());
+//                intent.putExtra("email", postDataList.get(position).getUser().getEmail());
+//                intent.putExtra("dob", postDataList.get(position).getUser().getDob());
+//                intent.putExtra("profession", postDataList.get(position).getUser().getProfession());
+//                intent.putExtra("gender", postDataList.get(position).getUser().getGender());
+//                intent.putExtra("mobile", postDataList.get(position).getUser().getMobile());
+//                intent.putExtra("marital", postDataList.get(position).getUser().getMaritalStatus());
+//                intent.putExtra("address", postDataList.get(position).getUser().getAddress());
+//                intent.putExtra("bypost","postsend");
+//
+//                startActivity(intent);
+//
+//
+//
+//            }
+//        });
 
 
     }

@@ -39,12 +39,27 @@ public class CommonBaseActivity extends DrawerBaseActivity {
 
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_common_base);
           setDrawer();
 
+        ImageView search_icon=(ImageView)findViewById(R.id.search_icon);
+
+
+        search_icon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent=new Intent(CommonBaseActivity.this,SearchActivity.class);
+                startActivity(intent);
+
+
+
+            }
+        });
 
 
         mViewPager = (ViewPager) findViewById(R.id.main_tabPager);

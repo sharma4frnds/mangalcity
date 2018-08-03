@@ -9,7 +9,7 @@
         android:width="1dip"
         android:color="#d3d3d3"
         />
-    <!--<solid android:color="#006a32"/>-->
+    <solid android:color="#ffffff"/>
 </shape>
 
 

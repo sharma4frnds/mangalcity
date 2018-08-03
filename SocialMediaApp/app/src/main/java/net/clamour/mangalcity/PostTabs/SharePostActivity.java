@@ -40,6 +40,7 @@ import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 
+import net.clamour.mangalcity.Home.CommonBaseActivity;
 import net.clamour.mangalcity.Home.PostActivity;
 import net.clamour.mangalcity.R;
 import net.clamour.mangalcity.ResponseModal.PostShareresponse;
@@ -146,7 +147,6 @@ public class SharePostActivity extends AppCompatActivity {
             ViewGroup.LayoutParams params1 = relativeComplete.getLayoutParams();
 
             params1.height = 400;
-
 
             postText.setText(post_text_st);
 
@@ -259,6 +259,9 @@ public class SharePostActivity extends AppCompatActivity {
 
                         Toast.makeText(getApplicationContext(),"sucessfully posted",Toast.LENGTH_SHORT).show();
 
+                        Intent intent=new Intent(SharePostActivity.this,CommonBaseActivity.class);
+                        startActivity(intent);
+
 
                     }
                 }
@@ -282,7 +285,7 @@ public class SharePostActivity extends AppCompatActivity {
 
             case android.R.id.home:
                 // Respond to the action bar's Up/Home button
-              Intent intent=new Intent(SharePostActivity.this,PostActivity.class);
+              Intent intent=new Intent(SharePostActivity.this,CommonBaseActivity.class);
                 startActivity(intent);
 
 
@@ -302,7 +305,7 @@ public class SharePostActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent=new Intent(SharePostActivity.this,PostActivity.class);
+        Intent intent=new Intent(SharePostActivity.this,CommonBaseActivity.class);
         startActivity(intent);
     }
 }

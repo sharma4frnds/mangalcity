@@ -115,8 +115,10 @@
         <activity android:name=".Home.OpenImageActivity" />
         <activity android:name=".Home.SearchActivity" />
         <activity android:name=".facebookplayer.VideoPlaying" />
-        <activity android:name=".Home.CommonBaseActivity"></activity>
+        <activity android:name=".Home.CommonBaseActivity" />
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
+        <activity android:name=".profile.SocialMediaMobileIntegration" />
+        <activity android:name=".profile.SocialLoginOtp"></activity>
     </application>
 
 </manifest>

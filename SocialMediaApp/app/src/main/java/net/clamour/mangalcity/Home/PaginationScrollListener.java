@@ -30,7 +30,9 @@ public abstract class PaginationScrollListener extends RecyclerView.OnScrollList
 
 
         if (!recyclerView.canScrollVertically(1)) {
-            onScrolledToEnd();
+            if (!isLoading() && !isLastPage()) {
+                onScrolledToEnd();
+            }
         }
 
         if (!isLoading() && !isLastPage()) {

@@ -92,24 +92,24 @@
                     android:textColor="@color/text_grey" />
 
 
-                <ImageView
-                    android:id="@+id/post_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="190dp"
-                    android:layout_marginBottom="@dimen/intrinsic_padding"
-                    android:layout_marginTop="105dp"
-                    android:scaleType="centerCrop"
-                    android:visibility="invisible"
+                <!--<ImageView-->
+                    <!--android:id="@+id/post_image"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="190dp"-->
+                    <!--android:layout_marginBottom="@dimen/intrinsic_padding"-->
+                    <!--android:layout_marginTop="105dp"-->
+                    <!--android:scaleType="centerCrop"-->
+                    <!--android:visibility="invisible"-->
 
 
-                    />
+                    <!--/>-->
 
                 <com.google.android.exoplayer2.ui.SimpleExoPlayerView
                     android:id="@+id/exo_player_view_audio"
                     android:layout_width="match_parent"
                     android:layout_height="190dp"
                     android:layout_marginTop="105dp"
-                    android:visibility="invisible"
+                    android:visibility="gone"
 
                     >
 
@@ -121,12 +121,29 @@
                     android:layout_width="match_parent"
                     android:layout_height="190dp"
                     android:layout_marginTop="105dp"
-                    android:background="@drawable/anu"
+                    android:visibility="gone"
 
 
 
 
                     />
+                <GridView
+                    android:id="@+id/gridView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="190dp"
+                    android:columnWidth="100dp"
+                    android:drawSelectorOnTop="true"
+                    android:gravity="center"
+                    android:numColumns="2"
+
+
+                    android:focusable="true"
+                    android:visibility="gone"
+                    android:clickable="true"
+                    android:layout_marginTop="105dp"
+                    />
+
+
             </RelativeLayout>
 
             <include

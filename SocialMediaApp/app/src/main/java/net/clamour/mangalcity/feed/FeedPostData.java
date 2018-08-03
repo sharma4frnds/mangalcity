@@ -5,6 +5,9 @@ package net.clamour.mangalcity.feed;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class FeedPostData {
 
@@ -42,8 +45,31 @@ public class FeedPostData {
     private User user;
     @SerializedName("user_id")
     private Long userId;
+
+    public List<CommentShowData>comment;
+
+    public List<CommentShowData> getComment() {
+        return comment;
+    }
+
+    public List<MediaImageResponse>media;
+
+    public List<MediaImageResponse> getMedia() {
+        return media;
+    }
+
+    public void setMedia(List<MediaImageResponse> media) {
+        this.media = media;
+    }
+
+    public void setComment(List<CommentShowData> comment) {
+        this.comment = comment;
+    }
+
     @Expose
     private String value;
+
+
 
     public Long getCity() {
         return city;

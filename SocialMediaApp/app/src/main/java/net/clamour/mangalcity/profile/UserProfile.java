@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -80,6 +81,8 @@ public class UserProfile extends DrawerBaseActivity {
     ImageView CoverImage;
     @BindView(R.id.editText_name)
     EditText editText_name;
+    @BindView(R.id.editText_last)
+    EditText editText_last;
 
 
     @BindView(R.id.linear_current)
@@ -151,15 +154,18 @@ public class UserProfile extends DrawerBaseActivity {
     ArrayList<CountryDataStorage> Block_ArrayModal;
 
     SharedPreferences LoginPrefrences;
+    SharedPreferences profileprefrences;
     String UserToken;
+    Boolean isSucessProfileUpdate;
 
-    String firstname_get, lastname_get, mobile_get, dob_get, emailid_get, fulladdress_get, profession_get, gender_get, marital_status_get, statecurrent_get, districtcurrent_get, city_current_get, profileimage_get, coverImageget, currentlocationStatus;
+    String firstname_get, lastname_get, mobile_get, dob_get, emailid_get, fulladdress_get, profession_get, gender_get, marital_status_get, statecurrent_get, districtcurrent_get, city_current_get, profileimage_get, coverImageget, currentlocationStatus, mobilehiddenget, dobhiddenget;
 
 
     String country_name, country_id, state_name, state_id, district_name, district_id, city_name, city_id;
     ProgressDialog pDialog;
     String firstname_st, lastname_st, mobile_st, email_st, fulladdress_st, proffession_st, male_st, marital_st, dob_st;
     Boolean isSucessget;
+    String hiddenmobile_st,hiddendob_set;
     // @BindView(R.id.camera_cover)
     // ImageView cameraCover;
     //@BindView(R.id.profile_camera)
@@ -176,6 +182,10 @@ public class UserProfile extends DrawerBaseActivity {
     ImageView imageProffession;
     @BindView(R.id.image_dob)
     ImageView imageDob;
+    @BindView(R.id.checkbox_mobile)
+    CheckBox checkboxMobile;
+    @BindView(R.id.checkbox_dob)
+    CheckBox checkboxDob;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -195,47 +205,61 @@ public class UserProfile extends DrawerBaseActivity {
         LoginPrefrences = this.getSharedPreferences("net.clamour.mangalcity.profile.LoginActivity", MODE_PRIVATE);
         UserToken = LoginPrefrences.getString("userToken", "");
         Log.i("token", UserToken);
+        profileprefrences= this.getSharedPreferences("net.clamour.mangalcity.profile.UserProfile", MODE_PRIVATE);
+
 
         getProfileData();
 
         imageAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                fulladdressPro.requestFocus();
+                fulladdressPro.setSelection(fulladdressPro.getText().length());
                 fulladdressPro.setCursorVisible(true);
-                fulladdressPro.getText().clear();
                 fulladdressPro.setFocusableInTouchMode(true);
+
             }
         });
         imageDob.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+
+                dobPro.requestFocus();
+                dobPro.setSelection(dobPro.getText().length());
                 dobPro.setCursorVisible(true);
+                dobPro.setFocusableInTouchMode(true);
+
             }
         });
         imageMob.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-               mobilePro.getText().clear();
-
-                mobilePro.setFocusableInTouchMode(true);
+                mobilePro.requestFocus();
+                mobilePro.setSelection(mobilePro.getText().length());
                 mobilePro.setCursorVisible(true);
+                mobilePro.setFocusableInTouchMode(true);
             }
         });
         imageEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                emailPro.requestFocus();
+                emailPro.setSelection(emailPro.getText().length());
                 emailPro.setCursorVisible(true);
                 emailPro.setFocusableInTouchMode(true);
-                emailPro.getText().clear();
+
             }
         });
         imageProffession.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+                proffessionPro.requestFocus();
+                proffessionPro.setSelection(proffessionPro.getText().length());
                 proffessionPro.setCursorVisible(true);
-                proffessionPro.getText().clear();
                 proffessionPro.setFocusableInTouchMode(true);
             }
         });
@@ -258,13 +282,13 @@ public class UserProfile extends DrawerBaseActivity {
         showStateDataHomeLocation();
 
 
-        profile_update.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                //updateProfile();
-            }
-        });
+//        profile_update.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//                //updateProfile();
+//            }
+//        });
 
         CoverImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -293,10 +317,10 @@ public class UserProfile extends DrawerBaseActivity {
             @Override
             public void onClick(View view) {
 
-                if(!checkBox.isChecked()){
+                if (!checkBox.isChecked()) {
                     saveProfileHome();
                 }
-                if(checkBox.isChecked()){
+                if (checkBox.isChecked()) {
                     saveProfile();
 
                 }
@@ -313,7 +337,7 @@ public class UserProfile extends DrawerBaseActivity {
         // checkBox.setChecked(true);
         if (!checkBox.isChecked()) {
 
-           // layout_homelocation.setVisibility(View.VISIBLE);
+            // layout_homelocation.setVisibility(View.VISIBLE);
             layout_homelocation.getLayoutParams().height = 500;
             //   ll.getLayoutParams().width = 200;
             layout_homelocation.requestLayout();
@@ -322,7 +346,7 @@ public class UserProfile extends DrawerBaseActivity {
 
         } else if (checkBox.isChecked()) {
 
-           // layout_homelocation.setVisibility(View.INVISIBLE);
+            // layout_homelocation.setVisibility(View.INVISIBLE);
             layout_homelocation.getLayoutParams().height = 0;
             //   ll.getLayoutParams().width = 200;
             layout_homelocation.requestLayout();
@@ -332,6 +356,30 @@ public class UserProfile extends DrawerBaseActivity {
             // showStateDataHomeLocation();
 
         }
+    }
+
+    public void itemClickedmobile(View v){
+
+        if(!checkboxMobile.isChecked()){
+            hiddenmobile_st="0";
+
+        }
+        else if(checkboxMobile.isChecked()){
+            hiddenmobile_st="1";
+        }
+
+
+    }
+
+    public void itemClickeddob(View v){
+        if(!checkboxDob.isChecked()){
+            hiddendob_set="0";
+
+        }
+        else if(checkboxDob.isChecked()){
+            hiddendob_set="1";
+        }
+
     }
 
 
@@ -357,6 +405,7 @@ public class UserProfile extends DrawerBaseActivity {
                         Log.i(TAG, "Image Path : " + profilepath);
 
                         Uri destination = Uri.fromFile(new File(getCacheDir(), "cropped"));
+
                         Crop.of(selectedImageUri, destination).asSquare().start(this);
 
                         // Set the image in ImageView
@@ -396,9 +445,15 @@ public class UserProfile extends DrawerBaseActivity {
                         path = getPathFromURI(selectedImageUri);
                         Log.i(TAG, "Image Path : " + path);
 
-                        Uri destination = Uri.fromFile(new File(getCacheDir(), "cropped"));
-                        Crop.of(selectedImageUri, destination).asSquare().start(this);
 
+                        Uri destination = Uri.fromFile(new File(getCacheDir(), "cropped"));
+
+                        if(destination==null){
+
+                        }
+                        else {
+                            Crop.of(selectedImageUri, destination).asSquare().start(this);
+                        }
 //                        CropImage.activity(selectedImageUri)
 //                                .setAspectRatio(1, 1)
 //                                .setMinCropWindowSize(1000, 1000)
@@ -420,7 +475,7 @@ public class UserProfile extends DrawerBaseActivity {
                             // profile_prefrence.edit().remove("guset_profileimage").apply();
 
                             //displaying selected image to imageview
-                            //  CoverImage.setImageBitmap(bitmap);
+                              CoverImage.setImageBitmap(bitmap);
 
                             //calling the method uploadBitmap to upload image
 
@@ -715,7 +770,6 @@ public class UserProfile extends DrawerBaseActivity {
 
             }
         });
-
 
 
     }
@@ -1188,7 +1242,7 @@ public class UserProfile extends DrawerBaseActivity {
                     @Override
                     public void onResponse(String response) {
                         //Toast.makeText(JobDetails.this, response, Toast.LENGTH_LONG).show();
-
+pDialog.cancel();
                         Log.i("responsegetProfile", response);
 
 
@@ -1222,7 +1276,11 @@ public class UserProfile extends DrawerBaseActivity {
                             dob_get = jsonObject1.getString("dob");
                             profileimage_get = jsonObject1.getString("image");
                             coverImageget = jsonObject1.getString("cover_image");
-                            Log.d(TAG, "onResponsecover: "+coverImageget);
+                            Log.d(TAG, "onResponsecover: " + coverImageget);
+                            mobilehiddenget = jsonObject1.getString("mobile_hidden");
+                            dobhiddenget = jsonObject1.getString("dob_hidden");
+                            Log.d(TAG, "onResponsedobbb: "+dobhiddenget);
+                            lastname_get=jsonObject1.getString("last_name");
 
 
                         } catch (Exception e) {
@@ -1263,7 +1321,8 @@ public class UserProfile extends DrawerBaseActivity {
 
     public void setData() {
 
-        editText_name.setText(firstname_get + " " + lastname_get);
+        editText_name.setText(firstname_get);
+        editText_last.setText(lastname_get);
         mobilePro.setText(mobile_get);
         emailPro.setText(emailid_get);
         fulladdressPro.setText(fulladdress_get);
@@ -1287,7 +1346,7 @@ public class UserProfile extends DrawerBaseActivity {
         if (location_checked_get.contains("active")) {
 
             checkBox.setChecked(true);
-           // layout_homelocation.setVisibility(View.INVISIBLE);
+            // layout_homelocation.setVisibility(View.INVISIBLE);
             layout_homelocation.getLayoutParams().height = 0;
             //   ll.getLayoutParams().width = 200;
             layout_homelocation.requestLayout();
@@ -1295,7 +1354,7 @@ public class UserProfile extends DrawerBaseActivity {
 
         } else if (location_checked_get.contains("inactive")) {
             checkBox.setChecked(false);
-          //  layout_homelocation.setVisibility(View.VISIBLE);
+            //  layout_homelocation.setVisibility(View.VISIBLE);
             layout_homelocation.getLayoutParams().height = 500;
             //   ll.getLayoutParams().width = 200;
             layout_homelocation.requestLayout();
@@ -1304,6 +1363,22 @@ public class UserProfile extends DrawerBaseActivity {
 
         }
         //proffessionPro.setText(prof);
+        if (mobilehiddenget.contains("0")) {
+checkboxMobile.setChecked(false);
+
+        }
+        else if(mobilehiddenget.contains("1")){
+            checkboxMobile.setChecked(true);
+        }
+
+        if (dobhiddenget.contains("0")) {
+
+            checkboxDob.setChecked(false);
+        }
+        else if(dobhiddenget.contains("1")){
+             checkboxDob.setChecked(true);
+         }
+
 
     }
 
@@ -1497,7 +1572,7 @@ public class UserProfile extends DrawerBaseActivity {
 
                     Toast.makeText(getApplicationContext(), "Successfully Updated", Toast.LENGTH_SHORT).show();
 
-                    getProfileData();
+                   // getProfileData();
 
 
 //                    final AlertDialog alertDialog = new AlertDialog.Builder(
@@ -1613,6 +1688,7 @@ public class UserProfile extends DrawerBaseActivity {
         Log.i("instatedata", "instatedata");
 
         firstname_st = editText_name.getText().toString();
+        lastname_st=editText_last.getText().toString();
         email_st = emailPro.getText().toString();
         fulladdress_st = fulladdressPro.getText().toString();
         proffession_st = proffessionPro.getText().toString();
@@ -1641,8 +1717,8 @@ public class UserProfile extends DrawerBaseActivity {
 
 
                             JSONObject jsonObject = new JSONObject(response);
-                            String sts = jsonObject.getString("success");
-                            Log.d(TAG, "onResponse: " + sts);
+                            isSucessProfileUpdate = jsonObject.getBoolean("success");
+                            Log.d(TAG, "onResponse: " + isSucessProfileUpdate);
                             Toast.makeText(UserProfile.this, "updated sucessfully", Toast.LENGTH_LONG).show();
                             getProfileData();
 
@@ -1673,8 +1749,12 @@ public class UserProfile extends DrawerBaseActivity {
                         } catch (Exception e) {
                         }
 
+                        if(isSucessProfileUpdate==true){
+                            if(checkBox.isChecked()){
+                                saveProfileHomeLocationnotChecked();
+                            }
 
-
+                        }
 
                     }
 
@@ -1694,8 +1774,8 @@ public class UserProfile extends DrawerBaseActivity {
             public Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("token", UserToken);
-                params.put("first_name", "pooja");
-                params.put("last_name", "gupta");
+                params.put("first_name", firstname_st);
+                params.put("last_name", lastname_st);
                 params.put("email", email_st);
                 params.put("country", "101");
                 params.put("state", "10");
@@ -1709,8 +1789,10 @@ public class UserProfile extends DrawerBaseActivity {
                 params.put("home_district", "707");
                 params.put("home_state", "10");
                 params.put("address", fulladdress_st);
-                params.put("profession",proffession_st);
-                params.put("dob",dob_st);
+                params.put("profession", proffession_st);
+                params.put("dob", dob_st);
+               // params.put("dob_hidden",hiddendob_set);
+              //  params.put("mobile_hidden",hiddenmobile_st);
 
 
                 return params;
@@ -1724,7 +1806,7 @@ public class UserProfile extends DrawerBaseActivity {
 
     }
 
-    public void saveProfileHome(){
+    public void saveProfileHome() {
         pDialog = new ProgressDialog(UserProfile.this);
         pDialog.setMessage("Please wait...");
         pDialog.setCancelable(true);
@@ -1732,6 +1814,7 @@ public class UserProfile extends DrawerBaseActivity {
         Log.i("instatedata", "instatedata");
 
         firstname_st = editText_name.getText().toString();
+        lastname_st=editText_last.getText().toString();
         email_st = emailPro.getText().toString();
         fulladdress_st = fulladdressPro.getText().toString();
         proffession_st = proffessionPro.getText().toString();
@@ -1746,7 +1829,9 @@ public class UserProfile extends DrawerBaseActivity {
                     public void onResponse(String response) {
 
 
-                        Log.i("responprofileresponse", response);
+                        Log.i("responprofileresponsehomeeee", response);
+
+
 
 
                         //   arrayList=new ArrayList<>();
@@ -1760,8 +1845,8 @@ public class UserProfile extends DrawerBaseActivity {
 
 
                             JSONObject jsonObject = new JSONObject(response);
-                            String sts = jsonObject.getString("success");
-                            Log.d(TAG, "onResponse: " + sts);
+                            isSucessProfileUpdate = jsonObject.getBoolean("success");
+                            Log.d(TAG, "onResponse: " + isSucessProfileUpdate);
                             Toast.makeText(UserProfile.this, "updated sucessfully", Toast.LENGTH_LONG).show();
 //                            String res = jsonObject.getString("data");
 //                            Log.d(TAG, "onResponse: " + res);
@@ -1790,9 +1875,12 @@ public class UserProfile extends DrawerBaseActivity {
                         } catch (Exception e) {
                         }
 
+                        if(isSucessProfileUpdate==true){
+                            if(!checkBox.isChecked()){
+                                saveProfileHomeLocationChecked();
+                            }
 
-
-
+                        }
                     }
 
                 },
@@ -1811,8 +1899,8 @@ public class UserProfile extends DrawerBaseActivity {
             public Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("token", UserToken);
-                params.put("first_name", "pooja");
-                params.put("last_name", "gupta");
+                params.put("first_name", firstname_st);
+                params.put("last_name", lastname_st);
                 params.put("email", email_st);
                 params.put("country", "101");
                 params.put("state", "10");
@@ -1821,13 +1909,15 @@ public class UserProfile extends DrawerBaseActivity {
                 params.put("gender", "female");
                 params.put("marital_status", "yes");
                 params.put("current_location", "inactive");
-                 params.put("home_city", "1");
-                 params.put("home_country", "101");
-                  params.put("home_district", "707");
-                  params.put("home_state", "10");
+                params.put("home_city", "1");
+                params.put("home_country", "101");
+                params.put("home_district", "707");
+                params.put("home_state", "10");
                 params.put("address", fulladdress_st);
-                params.put("profession",proffession_st);
-                params.put("dob",dob_st);
+                params.put("profession", proffession_st);
+                params.put("dob", dob_st);
+               // params.put("dob_hidden",hiddendob_set);
+              //  params.put("mobile_hidden",hiddenmobile_st);
 
 
                 return params;
@@ -1838,6 +1928,21 @@ public class UserProfile extends DrawerBaseActivity {
         RequestQueue requestQueue1 = Volley.newRequestQueue(this);
         requestQueue1.add(stringRequest1);
 
+
+    }
+
+public void saveProfileHomeLocationChecked(){
+    SharedPreferences.Editor editor = profileprefrences.edit();
+   editor.putString("home_location","1");
+
+    editor.commit();
+
+}
+    public void saveProfileHomeLocationnotChecked(){
+        SharedPreferences.Editor editor = profileprefrences.edit();
+        editor.putString("home_location","0");
+
+        editor.commit();
 
     }
 }

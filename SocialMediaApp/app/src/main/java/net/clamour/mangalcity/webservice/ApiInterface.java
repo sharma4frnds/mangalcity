@@ -20,6 +20,10 @@ import net.clamour.mangalcity.ResponseModal.SpamTagsResponse;
 import net.clamour.mangalcity.ResponseModal.StateMainResponse;
 import net.clamour.mangalcity.ResponseModal.UpdateProfileResponse;
 import net.clamour.mangalcity.ResponseModal.changePasswordResponse;
+import net.clamour.mangalcity.SocialMedia.SocialMediaOtpResponse;
+import net.clamour.mangalcity.SocialMedia.SocialMobileResponse;
+import net.clamour.mangalcity.feed.CommentShowData;
+import net.clamour.mangalcity.feed.PostCommentResponse;
 import net.clamour.mangalcity.feed.PostFeedResponse;
 
 import java.util.ArrayList;
@@ -57,6 +61,20 @@ public interface ApiInterface {
     @POST("auth/logout")
     @FormUrlEncoded
     Call<LogoutResponse>userLogout(@Field("token") String token);
+
+
+    @POST("auth/social_login_otp")
+    @FormUrlEncoded
+    Call<SocialMobileResponse>socialmediaMobile(@Field("mobile") String mobile , @Field("token") String token);
+
+    @POST("auth/social_login_otp")
+    @FormUrlEncoded
+    Call<SocialMediaOtpResponse>socialmediaOtp(@Field("mobile") String mobile ,@Field("otp") String otp, @Field("token") String token);
+
+
+    @POST("getuser")
+    @FormUrlEncoded
+    Call<LogoutResponse>getValidity(@Field("token") String token);
 
     @POST("change_password")
     @FormUrlEncoded
@@ -133,6 +151,11 @@ public interface ApiInterface {
     @POST("activity")
     @FormUrlEncoded
     Call<ActivityResponse>activityLogs(@Field("token") String token ,@Field("page") String page);
+
+    @POST("post_comment")
+    @FormUrlEncoded
+    Call<PostCommentResponse>postComment(@Field("token") String token , @Field("post_id") String post_id , @Field("comment") String comment , @Field("comment_id") String comment_id);
+
 
 
 }

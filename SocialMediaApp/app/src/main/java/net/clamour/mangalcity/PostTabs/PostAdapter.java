@@ -1,10 +1,12 @@
 package net.clamour.mangalcity.PostTabs;
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,12 +15,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -35,14 +45,22 @@ import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 
+import net.clamour.mangalcity.Activity.ActivityData;
+import net.clamour.mangalcity.Activity.ActivityPost;
 import net.clamour.mangalcity.Home.GetTimeAgo;
+import net.clamour.mangalcity.Home.MediaGridAdapter;
 import net.clamour.mangalcity.Home.OpenImageActivity;
 import net.clamour.mangalcity.Home.OtherUserProfile;
 import net.clamour.mangalcity.R;
 import net.clamour.mangalcity.feed.FeedPostData;
+import net.clamour.mangalcity.feed.MediaImageResponse;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -68,6 +86,9 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int ITEM = 1;
     private static final int LOADING = 2;
     android.support.v7.app.AlertDialog alertDialog;
+    ProgressDialog pDialog;
+    String  profileimage_get;
+    List<MediaImageResponse> mediaList;
 
 
     private boolean isLoadingAdded = false;
@@ -79,6 +100,7 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private String profile_image;
     private Uri uri;
     private MyPostViewHolder myPostViewHolder;
+    private String mediaImagename;
 
 
     public interface OnItemClickListner {
@@ -93,6 +115,12 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void onDotClick(int position);
 
         void onUserImageClick(int position);
+
+        void onCommentImageClick(int position);
+
+        void onShareTextClick(int position);
+
+        void OnCommentTextClick(int position);
 
 
 
@@ -153,12 +181,15 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             super(itemView);
             this.postClickListner = listner;
             ButterKnife.bind(this, itemView);
-            Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/user/" + profile_image)
-                    .thumbnail(0.5f)
-                    .crossFade()
-                    .placeholder(0)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(personProfileImage);
+//            Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/user/" + profile_image)
+//                    .thumbnail(0.5f)
+//                    .crossFade()
+//                    .placeholder(0)
+//                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                    .into(personProfileImage);
+
+
+            getProfileData();
 
         }
 
@@ -180,6 +211,7 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 case R.id.post_buttonnn:
                     String message = editTextTextpost.getText().toString();
                     postClickListner.onPostButtonClick(message);
+                   // editTextTextpost.getText().clear();
 
                     if (message != null)
                         editTextTextpost.getText().clear();
@@ -196,7 +228,8 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         private void resetFormData() {
             imagepreview.setImageResource(0);
-            editTextTextpost.getText().clear();
+selected_file.setVisibility(View.GONE);
+cross_image.setVisibility(View.GONE);
             notifyItemChanged(0);
         }
 public void disableButton(){
@@ -207,14 +240,16 @@ public void disableButton(){
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.post_image)
-        ImageView postImage;
+//        @BindView(R.id.post_image)
+//        ImageView postImage;
 //        @BindView(R.id.audiolayout)
 //        LinearLayout audiolayout;
         @BindView(R.id.exo_player_view_audio)
         SimpleExoPlayerView exoPlayerView_audio;
         @BindView(R.id.videoplayer)
         VidstaPlayer player;
+        @BindView(R.id.gridView)
+        GridView gridView;
 //        @BindView(R.id.videorelative)
 //        RelativeLayout videorelative;
 //        @BindView(R.id.relativ1)
@@ -245,6 +280,8 @@ public void disableButton(){
         TextView postTiming;
         @BindView(R.id.post_text)
         TextView postText;
+        @BindView(R.id.commentsCountTextView)
+        TextView comment_count;
 //        @BindView(R.id.dots)
 //        ImageView dots;
 //        @BindView(R.id.play)
@@ -268,7 +305,7 @@ public void disableButton(){
 
         private OnItemClickListner listner;
 
-        @OnClick({R.id.image_like, R.id.image_dislike, R.id.image_comment, R.id.image_share, R.id.no_of_likes, R.id.no_of_dislikes, R.id.share_text, R.id.dots ,R.id.user_name})
+        @OnClick({R.id.image_like, R.id.image_dislike, R.id.image_comment, R.id.image_share, R.id.no_of_likes, R.id.no_of_dislikes, R.id.share_text, R.id.dots ,R.id.user_name,R.id.commentsCountTextView})
         public void onViewClicked(View view) {
             switch (view.getId()) {
                 case R.id.image_like:
@@ -293,7 +330,7 @@ public void disableButton(){
                     if (listner != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            listner.onSharePostClick(position-1);
+                            listner.onCommentImageClick(position-1);
                         }
 
                     }
@@ -329,7 +366,7 @@ public void disableButton(){
                     if (listner != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            listner.onShareImageClick(position-1);
+                            listner.onShareTextClick(position-1);
                         }
 
                     }
@@ -352,7 +389,13 @@ public void disableButton(){
                             listner.onUserImageClick(position-1);
                         }
                     }
-
+                case R.id.commentsCountTextView:
+                    if(listner !=null){
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listner.OnCommentTextClick(position-1);
+                        }
+                    }
             }
         }
 
@@ -408,24 +451,25 @@ public void disableButton(){
             userName.setText(post.getUser().getFullName());
             post_id = post.getId() + "";
             postText.setText(post.getMessage());
-           // postTiming.setText(post.getCreatedAt());
-            Log.d(TAG, "bind: "+post.getUser().getImage());
+            // postTiming.setText(post.getCreatedAt());
+            Log.d(TAG, "bind: " + post.getUser().getImage());
 
 
             GetTimeAgo getTimeAgo = new GetTimeAgo();
-            String time=post.getCreatedAt();
+            String time = post.getCreatedAt();
 
-           // long lastTime = Long.parseLong(post.getCreatedAt());
+            // long lastTime = Long.parseLong(post.getCreatedAt());
 
-            String lastSeenTime = getTimeAgo.getTimeAgo(time,context);
+            String lastSeenTime = getTimeAgo.getTimeAgo(time, context);
 
             postTiming.setText(lastSeenTime);
+
 
             if (post.getType().contains("video")) {
 
                 Log.i("video", "video");
 
-                postImage.setVisibility(View.GONE);
+                gridView.setVisibility(View.GONE);
                 player.setVisibility(View.VISIBLE);
                 exoPlayerView_audio.setVisibility(View.GONE);
 
@@ -434,10 +478,9 @@ public void disableButton(){
                     player.setAutoLoop(false);
                     player.setAutoPlay(false);
                     player.setFullScreenButtonVisible(false);
-                   // player.setFullScreen(true);
-                 //   player.setFullScreenButtonVisible(true);
-                }
-                catch (Exception e){
+                    // player.setFullScreen(true);
+                    //   player.setFullScreenButtonVisible(true);
+                } catch (Exception e) {
 
 
                 }
@@ -469,43 +512,110 @@ public void disableButton(){
 
             } else if (post.getType().contains("image")) {
 
-                Log.i("image", "image");
+//                List<FeedPostData> list = post.getMedia();
+//                List<MediaImageResponse> poatList = new ArrayList<>();
 
-                postImage.setVisibility(View.VISIBLE);
+//                for(FeedPostData data : feedPostData){
+//                    poatList.add(data.getMedia());
+//                }
+
+//                List<MediaImageResponse>mediaImageResponses=new ArrayList<>();
+//
+//                feedPostData=new ArrayList<>();
+//                for(FeedPostData feedPostData1:feedPostData){
+//
+//                    //mediaImageResponses.add(feedPostData1.getMedia().get())
+//                    feedPostData.add(feedPostData1);
+//
+//                }
+//
+//
+//                                for (int i = 0; i < feedPostData.size(); i++) {
+//                    String idddd = feedPostData.get(i).getMedia().get(i).getId();
+//                                    Log.d(TAG, "bind: "+idddd);
+//
+//
+//
+//
+//                }
+
+                gridView.setVisibility(View.VISIBLE);
+                // postImage.setVisibility(View.VISIBLE);
                 player.setVisibility(View.GONE);
                 exoPlayerView_audio.setVisibility(View.GONE);
+                //  mediaList=new ArrayList<>();
+                List<MediaImageResponse>mediaList=post.getMedia();
+
+
+//                try {
+//                    for (int i = 0; i < feedPostData.size(); i++) {
+//                        mediaList = feedPostData.get(i).getMedia();
+//
+//                        if (mediaList != null) {
+//                            for (MediaImageResponse media : mediaList) {
+//
+//                                mediaImagename = media.getName();
+//                                Log.d(TAG, "bindimageeee: " + mediaImagename);
+//
+////                                if (media.getName() == null) {
+////
+////                                    mediaList.remove(mediaImagename);
+////                                }
+//
+//                                mediaList.add(media);
+//                            }
+//
+//                        }
+//
+//                    }
+//                } catch (java.util.ConcurrentModificationException exception) {
+//                    // Catch ConcurrentModificationExceptions.
+//                    // Logging.log(exception);
+//                    Log.d(TAG, "bind: " + exception);
+//                } catch (Throwable throwable) {
+//                    // Catch any other Throwables.
+//                    // Logging.log(throwable);
+//                }
+
+
+                MediaGridAdapter adapter = new MediaGridAdapter(context,mediaList);
+
+                gridView.setAdapter(adapter);
+
+                Log.i("image", "image");
+
 //                videorelative.setVisibility(View.INVISIBLE);
 //                audiorelative.setVisibility(View.INVISIBLE);
 
 
-                Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/post/post_image/" + post.getValue())
-                        .thumbnail(0.5f)
-                        .crossFade()
-                        .placeholder(R.drawable.anu)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(postImage);
+//                Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/post/post_image/" + post.getValue())
+//                        .thumbnail(0.5f)
+//                        .crossFade()
+//                        .placeholder(R.drawable.anu)
+//                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                        .into(postImage);
 
 
-                postImage.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                        Intent intent = new Intent(context, OpenImageActivity.class);
-                        intent.putExtra("postimage", post.getValue());
-                        intent.putExtra("posttext", post.getMessage());
-
-                        context.startActivity(intent);
-
-
-                    }
-                });
+//                postImage.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//
+//                        Intent intent = new Intent(context, OpenImageActivity.class);
+//                        intent.putExtra("postimage", post.getValue());
+//                        intent.putExtra("posttext", post.getMessage());
+//
+//                        context.startActivity(intent);
+//
+//
+//                    }
+//                });
 
 
             } else if (post.getType().contains("audio")) {
 
                 Log.i("audio", "audio");
 
-                postImage.setVisibility(View.GONE);
+                gridView.setVisibility(View.GONE);
                 player.setVisibility(View.GONE);
                 exoPlayerView_audio.setVisibility(View.VISIBLE);
 
@@ -551,7 +661,7 @@ public void disableButton(){
 
 
             } else if (post.getType().equalsIgnoreCase("")) {
-                postImage.setVisibility(View.GONE);
+                gridView.setVisibility(View.GONE);
                 player.setVisibility(View.GONE);
                 exoPlayerView_audio.setVisibility(View.GONE);
 
@@ -799,7 +909,9 @@ public void setSelectionDataVideo(){
         myPostViewHolder.bindFormData(uri);
     }
 public void desableButton(){
-myPostViewHolder.post_button.setEnabled(false);
+//myPostViewHolder.post_button.setEnabled(false);
+myPostViewHolder.editTextTextpost.requestFocus();
+myPostViewHolder.editTextTextpost.setCursorVisible(true);
 }
 public void enableButton(){
     myPostViewHolder.post_button.setEnabled(true);
@@ -808,5 +920,92 @@ public void enableButton(){
         this.uri = null;
         myPostViewHolder.resetFormData();
     }
+public void getProfileData(){
+
+        pDialog = new ProgressDialog(context);
+    pDialog.setMessage("Please wait...");
+    pDialog.setCancelable(true);
+
+
+    StringRequest stringRequest1 = new StringRequest(Request.Method.POST, "http://emergingncr.com/mangalcity/api/getprofile",
+            new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    //Toast.makeText(JobDetails.this, response, Toast.LENGTH_LONG).show();
+
+                    Log.i("responsegetProfile", response);
+
+
+                    if (pDialog.isShowing())
+                        pDialog.dismiss();
+                    Log.e("response=", response);
+
+
+                    try {
+
+                        JSONObject jsonObject = new JSONObject(response);
+                        Boolean isSucessget = jsonObject.getBoolean("success");
+
+
+
+
+
+
+                        JSONObject jsonObject1 = jsonObject.getJSONObject("user");
+//                       firstname_get = jsonObject1.getString("first_name");
+//                        Log.d(TAG, "onResponsefirsttt: " + firstname_get);
+//                      lastname_get = jsonObject1.getString("last_name");
+
+                        profileimage_get = jsonObject1.getString("image");
+
+
+                    } catch (Exception e) {
+                    }
+                    setData();
+
+                    // saveUpdatedData();
+
+
+
+                }
+            },
+            new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    //Toast.makeText(JobDetails.this, error.toString(), Toast.LENGTH_LONG).show();
+                    Log.i("errorr", error.toString());
+                }
+            })
+
+    {
+
+
+        @Override
+        public Map<String, String> getParams() {
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("token", userToken);
+
+
+            return params;
+        }
+
+    };
+
+    RequestQueue requestQueue1 = Volley.newRequestQueue(context);
+    requestQueue1.add(stringRequest1);
+
 
 }
+  public void setData(){
+    Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/user/" + profileimage_get)
+            .thumbnail(0.5f)
+            .crossFade()
+            .placeholder(0)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .into(myPostViewHolder.personProfileImage);
+
+
+
+
+
+}}

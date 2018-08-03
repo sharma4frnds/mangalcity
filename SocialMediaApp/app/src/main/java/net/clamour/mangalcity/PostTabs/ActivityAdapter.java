@@ -234,7 +234,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     Glide.with(context).load("http://emergingncr.com/mangalcity/public/images/post/post_image/" + activityData.post.getValue())
                             .thumbnail(0.5f)
                             .crossFade()
-                            .placeholder(R.drawable.anu)
+                            .placeholder(0)
                             .diskCacheStrategy(DiskCacheStrategy.ALL)
                             .into(postImage);
 

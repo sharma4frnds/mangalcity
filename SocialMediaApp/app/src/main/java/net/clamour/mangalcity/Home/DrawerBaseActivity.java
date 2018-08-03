@@ -13,6 +13,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -45,7 +46,7 @@ public class DrawerBaseActivity extends AppCompatActivity {
     SharedPreferences LoginPrefrences;
     Boolean isSucess;
     private static final String TAG = "DrawerBaseActivity";
-
+    DrawerLayout drawerLayout;
 
 
     @Override
@@ -72,7 +73,7 @@ public class DrawerBaseActivity extends AppCompatActivity {
 
         CustomAdapterDrawer CAD = new CustomAdapterDrawer(this, St, imgs);
         lt.setAdapter(CAD);
-        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         android.support.v7.widget.Toolbar toolbar1 = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
         // toolbar1.setTitleTextColor(Color.WHITE);
         //toolbar1.setTitle("My Healthy Host");
@@ -285,4 +286,10 @@ public class DrawerBaseActivity extends AppCompatActivity {
         });
 
 
-    }}
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        drawerLayout.closeDrawer(Gravity.LEFT, false);
+    }
+}

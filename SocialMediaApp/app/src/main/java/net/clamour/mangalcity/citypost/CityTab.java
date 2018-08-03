@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -14,6 +15,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -33,17 +35,23 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -59,11 +67,16 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 
+
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -74,6 +87,7 @@ import net.clamour.mangalcity.Home.OtherUserProfile;
 import net.clamour.mangalcity.Home.PaginationScrollListener;
 import net.clamour.mangalcity.Home.SearchAdapter;
 import net.clamour.mangalcity.MainActivity;
+import net.clamour.mangalcity.PostTabs.CommentAdapter;
 import net.clamour.mangalcity.PostTabs.FeedBackActivity;
 import net.clamour.mangalcity.PostTabs.PostAdapter;
 import net.clamour.mangalcity.PostTabs.SharePostActivity;
@@ -86,7 +100,10 @@ import net.clamour.mangalcity.ResponseModal.PostResponse;
 import net.clamour.mangalcity.countrypost.CountryPost;
 import net.clamour.mangalcity.districtpost.DistrictPost;
 import net.clamour.mangalcity.feed.CityPosts;
+import net.clamour.mangalcity.feed.CommentShowData;
 import net.clamour.mangalcity.feed.FeedPostData;
+import net.clamour.mangalcity.feed.MediaImageResponse;
+import net.clamour.mangalcity.feed.PostCommentResponse;
 import net.clamour.mangalcity.feed.PostFeedResponse;
 import net.clamour.mangalcity.profile.UserProfile;
 import net.clamour.mangalcity.statepost.StatePost;
@@ -130,8 +147,10 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
     ApiInterface apiInterface;
     Boolean isSucess, isSucessPost;
     String fullPath;
+    private List<String> imagePathList;
 
     private static final String TAG = "PostActivity";
+    //   List<String>imageFilePath=new ArrayList<>();
 
 
     List<FeedPostData> postDataList;
@@ -139,7 +158,7 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
     private RecyclerView recyclerView;
 
     String UserToken, profile_image;
-    SharedPreferences LoginPrefrences;
+    SharedPreferences LoginPrefrences,profileprefrences;
     ListView searchList;
     EditText searchDialogEdit;
     SearchAdapter searchAdapter;
@@ -149,6 +168,10 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
     Button btn_cancel,reportspam,delete_sheet,download;
 
     private AsyncTask mMyTask;
+    PopupWindow popWindow;
+    EditText postedit;
+    String postcommet_st;
+    CommentAdapter commentAdapter;
 
 
 
@@ -167,7 +190,7 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
     private String message = "";
     private String audiopath = "";
     JSONArray jsonArray, filtered_array;
-    BottomSheetDialog dialog;
+    public static BottomSheetDialog dialog;
     BottomSheetBehavior bottomSheetBehavior;
 
     LinearLayoutManager linearLayoutManager;
@@ -187,69 +210,43 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
     private CityPosts cityPosts;
     private String user_id;
     List<FeedPostData> nextList;
+    List<CommentShowData>showComment_array;
+    String comment_message,comment_id,user_imagecomment,comment_post_id;
+
     String character, character_dialog;
     Boolean isSucessSearch;
     Boolean isEXist=false;
+    View view;
 
     String url = "http://ichef.bbci.co.uk/onesport/cps/480/cpsprodpb/11136/production/_95324996_defoe_rex.jpg";
     File file;
     String dirPath, fileName;
-
+    private String imagePath1;
+    String imageEncoded;
+    List<String> imagesEncodedList;
+    List<CommentShowData>comment_array;
+    String homeLocationchecked,homelocationnotchecked;
+    List<String>imageFilePath;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.activity_post, container, false);
+        final   View v = inflater.inflate(R.layout.activity_post, container, false);
 
 
 
+        profileprefrences = getActivity().getSharedPreferences("net.clamour.mangalcity.profile.UserProfile", MODE_PRIVATE);
 
         LoginPrefrences = getActivity().getSharedPreferences("net.clamour.mangalcity.profile.LoginActivity", MODE_PRIVATE);
         UserToken = LoginPrefrences.getString("userToken", "");
         Log.i("UserToken", UserToken);
         user_id = LoginPrefrences.getString("user_id", "");
         profile_image = LoginPrefrences.getString("profileImage", "");
+//
+//        if(profileprefrences.contains("")){
+//
+//
+//        }
 
-
-//        search_icon.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-////                Intent intent=new Intent(PostActivity.this,SearchActivity.class);
-////                startActivity(intent);
-//                openSearchPopup();
-//
-//
-//            }
-//        });
-
-
-//        buttonCountry.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//                Intent intent = new Intent(PostActivity.this, CountryPost.class);
-//                startActivity(intent);
-//
-//            }
-//        });
-//
-//        buttonDistrict.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(PostActivity.this, DistrictPost.class);
-//                startActivity(intent);
-//
-//            }
-//        });
-//
-//        buttonState.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(PostActivity.this, StatePost.class);
-//                startActivity(intent);
-//
-//            }
-//        });
         progressBar = (ProgressBar)v.findViewById(R.id.main_progress);
         recyclerView = (RecyclerView)v.findViewById(R.id.recyclerview);
 //        swipeRefreshLayout.setOnRefreshListener(this);
@@ -279,14 +276,20 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
             @Override
             protected void onScrolledToEnd() {
                 Log.e("Position", "Last item reached");
-            }
-
-            @Override
-            protected void loadMoreItems() {
                 Log.d(TAG, "loadMoreItems: Loading");
                 isLoading = true;
                 currentPage += 1;
                 loadNextPage();
+            }
+
+            @Override
+            protected void loadMoreItems() {
+                Log.e("Position", "Last item reached");
+//                Log.d(TAG, "loadMoreItems: Loading");
+//                isLoading = true;
+//                currentPage += 1;
+//                loadNextPage();
+
             }
 
             @Override
@@ -315,48 +318,50 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
 //                loadFirstPage();
 //            }
 //        });
-postAdapter.setOnPostClickListner(new PostAdapter.OnPostClickListner() {
-    @Override
-    public void onPostButtonClick(String msz) {
-        //message = editTextTextpost.getText().toString();
-        Log.d(TAG, "input : " + imagepath + "\n" + videopath + "\n" + message + "\n" + audiopath);
-        if(msz.isEmpty()&&imagepath.isEmpty()&&videopath.isEmpty()&&audiopath.isEmpty()){
-            postAdapter.desableButton();
-        }
-        else {
-            postAdapter.enableButton();
-            pjUploadMultiFile(msz, imagepath, videopath, audiopath);}
-    }
+        postAdapter.setOnPostClickListner(new PostAdapter.OnPostClickListner() {
+            @Override
+            public void onPostButtonClick(String msz) {
+                //message = editTextTextpost.getText().toString();
+                Log.d(TAG, "input : " + imagepath + "\n" + videopath + "\n" + message + "\n" + audiopath);
+//        if(msz.isEmpty()&&imagepath.isEmpty()&&videopath.isEmpty()&&audiopath.isEmpty()){
+//            postAdapter.desableButton();
+//        }
+//        else {
+                // postAdapter.enableButton();
+                 uploadImage();
+                pjUploadMultiFile(msz, imagesEncodedList, videopath, audiopath);}
+            //}
 
-    @Override
-    public void onImageButttonClick() {
-        Intent openGalleryIntent = new Intent(Intent.ACTION_PICK);
-        openGalleryIntent.setType("image/*");
-        startActivityForResult(openGalleryIntent, REQUEST_IMAGE_CODE);
-    }
+            @Override
+            public void onImageButttonClick() {
+                Intent openGalleryIntent = new Intent(Intent.ACTION_PICK);
+                openGalleryIntent.setType("image/*");
+                openGalleryIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                startActivityForResult(openGalleryIntent, REQUEST_IMAGE_CODE);
+            }
 
-    @Override
-    public void onVideoButttonClick() {
-        Intent openGalleryIntent = new Intent(Intent.ACTION_PICK);
-        openGalleryIntent.setType("video/*");
-        startActivityForResult(openGalleryIntent, REQUEST_VIDEO_CODE);
-    }
+            @Override
+            public void onVideoButttonClick() {
+                Intent openGalleryIntent = new Intent(Intent.ACTION_PICK);
+                openGalleryIntent.setType("video/*");
+                startActivityForResult(openGalleryIntent, REQUEST_VIDEO_CODE);
+            }
 
-    @Override
-    public void onAudioButtonClick() {
-        Intent intent = new Intent();
-        intent.setType("audio/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Audio"), REQUEST_AUDIO_CODE);
-    }
+            @Override
+            public void onAudioButtonClick() {
+                Intent intent = new Intent();
+                intent.setType("audio/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select Audio"), REQUEST_AUDIO_CODE);
+            }
 
-    @Override
-    public void OnCrossImageClick() {
-        imagepath="";
-        videopath="";
-        audiopath="";
-    }
-});
+            @Override
+            public void OnCrossImageClick() {
+                imagepath="";
+                videopath="";
+                audiopath="";
+            }
+        });
 
 
 
@@ -420,7 +425,15 @@ postAdapter.setOnPostClickListner(new PostAdapter.OnPostClickListner() {
             }
 
 
+            @Override
+            public void OnCommentTextClick(int position) {
 
+
+
+
+
+                showCommentPopup(v,position);
+            }
 
             @Override
             public void onDislikeClick(final int position) {
@@ -571,6 +584,66 @@ postAdapter.setOnPostClickListner(new PostAdapter.OnPostClickListner() {
             }
 
             @Override
+            public void onShareTextClick(int position) {
+                Log.d(TAG, "onShareImageClick: " + position);
+
+                Intent intent = new Intent(getActivity(), SharePostActivity.class);
+
+                if (postDataList.get(position).getType().contains("image")) {
+
+                    intent.putExtra("image", postDataList.get(position).getValue());
+                    intent.putExtra("token", UserToken);
+                    intent.putExtra("post_id", String.valueOf(postDataList.get(position).getId()));
+                    intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
+                    intent.putExtra("text", postDataList.get(position).getMessage());
+
+                } else if (postDataList.get(position).getType().contains("video")) {
+                    intent.putExtra("video", postDataList.get(position).getValue());
+                    intent.putExtra("token", UserToken);
+                    intent.putExtra("post_id", String.valueOf(postDataList.get(position).getId()));
+                    intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
+                    intent.putExtra("text", postDataList.get(position).getMessage());
+
+
+                } else if (postDataList.get(position).getType().contains("audio")) {
+                    intent.putExtra("audio", postDataList.get(position).getValue());
+                    intent.putExtra("token", UserToken);
+                    intent.putExtra("post_id", String.valueOf(postDataList.get(position).getId()));
+                    intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
+                    intent.putExtra("text", postDataList.get(position).getMessage());
+
+
+                } else if (postDataList.get(position).getType().contains("")) {
+
+                    intent.putExtra("text", postDataList.get(position).getMessage());
+                    intent.putExtra("token", UserToken);
+                    intent.putExtra("post_id", String.valueOf(postDataList.get(position).getId()));
+                    intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
+
+                }
+                startActivity(intent);
+
+            }
+
+            @Override
+            public void onCommentImageClick(int position) {
+
+                List<CommentShowData> commentList = postDataList.get(position).getComment();
+                comment_array= new ArrayList<>();
+
+                if(commentList!=null){
+                    for(CommentShowData commentShowData :commentList){
+                        comment_message=commentShowData.getMessage();
+                        Log.d(TAG, "commentListtttt: "+comment_message);
+                        comment_id=commentShowData.getId();
+                        comment_post_id=commentShowData.getPost_id();
+                        comment_array.add(commentShowData);
+                    }
+                }
+                showCommentPopup(v,position);
+            }
+
+            @Override
             public void onUserImageClick(int position) {
 
 //                if(user_id.equals(nextList.get(position).getUser().getId())){
@@ -599,11 +672,13 @@ postAdapter.setOnPostClickListner(new PostAdapter.OnPostClickListner() {
 
 
             }
+
         });
 
 
 
-return v;
+
+        return v;
     }
 
     public void openDialog(final int position) {
@@ -661,6 +736,7 @@ return v;
 
                                 postAdapter.remove(postDataList.get(position));
                                 postDataList.remove(position);
+                                dialog.hide();
                                 //postAdapter.notifyDataSetChanged();
 
                                 final AlertDialog alertDialog = new AlertDialog.Builder(
@@ -743,39 +819,100 @@ return v;
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CODE && resultCode == Activity.RESULT_OK) {
-            uri = data.getData();
+        try{
+            if (requestCode == REQUEST_IMAGE_CODE && resultCode == Activity.RESULT_OK) {
+                uri = data.getData();
 
-            if (EasyPermissions.hasPermissions(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                final String imagepathSelected = getRealPathFromURIPath(uri, getActivity());
-                File imageFile = new File(imagepathSelected);
-                double maxFileSize = 2.00;
-                double selectedImageFileSize = getFileSizeMegaBytes(imageFile);
-                Log.d(TAG, "selectedImageFileSize " + selectedImageFileSize);
-                Log.d(TAG, "maxFileSize " + maxFileSize);
-                if (selectedImageFileSize < maxFileSize) {
-                    imagepath = imagepathSelected;
-                    postAdapter.setImageUri(uri);
-                    postAdapter.setSelectionData();
+                if (EasyPermissions.hasPermissions(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
-                //    postAdapter.cleanData(imagepath);
+                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                    imagesEncodedList = new ArrayList<String>();
+                    if (data.getData() != null) {
 
+                        Uri mImageUri = data.getData();
+
+                        // Get the cursor
+                        Cursor cursor = getActivity().getContentResolver().query(mImageUri,
+                                filePathColumn, null, null, null);
+                        // Move to first row
+                        cursor.moveToFirst();
+
+                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                        imageEncoded = cursor.getString(columnIndex);
+                        cursor.close();
+
+                    } else {
+                        if (data.getClipData() != null) {
+                            ClipData mClipData = data.getClipData();
+                            ArrayList<Uri> mArrayUri = new ArrayList<Uri>();
+                            for (int i = 0; i < mClipData.getItemCount(); i++) {
+
+                                ClipData.Item item = mClipData.getItemAt(i);
+                                Uri uri = item.getUri();
+                                mArrayUri.add(uri);
+                                // Get the cursor
+                                Cursor cursor = getActivity().getContentResolver().query(uri, filePathColumn, null, null, null);
+                                // Move to first row
+                                cursor.moveToFirst();
+
+                                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                                imageEncoded = cursor.getString(columnIndex);
+                                imagesEncodedList.add(imageEncoded);
+                                cursor.close();
+
+//                            File file = new File(uri.getPath());
+//                            String[] filePath = file.getPath().split(":");
+//                            String image_id = filePath[filePath.length - 1];
+
+                            }
+                            Log.v("LOG_TAG", "Selected Images" + mArrayUri.size());
+                            Log.v(TAG, "getImageFilePath: "+imagesEncodedList.get(0)+" "+imagesEncodedList.get(1)+"   "+mArrayUri.size()+"    "+mArrayUri.get(0));
+                            Toast.makeText(getActivity(),imagesEncodedList.get(0)+"   "+mArrayUri.size()+"    "+mArrayUri.get(0),Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 } else {
-                    Toast.makeText(getActivity(), "File Size is greater than 2MB ", Toast.LENGTH_LONG).show();
-                }
-
-                Log.d(TAG, "Filename " + imagepath);
-
-            } else {
-                EasyPermissions.requestPermissions(this, getString(R.string.read_file), READ_REQUEST_CODE, Manifest.permission.READ_EXTERNAL_STORAGE);
-            }
+                    Toast.makeText(getActivity(), "You haven't picked Image",
+                            Toast.LENGTH_LONG).show();
+                }}
         }
+        catch(Exception e){
+            Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_LONG)
+                    .show();
+        }
+//        super.onActivityResult(requestCode, resultCode, data);
+
+
+
+//                final String imagepathSelected = getRealPathFromURIPath(uri, getActivity());
+//                File imageFile = new File(imagepathSelected);
+//                double maxFileSize = 5.00;
+//                double selectedImageFileSize = getFileSizeMegaBytes(imageFile);
+//                Log.d(TAG, "selectedImageFileSize " + selectedImageFileSize);
+//                Log.d(TAG, "maxFileSize " + maxFileSize);
+//                if (selectedImageFileSize < maxFileSize) {
+//                    imagepath = imagepathSelected;
+//                    postAdapter.setImageUri(uri);
+//                    postAdapter.setSelectionData();
+//
+//                //    postAdapter.cleanData(imagepath);
+
+
+//                else {
+//                    Toast.makeText(getActivity(), "File Size is greater than 5MB ", Toast.LENGTH_LONG).show();
+//                }
+
+        Log.d(TAG, "Filename " + imagepath);
+
+//             else {
+//                EasyPermissions.requestPermissions(this, getString(R.string.read_file), READ_REQUEST_CODE, Manifest.permission.READ_EXTERNAL_STORAGE);
+//            }
+
         if (requestCode == REQUEST_VIDEO_CODE && resultCode == Activity.RESULT_OK) {
             uri = data.getData();
             if (EasyPermissions.hasPermissions(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)) {
                 String videopathSelected = getPath(uri, getActivity());
                 File videoFile = new File(videopathSelected);
-                double maxFileSize = 2.00;
+                double maxFileSize = 25.00;
                 double selectedVideoFileSize = getFileSizeMegaBytes(videoFile);
                 if (selectedVideoFileSize < maxFileSize) {
                     videopath = videopathSelected;
@@ -797,7 +934,7 @@ return v;
 
 
                 } else {
-                    Toast.makeText(getActivity(), "File Size is greater than 2MB ", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "File Size is greater than 25MB ", Toast.LENGTH_LONG).show();
                 }
                 Log.d(TAG, "Filename " + videopath);
 
@@ -863,29 +1000,39 @@ return v;
     }
 
 
-    private void pjUploadMultiFile(String message, final String imageFilePath, String videoFilePath, String audioFilePath) {
+    private void pjUploadMultiFile(String message,List<String> imageFilePath, String videoFilePath, String audioFilePath) {
 
         pDialog = new ProgressDialog(getActivity());
         pDialog.setMessage("Please wait...");
         pDialog.setCancelable(true);
         pDialog.show();
-
-
+     //   imageFilePath=new ArrayList<>();
         File videoFile = new File(videoFilePath);
-        File imageFile = new File(imageFilePath);
         File audioFile = new File(audioFilePath);
+
+        // Log.d(TAG, "pjUploadMultiFilenameeeeimagepathhh: "+imageFilePath.size());
+
+
 
 
         MediaType mediaType = MediaType.parse("multipart/form-data");
 
         MultipartBody.Builder builder = new MultipartBody.Builder();
         builder.setType(MultipartBody.FORM);
-        Log.d(TAG, "pjUploadMultiFile: " + imageFile.getName() + "  " + videoFile.getName() + " " + audioFile.getName());
+        Log.d(TAG, "pjUploadMultiFile: "  + "  " + videoFile.getName() + " " + audioFile.getName());
         builder.addFormDataPart("token", UserToken);
         builder.addFormDataPart("message", message);
-        if (!imageFilePath.equalsIgnoreCase("")) {
-            builder.addFormDataPart("image", imageFile.getName(), RequestBody.create(mediaType, imageFile));
-        }
+        if (!imageFilePath.isEmpty()) {
+
+            for (int i = 0; i <imageFilePath.size() ; i++) {
+                File imageFile = new File(imageFilePath.get(i));
+                Log.d(TAG, "pjUploadMultiFilenameeee: "+imageFile.getName());
+                // RequestBody requestImage = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+                builder.addFormDataPart("image[]", imageFile.getName(), RequestBody.create(mediaType, imageFile));
+                // builder.addFormDataPart("event_images[]", file.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), file));
+                //  }
+            }}
+        Log.d(TAG, "pjUploadMultiFilenameeeeimagepathhhafterloop: "+imageFilePath.size());
 
         if (!videoFilePath.equalsIgnoreCase("")) {
             builder.addFormDataPart("video", videoFile.getName(), RequestBody.create(mediaType, videoFile));
@@ -901,25 +1048,27 @@ return v;
                 pDialog.cancel();
                 // imagepreview.setImageResource(0);
                 //  postAdapter.restForm();
-try {
-    PostResponse postResponse = response.body();
-    isSucessPost = postResponse.getSuccess();
-    Log.i("sucesspost", isSucessPost.toString());
+                try {
+                    PostResponse postResponse = response.body();
+                    isSucessPost = postResponse.getSuccess();
+                    Log.i("sucesspost", isSucessPost.toString());
 
-}
-catch (Exception e){
+                }
+                catch (Exception e){
 
 
-}
+                }
 
 
                 if (isSucessPost == true) {
-
+                    pDialog.dismiss();
                     imagepath = "";
+                    //imageFilePath.clear();
                     //  editTextTextpost.getText().clear();
                     audiopath = "";
                     videopath = "";
                     postAdapter.restForm();
+                    //    postAdapter.clear();
 
                     loadFirstPage();
                     //  selected_file.setVisibility(View.INVISIBLE);
@@ -979,6 +1128,9 @@ catch (Exception e){
         initFeedApi().enqueue(new Callback<PostFeedResponse>() {
             @Override
             public void onResponse(Call<PostFeedResponse> call, Response<PostFeedResponse> response) {
+
+
+
                 progressBar.setVisibility(View.GONE);
                 //swipeRefreshLayout.setRefreshing(false);
                 cityPosts = new CityPosts();
@@ -994,6 +1146,9 @@ catch (Exception e){
                 }
                 postDataList.addAll(nextList);
                 postAdapter.refreshAdapter(postDataList);
+
+
+
 
 
                 if (currentPage <= TOTAL_PAGES) postAdapter.addLoadingFooter();
@@ -1052,6 +1207,8 @@ catch (Exception e){
 
     private CityPosts fetchCityPost(Response<PostFeedResponse> response) {
         PostFeedResponse body = response.body();
+
+
         return body.getCityPosts();
     }
 
@@ -1395,127 +1552,144 @@ catch (Exception e){
 
             }
         });
-
-        delete_sheet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-                android.support.v7.app.AlertDialog.Builder alertDialogBuilder = new android.support.v7.app.AlertDialog.Builder(
-                        getActivity());
-
-                // set title
-                alertDialogBuilder.setTitle("                    Alert!");
-
-                // set dialog message
-                alertDialogBuilder
-                        .setMessage("      Are you surely want to delete")
-                        .setCancelable(false)
-                        .setPositiveButton("YES",new DialogInterface.OnClickListener() {
-                            public void onClick(final DialogInterface dialog, int id) {
-
-                                pDialog = new ProgressDialog(getActivity());
-                                pDialog.setMessage("Please wait...");
-                                pDialog.setCancelable(true);
-                                pDialog.show();
-
-                                apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-
-                                Call<PostDeleteResponse> call = apiInterface.deltePost(UserToken, String.valueOf(postDataList.get(position).getId()));
-
-                                call.enqueue(new Callback<PostDeleteResponse>() {
-                                    @Override
-                                    public void onResponse(Call<PostDeleteResponse> call, Response<PostDeleteResponse> response) {
-                                        pDialog.cancel();
-
-                                        PostDeleteResponse postDeleteResponse = response.body();
-                                        isSucess = postDeleteResponse.getSuccess();
-                                        Log.d(TAG, "onResponse: " + isSucess);
-                                        //  notifyItemRangeChanged(position, event_list.size());
+        if (user_id.equalsIgnoreCase(String.valueOf(postDataList.get(position).getUserId()))) {
+            delete_sheet.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
 
-                                        if (isSucess == true) {
+                    android.support.v7.app.AlertDialog.Builder alertDialogBuilder = new android.support.v7.app.AlertDialog.Builder(
+                            getActivity());
 
-                                            postAdapter.remove(postDataList.get(position));
-                                            postDataList.remove(position);
-                                            dialog.dismiss();
-                                            //   alertDialog.dismiss();
-                                            //dialog.dismiss();
+                    // set title
+                    alertDialogBuilder.setTitle("                    Alert!");
 
-                                            Toast.makeText(getActivity(),"Deleted Successfully",Toast.LENGTH_SHORT).show();
-                                        } else if (isSucess == false) {
+                    // set dialog message
+                    alertDialogBuilder
+                            .setMessage("      Are you surely want to delete")
+                            .setCancelable(true)
+                            .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                public void onClick(final DialogInterface dialog, int id) {
 
-                                            Toast.makeText(getActivity(),"Please Try Again",Toast.LENGTH_SHORT).show();
-                                            // dialog.dismiss();
+                                    pDialog = new ProgressDialog(getActivity());
+                                    pDialog.setMessage("Please wait...");
+                                    pDialog.setCancelable(true);
+                                    pDialog.show();
+
+                                    apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+
+                                    Call<PostDeleteResponse> call = apiInterface.deltePost(UserToken, String.valueOf(postDataList.get(position).getId()));
+
+                                    call.enqueue(new Callback<PostDeleteResponse>() {
+                                        @Override
+                                        public void onResponse(Call<PostDeleteResponse> call, Response<PostDeleteResponse> response) {
+                                            pDialog.cancel();
+
+                                            PostDeleteResponse postDeleteResponse = response.body();
+                                            isSucess = postDeleteResponse.getSuccess();
+                                            Log.d(TAG, "onResponse: " + isSucess);
+                                            //  notifyItemRangeChanged(position, event_list.size());
+
+
+                                            if (isSucess == true) {
+
+                                                postAdapter.remove(postDataList.get(position));
+                                                postDataList.remove(position);
+                                                ;
+                                                //   alertDialog.dismiss();
+                                                //dialog.dismiss();
+
+                                                Toast.makeText(getActivity(), "Deleted Successfully", Toast.LENGTH_SHORT).show();
+                                            } else if (isSucess == false) {
+
+                                                Toast.makeText(getActivity(), "Please Try Again", Toast.LENGTH_SHORT).show();
+                                                // dialog.dismiss();
+
+                                            }
+
 
                                         }
 
-
-                                    }
-
-                                    @Override
-                                    public void onFailure(Call<PostDeleteResponse> call, Throwable t) {
+                                        @Override
+                                        public void onFailure(Call<PostDeleteResponse> call, Throwable t) {
 
 
-                                    }
-                                });
+                                        }
+                                    });
 
 
+                                }
+                            })
+                            .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    // if this button is clicked, just close
+                                    // the dialog box and do nothing
+                                    dialog.cancel();
 
 
+                                }
+                            });
+
+                    // create alert dialog
+                    android.support.v7.app.AlertDialog alertDialog = alertDialogBuilder.create();
+
+                    // show it
+                    alertDialog.show();
 
 
-                            }
-                        })
-                        .setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // if this button is clicked, just close
-                                // the dialog box and do nothing
-                                dialog.cancel();
+                }
+            });
+        }
+        else {
 
-                            }
-                        });
-
-                // create alert dialog
-                android.support.v7.app.AlertDialog alertDialog = alertDialogBuilder.create();
-
-                // show it
-                alertDialog.show();
+            delete_sheet.setVisibility(View.GONE);
+        }
 
 
-
-            }
-        });
 
         // alertDialog.show();
 
 
+        Log.d(TAG, "init_modal_bottomsheet: "+"insideeeeeeeeeeee");
         download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //Toast.makeText(PostActivity.this, "DownLoad Complete", Toast.LENGTH_SHORT).show();
 
-                if (EasyPermissions.hasPermissions(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+                if (postDataList.get(position).getType().equalsIgnoreCase("image") && EasyPermissions.hasPermissions(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                     Glide.with(getActivity())
-                            .load("http://emergingncr.com/mangalcity/public/images/post/post_image/"+postDataList.get(position).getValue())
+                            .load("http://emergingncr.com/mangalcity/public/images/post/post_image/" + postDataList.get(position).getValue())
                             .asBitmap()
-                            .into(new SimpleTarget<Bitmap>(100,100) {
+                            .into(new SimpleTarget<Bitmap>(100, 100) {
                                 @Override
-                                public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation)  {
+                                public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
                                     saveImage(resource);
                                 }
                             });
                 }
-                else {
-                    EasyPermissions.requestPermissions(getActivity(), getString(R.string.read_file), READ_REQUEST_CODE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//             else if (postDataList.get(position).getType().equalsIgnoreCase("video") && EasyPermissions.hasPermissions(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+//
+//                 // ProgressBack PB = new ProgressBack();
+//                 //   PB.execute("");
+//
+//
+//             }
 
-                }
+//                else if {
+//                    EasyPermissions.requestPermissions(getActivity(), getString(R.string.read_file), READ_REQUEST_CODE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//
+//                }
 
 
             }
         });
 
+        //}
 
+// else {
+//     //download.setVisibility(View.GONE);
+// }
 
 
         btn_cancel.setOnClickListener(new View.OnClickListener() {
@@ -1527,9 +1701,14 @@ catch (Exception e){
     }
 
     private String saveImage(Bitmap image) {
+        pDialog = new ProgressDialog(getActivity());
+        pDialog.setMessage("Please wait...");
+        pDialog.setCancelable(true);
+        pDialog.show();
+
         String savedImagePath = null;
 
-        String imageFileName = "JPEG_" + "FILE_NAME" + ".jpg";
+        String imageFileName = "JPEG_" + System.currentTimeMillis()+ ".jpg";
         File storageDir = new File(            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
                 + "Mangal");
         boolean success = true;
@@ -1537,6 +1716,7 @@ catch (Exception e){
             success = storageDir.mkdirs();
         }
         if (success) {
+            pDialog.cancel();
             File imageFile = new File(storageDir, imageFileName);
             savedImagePath = imageFile.getAbsolutePath();
             try {
@@ -1549,7 +1729,8 @@ catch (Exception e){
 
             // Add the image to the system gallery
             galleryAddPic(savedImagePath);
-            Toast.makeText(getActivity(), "IMAGE SAVED", Toast.LENGTH_LONG).show();
+            dialog.hide();
+            Toast.makeText(getActivity(), "IMAGE SAVED TO GALLERY", Toast.LENGTH_LONG).show();
         }
         return savedImagePath;
     }
@@ -1561,6 +1742,256 @@ catch (Exception e){
         mediaScanIntent.setData(contentUri);
         getActivity().sendBroadcast(mediaScanIntent);
     }
+
+    public void showCommentPopup(View v,final int position){
+
+
+        List<CommentShowData> commentList = postDataList.get(position).getComment();
+        comment_array= new ArrayList<>();
+
+        if(commentList!=null){
+            for(CommentShowData commentShowData :commentList){
+                comment_message=commentShowData.getMessage();
+                Log.d(TAG, "commentListtttt: "+comment_message);
+
+                comment_id=commentShowData.getId();
+                comment_post_id=commentShowData.getPost_id();
+                comment_array.add(commentShowData);
+            }
+        }
+
+        LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View subView = layoutInflater.inflate(R.layout.commentpopup, null);
+        // inflate the custom popup layout
+        // find the ListView in the popup layout
+        final ListView listView = (ListView)subView.findViewById(R.id.commentsListView);
+        LinearLayout headerView = (LinearLayout)subView.findViewById(R.id.headerLayout);
+        postedit=(EditText)subView.findViewById(R.id.writeComment);
+        ImageView postButton=(ImageView) subView.findViewById(R.id.post_button);
+        commentAdapter=new CommentAdapter(getActivity(),comment_array);
+        listView.setAdapter(commentAdapter);
+        commentAdapter.notifyDataSetChanged();
+        postButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pDialog = new ProgressDialog(getActivity());
+                pDialog.setMessage("Please wait...");
+                pDialog.setCancelable(true);
+                pDialog.show();
+                postcommet_st=postedit.getText().toString();
+                Log.d(TAG, "postComment: "+postcommet_st);
+                //Log.d(TAG, "postComment: "+comment_array.get(position).getPost_id());
+
+
+                apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+                Call<PostCommentResponse> call = apiInterface.postComment(UserToken,String.valueOf(postDataList.get(position).getId()),postcommet_st,"0");
+
+                call.enqueue(new Callback<PostCommentResponse>() {
+                    @Override
+                    public void onResponse(Call<PostCommentResponse> call, Response<PostCommentResponse> response) {
+                        pDialog.cancel();
+                        try {
+                            PostCommentResponse   postCommentResponse = response.body();
+                            isSucess = postCommentResponse.getSuccess();
+                            Log.d(TAG, "comment_array onResponse: " + postCommentResponse.toString());
+                            CommentShowData csd = new CommentShowData();
+                            if (postCommentResponse !=null) {
+                                postedit.setText("");
+                                csd.setImage(postCommentResponse.getUser_image());
+                                csd.setMessage(postCommentResponse.getComment());
+                                csd.setPost_id(postCommentResponse.getComment_id());
+                                csd.setFirst_name(postCommentResponse.getName());
+                                csd.setParent_id(postCommentResponse.getPost_id());
+                                comment_array.add(csd);
+                                commentAdapter.notifyDataSetChanged();
+                            }
+                        }
+                        catch (Exception e){
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<PostCommentResponse> call, Throwable t) {
+
+                    }
+                });
+            }
+        });
+
+
+        // get device size
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        final Point size = new Point();
+        display.getSize(size);
+//        mDeviceHeight = size.y;
+        DisplayMetrics displayMetrics = getActivity().getResources().getDisplayMetrics();
+        int width = displayMetrics.widthPixels;
+        int height = displayMetrics.heightPixels;
+
+
+        // set height depends on the device size
+        popWindow = new PopupWindow(subView, width,height-50, true );
+        // set a background drawable with rounders corners
+        popWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.screen_background));
+
+        popWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+        popWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+
+        popWindow.setAnimationStyle(R.style.PopupAnimation);
+
+        // show the popup at bottom of the screen and set some margin at bottom ie,
+        popWindow.showAtLocation(v, Gravity.BOTTOM, 0,100);
+
+    }
+
+
+
+
+
+    private void downloadFile(String fileURL, String fileName) {
+        try {
+            String rootDir = Environment.getExternalStorageDirectory()
+                    + File.separator + "Video";
+            File rootFile = new File(rootDir);
+            rootFile.mkdir();
+            URL url = new URL(fileURL);
+            HttpURLConnection c = (HttpURLConnection) url.openConnection();
+            c.setRequestMethod("GET");
+            c.setDoOutput(true);
+            c.connect();
+            FileOutputStream f = new FileOutputStream(new File(rootFile,
+                    fileName));
+            InputStream in = c.getInputStream();
+            byte[] buffer = new byte[1024];
+            int len1 = 0;
+            while ((len1 = in.read(buffer)) > 0) {
+                f.write(buffer, 0, len1);
+            }
+            f.close();
+        } catch (IOException e) {
+            Log.d("Error....", e.toString());
+        }}
+    public void setCommentList(ListView listView){
+
+
+    }
+
+    public void getImageFilePath(Uri uri) {
+
+        File file = new File(uri.getPath());
+        String[] filePath = file.getPath().split(":");
+        String image_id = filePath[filePath.length - 1];
+
+        Cursor cursor = getActivity().getContentResolver().query(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Images.Media._ID + " = ? ", new String[]{image_id}, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            // cursor.moveToFirst();
+            imagePath1 = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            imagePathList.add(imagePath1);
+            cursor.close();
+
+
+        }
+    }
+
+    public void uploadImage(){
+        pDialog = new ProgressDialog(getActivity());
+        pDialog.setMessage("Please wait...");
+        pDialog.setCancelable(true);
+        pDialog.show();
+     //   imageFilePath=new ArrayList<>();
+
+      //  File videoFile = new File(videoFilePath);
+        //File imageFile = new File(imageFilePath);
+       // File audioFile = new File(audioFilePath);
+
+//        for (int i = 0; i <imageFilePath.size() ; i++) {
+//            File imageFile = new File(imageFilePath.get(i));
+//           // RequestBody requestImage = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+//           // builder.addFormDataPart("event_images[]", file.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), file));
+//        }
+
+
+        MediaType mediaType = MediaType.parse("multipart/form-data");
+
+        MultipartBody.Builder builder = new MultipartBody.Builder();
+        builder.setType(MultipartBody.FORM);
+        // Log.d(TAG, "pjUploadMultiFile: " + imageFile.getName() + "  " + videoFile.getName() + " " + audioFile.getName());
+        builder.addFormDataPart("token", UserToken);
+        builder.addFormDataPart("message", "abc");
+        // if (!imageFilePath.isEmpty()) {
+        //  builder.addFormDataPart("image", imageFile.getName(), RequestBody.create(mediaType, imageFile));
+
+        for (int i = 0; i <imagesEncodedList.size() ; i++) {
+            File imageFile = new File(imagesEncodedList.get(i));
+            Log.d(TAG, "pjUploadMultiFilenameeee: "+imageFile.getName());
+            // RequestBody requestImage = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+            builder.addFormDataPart("image[]", imageFile.getName(), RequestBody.create(mediaType, imageFile));
+            // builder.addFormDataPart("event_images[]", file.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), file));
+            //  }
+        }
+
+//        if (!videoFilePath.equalsIgnoreCase("")) {
+//            builder.addFormDataPart("video", videoFile.getName(), RequestBody.create(mediaType, videoFile));
+//        }
+//        if (!audioFilePath.equalsIgnoreCase("")) {
+//            builder.addFormDataPart("audio", audioFile.getName(), RequestBody.create(mediaType, audioFile));
+//        }
+        MultipartBody requestBody = builder.build();
+        Call<PostResponse> fileUpload = apiInterface.postData("multipart/form-data; boundary=" + requestBody.boundary(), requestBody);
+        fileUpload.enqueue(new Callback<PostResponse>() {
+            @Override
+            public void onResponse(Call<PostResponse> call, Response<PostResponse> response) {
+                pDialog.cancel();
+                // imagepreview.setImageResource(0);
+                //  postAdapter.restForm();
+                try {
+                    PostResponse postResponse = response.body();
+                    isSucessPost = postResponse.getSuccess();
+                    Log.i("sucesspostupload", isSucessPost.toString());
+
+                }
+                catch (Exception e){
+
+
+                }
+
+
+                if (isSucessPost == true) {
+
+                    imagepath = "";
+                    //  editTextTextpost.getText().clear();
+                    audiopath = "";
+                    videopath = "";
+                    postAdapter.restForm();
+                    //    postAdapter.clear();
+
+                    loadFirstPage();
+                    //  selected_file.setVisibility(View.INVISIBLE);
+
+                    //   postAdapter.notifyDataSetChanged();
+                    //  loadFirstPage();
+                    //  loadNextPage();
+
+                    Toast.makeText(getActivity(), "Successfully Posted", Toast.LENGTH_SHORT).show();
+                } else if (isSucessPost == false) {
+
+                    Toast.makeText(getActivity(), "Please enter some  Text,video,Image or Audio", Toast.LENGTH_SHORT).show();
+
+
+                }
+
+            }
+
+
+            @Override
+            public void onFailure(Call<PostResponse> call, Throwable t) {
+                Log.d(TAG, "Succcess " + t.getMessage());
+            }
+        });
+
+    }
+
 
 
 }

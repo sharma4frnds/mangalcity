@@ -11,17 +11,22 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.design.widget.AppBarLayout
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/appBarLayout">
-
-            <include layout="@layout/app_bar_layout"
-                android:id="@+id/main_page_toolbar" />
-
-
-
-        </android.support.design.widget.AppBarLayout>
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/appBlue"
+          >
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/editText_serach"
+                android:hint="Search Here..."
+                android:background="@null"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                 />
+        </android.support.v7.widget.Toolbar>
 
 
         <RelativeLayout
@@ -43,21 +48,21 @@
                     android:id="@+id/listview"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="100dp"
+
                     >
 
                 </ListView>
 
-                <EditText
-                    android:id="@+id/editText_serach"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="20dp"
-                    android:ems="10"
-                    android:inputType="textPersonName"
-                     />
+                <!--<EditText-->
+                    <!--android:id="@+id/editText_serach"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_alignParentTop="true"-->
+                    <!--android:layout_centerHorizontal="true"-->
+                    <!--android:layout_marginTop="20dp"-->
+                    <!--android:ems="10"-->
+                    <!--android:inputType="textPersonName"-->
+                     <!--/>-->
 
 
             </RelativeLayout>

@@ -20,7 +20,7 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="38dp"
             android:adjustViewBounds="true"
-            app:srcCompat="@drawable/anu" />
+             />
 
         <TextView
             android:id="@+id/user_name"

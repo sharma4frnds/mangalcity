@@ -52,6 +52,11 @@
                         android:layout_alignParentTop="true"
                         android:background="@color/lightBlue">
 
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            />
+
                         <ImageView
                             android:id="@+id/coverImage"
                             android:layout_width="fill_parent"
@@ -96,14 +101,33 @@
 
                         <EditText
                             android:id="@+id/editText_name"
-                            android:layout_width="wrap_content"
+                            android:layout_width="50dp"
                             android:layout_height="wrap_content"
                             android:layout_alignBottom="@+id/person_profile_image"
-                            android:layout_alignParentEnd="true"
-                            android:layout_marginBottom="36dp"
+                            android:layout_alignStart="@+id/person_profile_image"
+                            android:layout_marginBottom="33dp"
+                            android:layout_marginStart="109dp"
                             android:background="@null"
                             android:cursorVisible="false"
+                            android:ems="10"
+                            android:fontFamily="@font/pt_sans_web_regular"
+                            android:inputType="textPersonName"
+                            android:text="Name"
+                            android:textColor="@color/black"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
 
+                        <EditText
+                            android:id="@+id/editText_last"
+                            android:layout_width="80dp"
+                            android:layout_height="wrap_content"
+
+                            android:layout_alignBaseline="@+id/editText_name"
+                            android:layout_alignBottom="@+id/editText_name"
+
+                            android:layout_toEndOf="@+id/editText_name"
+                            android:background="@null"
+                            android:cursorVisible="false"
                             android:ems="10"
                             android:fontFamily="@font/pt_sans_web_regular"
                             android:inputType="textPersonName"
@@ -153,7 +177,7 @@
                     <RelativeLayout
                         android:id="@+id/r1"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="80dp"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:background="@color/lightBlue"
@@ -166,7 +190,7 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentLeft="true"
                             android:layout_alignParentStart="true"
-                            android:layout_centerVertical="true"
+                           android:layout_marginTop="15dp"
                             android:layout_marginLeft="22dp"
                             android:layout_marginStart="22dp"
                             android:background="@null"
@@ -182,9 +206,24 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/ic_create_black_24dp"
-                            android:layout_centerVertical="true"
+                           android:layout_marginTop="15dp"
                             android:layout_marginRight="20dp"
                             android:layout_alignParentRight="true"/>
+
+                        <CheckBox
+                            android:id="@+id/checkbox_mobile"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Hide mobile no on profile"
+                            android:layout_below="@+id/mobile_pro"
+                            android:onClick="itemClickedmobile"
+                            android:textSize="10sp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginLeft="17dp"
+
+
+                            />
+
 
                     </RelativeLayout>
 
@@ -349,7 +388,7 @@
                     <RelativeLayout
                         android:id="@+id/r7"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="80dp"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:layout_below="@+id/r6"
@@ -361,14 +400,14 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentLeft="true"
                             android:layout_alignParentStart="true"
-                            android:layout_centerVertical="true"
+                            android:layout_marginTop="15dp"
                             android:layout_marginLeft="22dp"
                             android:layout_marginStart="22dp"
                             android:background="@null"
                             android:focusableInTouchMode="false"
                             android:contextClickable="false"
                             android:fontFamily="@font/pt_sans_web_regular"
-                            android:hint="dob"
+                            android:hint="DOB"
                             android:clickable="false"
                             android:textSize="15sp" />
                         <ImageView
@@ -376,9 +415,24 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/ic_create_black_24dp"
-                            android:layout_centerVertical="true"
+                            android:layout_marginTop="15dp"
                             android:layout_marginRight="20dp"
                             android:layout_alignParentRight="true"/>
+
+                        <CheckBox
+                            android:id="@+id/checkbox_dob"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/dob_pro"
+                            android:layout_marginLeft="17dp"
+                            android:layout_marginTop="10dp"
+                            android:onClick="itemClickeddob"
+                            android:text="Hide DOB no on profile"
+                            android:textSize="10sp"
+
+
+                            />
+
 
 
                     </RelativeLayout>
