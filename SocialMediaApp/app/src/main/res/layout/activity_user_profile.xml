@@ -77,27 +77,25 @@
                             android:background="@drawable/user" />
 
 
-                        <!--<ImageView-->
-                            <!--android:id="@+id/camera_cover"-->
-                            <!--android:layout_width="wrap_content"-->
-                            <!--android:layout_height="wrap_content"-->
-                            <!--android:layout_alignParentEnd="true"-->
-                            <!--android:layout_alignParentRight="true"-->
-                            <!--android:layout_below="@+id/user_name"-->
-                            <!--android:layout_marginEnd="19dp"-->
-                            <!--android:layout_marginRight="19dp"-->
-                            <!--android:layout_marginTop="20dp"-->
-                            <!--android:background="@drawable/camera" />-->
+                        <ImageView
+                            android:id="@+id/camera_cover"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_below="@+id/user_name"
+                            android:layout_marginEnd="19dp"
+                            android:layout_marginRight="19dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@drawable/camera_large" />
 
-                        <!--<ImageView-->
-                            <!--android:id="@+id/profile_camera"-->
-                            <!--android:layout_width="wrap_content"-->
-                            <!--android:layout_height="wrap_content"-->
-                            <!--android:layout_alignBottom="@+id/person_profile_image"-->
-                            <!--android:layout_alignEnd="@+id/person_profile_image"-->
-                            <!--android:layout_alignRight="@+id/person_profile_image"-->
-                            <!--android:layout_marginBottom="2dp"-->
-                            <!--app:srcCompat="@drawable/ic_create_black_24dp" />-->
+                        <ImageView
+                            android:id="@+id/profile_camera"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_alignBottom="@+id/person_profile_image"
+                            android:layout_alignEnd="@+id/person_profile_image"
+                            app:srcCompat="@drawable/camera_large" />
 
                         <EditText
                             android:id="@+id/editText_name"
@@ -113,7 +111,7 @@
                             android:fontFamily="@font/pt_sans_web_regular"
                             android:inputType="textPersonName"
                             android:text="Name"
-                            android:textColor="@color/black"
+                            android:textColor="@color/white"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -132,7 +130,7 @@
                             android:fontFamily="@font/pt_sans_web_regular"
                             android:inputType="textPersonName"
                             android:text="Name"
-                            android:textColor="@color/black"
+                            android:textColor="@color/white"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 

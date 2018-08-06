@@ -381,7 +381,7 @@ public class CustomAdapterDrawer extends ArrayAdapter<String> {
                         JSONObject jsonObject = new JSONObject(response);
                         Boolean isSucessget = jsonObject.getBoolean("success");
 
-                        getProfileData();
+
 
 
 
@@ -396,7 +396,7 @@ public class CustomAdapterDrawer extends ArrayAdapter<String> {
 
                     } catch (Exception e) {
                     }
-                    //setData();
+                    setData();
 
                     // saveUpdatedData();
 

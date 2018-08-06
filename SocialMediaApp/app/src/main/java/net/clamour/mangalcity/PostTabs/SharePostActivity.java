@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.RelativeLayout;
@@ -44,14 +45,20 @@ import net.clamour.mangalcity.Home.CommonBaseActivity;
 import net.clamour.mangalcity.Home.PostActivity;
 import net.clamour.mangalcity.R;
 import net.clamour.mangalcity.ResponseModal.PostShareresponse;
+import net.clamour.mangalcity.citypost.CityTab;
+import net.clamour.mangalcity.feed.MediaImageResponse;
 import net.clamour.mangalcity.webservice.ApiClient;
 import net.clamour.mangalcity.webservice.ApiInterface;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import uk.co.jakelee.vidsta.VidstaPlayer;
 
 public class SharePostActivity extends AppCompatActivity {
 
@@ -60,8 +67,8 @@ public class SharePostActivity extends AppCompatActivity {
 
     @BindView(R.id.post_text)
     EditText postText;
-    @BindView(R.id.post_image)
-    ImageView postImage;
+   // @BindView(R.id.post_image)
+   // ImageView postImage;
   //  @BindView(R.id.post_video)
   //  VideoView postVideo;
     @BindView(R.id.share_post)
@@ -79,6 +86,10 @@ public class SharePostActivity extends AppCompatActivity {
     RelativeLayout relativeComplete;
     @BindView(R.id.audiorelative)
     RelativeLayout audiorelative;
+    @BindView(R.id.videoplayer)
+    VidstaPlayer player;
+    @BindView(R.id.gridView)
+    GridView gridView;
 
     RelativeLayout videorelative;
 
@@ -86,7 +97,9 @@ public class SharePostActivity extends AppCompatActivity {
     SimpleExoPlayer exoPlayer;
 
     SharedPreferences LoginPrefrences;
+
     String pro;
+    public static List<MediaImageResponse>mediaImageResponses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +121,15 @@ public class SharePostActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+       // mediaImageResponses=new ArrayList<>();
+
+      //  mediaImageResponses= CityTab.mediaList;
+      //  Log.d(TAG, "onCreate: "+mediaImageResponses.size());
+
+     //   ((List<MediaImageResponse>) getIntent().getExtras().getSerializable("list"));
+
+      mediaImageResponses= (List<MediaImageResponse>)getIntent().getExtras().getSerializable("list");
+
         LoginPrefrences = this.getSharedPreferences("net.clamour.mangalcity.profile.LoginActivity", MODE_PRIVATE);
         pro = LoginPrefrences.getString("profileImage", "");
         Log.i("profile", pro);
@@ -125,7 +147,7 @@ public class SharePostActivity extends AppCompatActivity {
         post_audio_st=intent.getStringExtra("audio");
         Log.d(TAG, "onCreate: "+post_audio_st);
 
-        exoPlayerView = (SimpleExoPlayerView) findViewById(R.id.exo_player_view);
+      //  exoPlayerView = (SimpleExoPlayerView) findViewById(R.id.exo_player_view);
         videorelative = (RelativeLayout) findViewById(R.id.videorelative);
         exoPlayerView_audio = (SimpleExoPlayerView) findViewById(R.id.exo_player_view_audio);
 
@@ -152,46 +174,41 @@ public class SharePostActivity extends AppCompatActivity {
 
         } else if (post_image_st == null && post_text_st != null) {
 
-            postImage.setVisibility(View.INVISIBLE);
+            gridView.setVisibility(View.GONE);
             videorelative.setVisibility(View.VISIBLE);
+            audiorelative.setVisibility(View.GONE);
             postText.setText(post_text_st);
 
-            try {
 
-                String videoUrl = "http://emergingncr.com/mangalcity/public/images/post/post_video/" + post_video_st;
-                BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-                TrackSelector trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory(bandwidthMeter));
-                exoPlayer = ExoPlayerFactory.newSimpleInstance(SharePostActivity.this, trackSelector);
 
-                Uri videoURI = Uri.parse(videoUrl);
+                try {
+                    player.setVideoSource("http://emergingncr.com/mangalcity/public/images/post/post_video/" + post_video_st);
+                    player.setAutoLoop(false);
+                    player.setAutoPlay(false);
+                    player.setFullScreenButtonVisible(false);
+                    // player.setFullScreen(true);
+                    //   player.setFullScreenButtonVisible(true);
+                } catch (Exception e) {
 
-                DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory("exoplayer_video");
-                ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-                MediaSource mediaSource = new ExtractorMediaSource(videoURI, dataSourceFactory, extractorsFactory, null, null);
 
-                exoPlayerView.setPlayer(exoPlayer);
-                exoPlayer.prepare(mediaSource);
-                exoPlayer.setPlayWhenReady(true);
-            } catch (Exception e) {
-                Log.e("SharePost", " exoplayer error " + e.toString());
-            }
+                }
 
         } else if (post_video_st == null && post_text_st != null) {
 
-            postImage.setVisibility(View.VISIBLE);
+          //  postImage.setVisibility(View.VISIBLE);
             videorelative.setVisibility(View.INVISIBLE);
             postText.setText(post_text_st);
-
-            Glide.with(SharePostActivity.this).load("http://emergingncr.com/mangalcity/public/images/post/post_image/" + post_image_st)
-                    .thumbnail(0.5f)
-                    .crossFade()
-                    .placeholder(0)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(postImage);
+//
+//            Glide.with(SharePostActivity.this).load("http://emergingncr.com/mangalcity/public/images/post/post_image/" + post_image_st)
+//                    .thumbnail(0.5f)
+//                    .crossFade()
+//                    .placeholder(0)
+//                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                    .into(postImage);
 
         } else if (post_image_st == null && post_video_st == null && post_text_st != null) {
 
-            postImage.setVisibility(View.INVISIBLE);
+            gridView.setVisibility(View.GONE);
             videorelative.setVisibility(View.INVISIBLE);
             audiorelative.setVisibility(View.VISIBLE);
             postText.setText(post_text_st);
@@ -264,6 +281,10 @@ public class SharePostActivity extends AppCompatActivity {
 
 
                     }
+
+                    else if(isSucess=false){
+                        Toast.makeText(getApplicationContext(),"please enter some text",Toast.LENGTH_SHORT).show();
+                    }
                 }
                 catch (Exception e){
 
@@ -287,6 +308,7 @@ public class SharePostActivity extends AppCompatActivity {
                 // Respond to the action bar's Up/Home button
               Intent intent=new Intent(SharePostActivity.this,CommonBaseActivity.class);
                 startActivity(intent);
+                finish();
 
 
                 // adapter.notifyDataSetChanged();
@@ -307,6 +329,7 @@ public class SharePostActivity extends AppCompatActivity {
         super.onBackPressed();
         Intent intent=new Intent(SharePostActivity.this,CommonBaseActivity.class);
         startActivity(intent);
+        finish();
     }
 }
 

@@ -1,10 +1,14 @@
 package net.clamour.mangalcity.feed;
 
+import com.google.gson.annotations.SerializedName;
+
+import java.io.Serializable;
+
 /**
  * Created by clamour_5 on 8/2/2018.
  */
 
-public class MediaImageResponse {
+public class MediaImageResponse implements Serializable {
     private String id;
     private String post_id;
     private String name;

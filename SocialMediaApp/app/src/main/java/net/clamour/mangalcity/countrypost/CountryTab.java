@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import net.clamour.mangalcity.PostTabs.CommentAdapter;
 import net.clamour.mangalcity.R;
 
 
@@ -105,7 +106,9 @@ import net.clamour.mangalcity.ResponseModal.PostResponse;
 import net.clamour.mangalcity.countrypost.CountryPost;
 import net.clamour.mangalcity.districtpost.DistrictPost;
 import net.clamour.mangalcity.feed.CityPosts;
+import net.clamour.mangalcity.feed.CommentShowData;
 import net.clamour.mangalcity.feed.FeedPostData;
+import net.clamour.mangalcity.feed.PostCommentResponse;
 import net.clamour.mangalcity.feed.PostFeedResponse;
 import net.clamour.mangalcity.profile.UserProfile;
 import net.clamour.mangalcity.statepost.StatePost;
@@ -176,6 +179,11 @@ public class CountryTab extends android.support.v4.app.Fragment {
     BottomSheetDialog dialog;
 
     LinearLayoutManager linearLayoutManager;
+    List<CommentShowData>comment_array;
+    EditText postedit;
+    String postcommet_st;
+    CommentAdapter commentAdapter;
+    String comment_message,comment_id,user_imagecomment,comment_post_id,user_comment_firstname,user_comment_lastname,comment_time;
 
     RecyclerView rv;
     ProgressBar progressBar;
@@ -389,7 +397,7 @@ public class CountryTab extends android.support.v4.app.Fragment {
 
             @Override
             public void OnCommentTextClick(int position) {
-
+                showCommentPopup(v,position);
             }
 
             @Override
@@ -687,8 +695,8 @@ return v;
 
         dialog = new BottomSheetDialog(getActivity());
         dialog.setContentView(modalbottomsheet);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.setCancelable(true);
         dialog.show();
 
 
@@ -758,8 +766,8 @@ return v;
 
                                         if (isSucess == true) {
 
-                                            nextList.remove(position);
-                                            postAdapter.notifyItemRemoved(position);
+                                            postAdapter.remove(postDataList.get(position));
+                                            postDataList.remove(position);
                                             dialog.dismiss();
                                             //   alertDialog.dismiss();
                                             //dialog.dismiss();
@@ -884,14 +892,87 @@ return v;
         getActivity().sendBroadcast(mediaScanIntent);
     }
 
-    public void showCommentPopup(View v,int position){
+    public void showCommentPopup(View v,final int position){
+
+
+        List<CommentShowData> commentList = postDataList.get(position).getComment();
+        comment_array= new ArrayList<>();
+
+        if(commentList!=null){
+            for(CommentShowData commentShowData :commentList){
+                comment_message=commentShowData.getMessage();
+                Log.d(TAG, "commentListtttt: "+comment_message);
+                comment_id=commentShowData.getId();
+                comment_post_id=commentShowData.getPost_id();
+                user_imagecomment=commentShowData.getImage();
+                user_comment_firstname=commentShowData.getFirst_name();
+                user_comment_lastname=commentShowData.getLast_name();
+                comment_time=commentShowData.getCreated_at();
+                comment_array.add(commentShowData);
+            }
+        }
 
         LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View subView = layoutInflater.inflate(R.layout.commentpopup, null);
         // inflate the custom popup layout
         // find the ListView in the popup layout
-        ListView listView = (ListView)subView.findViewById(R.id.commentsListView);
+        final ListView listView = (ListView)subView.findViewById(R.id.commentsListView);
         LinearLayout headerView = (LinearLayout)subView.findViewById(R.id.headerLayout);
+        postedit=(EditText)subView.findViewById(R.id.writeComment);
+        ImageView postButton=(ImageView) subView.findViewById(R.id.post_button);
+        commentAdapter=new CommentAdapter(getActivity(),comment_array);
+        listView.setAdapter(commentAdapter);
+        commentAdapter.notifyDataSetChanged();
+        postButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pDialog = new ProgressDialog(getActivity());
+                pDialog.setMessage("Please wait...");
+                pDialog.setCancelable(true);
+                pDialog.show();
+                postcommet_st=postedit.getText().toString();
+                Log.d(TAG, "postComment: "+postcommet_st);
+                //Log.d(TAG, "postComment: "+comment_array.get(position).getPost_id());
+
+
+                apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+                Call<PostCommentResponse> call = apiInterface.postComment(UserToken,String.valueOf(postDataList.get(position).getId()),postcommet_st,"0");
+
+                call.enqueue(new Callback<PostCommentResponse>() {
+                    @Override
+                    public void onResponse(Call<PostCommentResponse> call, Response<PostCommentResponse> response) {
+                        pDialog.cancel();
+                        try {
+                            PostCommentResponse   postCommentResponse = response.body();
+                            isSucess = postCommentResponse.getSuccess();
+                            Log.d(TAG, "comment_array onResponse: " + postCommentResponse.toString());
+                            CommentShowData csd = new CommentShowData();
+                            if (postCommentResponse !=null) {
+                                postedit.setText("");
+                                csd.setImage(postCommentResponse.getUser_image());
+                                csd.setMessage(postCommentResponse.getComment());
+                                csd.setPost_id(postCommentResponse.getComment_id());
+                                csd.setFirst_name(postCommentResponse.getName());
+                                csd.setParent_id(postCommentResponse.getPost_id());
+                                csd.setCreated_at(postCommentResponse.getDate());
+                                comment_array.add(csd);
+                                commentAdapter.notifyDataSetChanged();
+                            }
+                        }
+                        catch (Exception e){
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<PostCommentResponse> call, Throwable t) {
+
+                    }
+                });
+            }
+        });
+
+
         // get device size
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         final Point size = new Point();
@@ -900,53 +981,6 @@ return v;
         DisplayMetrics displayMetrics = getActivity().getResources().getDisplayMetrics();
         int width = displayMetrics.widthPixels;
         int height = displayMetrics.heightPixels;
-
-
-        // fill the data to the list items
-//    List<PostFeedResponse>olddd=new ArrayList<>();
-//    ArrayList<CommentShowData>showw=new ArrayList<>();
-//    for (PostFeedResponse postFeedResponse:olddd){
-//
-//        olddd.add(postFeedResponse.getCityPosts().getData)
-//    }
-//    List<FeedPostData>arrayList=nextList;
-//ArrayList<CommentShowData>commentShowData=new ArrayList<>();
-//CommentShowData commentShowData1=new CommentShowData();
-////        for (int index = 0; nextList.size()>=0; index++) {
-//   // ArrayList<FeedPostData>feedPostData_array=
-//for(FeedPostData feedPostData:arrayList){
-//
-//    commentShowData.add(feedPostData.getComment().)
-//
-//            String comm=nextList.get(position).getMessage();
-//    Log.d(TAG, "showCommentPopup: "+comm);
-//            Toast.makeText(getActivity(),comm,Toast.LENGTH_SHORT).show();
-//
-//
-//            commentShowData.add(commentShowData1);
-//    }
-//
-//    CommentAdapter commentAdapter=new CommentAdapter(getActivity(),commentShowData);
-//    listView.setAdapter(commentAdapter);
-
-
-//    PostFeedResponse postFeedResponse1=new PostFeedResponse();
-//    List<PostFeedResponse> comment_data = new ArrayList<>();
-//    comment_data=postFeedResponse1.getCityPosts().getData();
-//
-//
-//    for (PostFeedResponse postFeedResponse:comment_data){
-//
-//
-//            String commenttt=postFeedResponse.getCityPosts().getData();}
-//
-//
-////    for (int index = 0; index < 10; index++) {
-////        contactsList.add("I am @ index " + index + " today " + Calendar.getInstance().getTime().toString());
-////    }
-//
-//        listView.setAdapter(new ArrayAdapter<String>(MainActivity.this,
-//                R.layout.popup_list_item, android.R.id.text1, contactsList));
 
 
         // set height depends on the device size

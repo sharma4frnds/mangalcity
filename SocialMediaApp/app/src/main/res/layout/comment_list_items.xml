@@ -9,7 +9,7 @@
         android:layout_height="110dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/user_image"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_alignParentStart="true"
@@ -18,33 +18,59 @@
             android:background="@drawable/user" />
 
         <RelativeLayout
+            android:id="@+id/relativeLayout8"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="60dp"
             android:layout_marginLeft="80dp"
-            android:layout_marginTop="20dp"
             android:layout_marginRight="20dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/borderlayout_comment">
 
             <TextView
                 android:id="@+id/user_name_comment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:layout_alignStart="@+id/comment"
-                android:layout_marginTop="14dp"
-                android:text="commenthere" />
+                android:layout_marginStart="22dp"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/pt_sans_web_bold"
+                android:text="commenthere"
+                android:textColor="@color/black" />
 
             <TextView
                 android:id="@+id/comment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
+                android:layout_alignStart="@+id/user_name_comment"
                 android:layout_below="@+id/user_name_comment"
-                android:layout_marginStart="104dp"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="5dp"
                 android:text="dfjkgkljdlk" />
 
         </RelativeLayout>
+
+        <TextView
+            android:id="@+id/comment_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/relativeLayout8"
+            android:layout_below="@+id/user_image"
+            android:layout_marginStart="13dp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/pt_sans_web_regular"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/comment_time"
+            android:layout_alignBottom="@+id/comment_time"
+            android:layout_marginStart="41dp"
+            android:layout_toEndOf="@+id/comment_time"
+            android:fontFamily="@font/pt_sans_web_bold"
+            android:text="Reply"
+            android:textColor="@color/appBlue" />
 
     </RelativeLayout>
 

@@ -41,42 +41,44 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="790dp">
+                    android:layout_height="810dp">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="180dp"
+                        android:layout_height="230dp"
                         android:id="@+id/relative_image"
                         >
 
                         <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="130dp"
-                            android:background="#ededed">
+                            android:layout_height="180dp"
+                            android:id="@+id/relativeLayout10">
                             <ImageView
                                 android:id="@+id/coverImage_other"
                                 android:layout_width="fill_parent"
                                 android:layout_height="wrap_content"
-                                android:adjustViewBounds="true"
-                                android:scaleType="centerCrop"/>
+                                />
 
                         </RelativeLayout>
 
-                        <de.hdodenhof.circleimageview.CircleImageView
-                            android:id="@+id/person_profile_image"
-                            android:layout_width="100dp"
-                            android:layout_height="100dp"
+                        <TextView
+                            android:id="@+id/user_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+
                             android:layout_alignParentBottom="true"
                             android:layout_centerHorizontal="true"
-                            android:background="@drawable/user" />
-
-
+                            android:fontFamily="@font/pt_sans_web_bold"
+                            android:text="User Name"
+                            android:textColor="@color/black"
+                            android:textSize="15sp" />
                     </RelativeLayout>
 
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="600dp"
                         android:layout_below="@+id/relative_image"
+
                         android:id="@+id/relativeLayout5">
 
 
@@ -86,7 +88,7 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentTop="true"
                             android:layout_alignStart="@+id/view6"
-                            android:layout_marginTop="64dp"
+                            android:layout_marginTop="24dp"
                             android:fontFamily="@font/pt_sans_web_regular"
                             android:text="Email"
                             android:textColor="@color/appBlue" />
@@ -108,12 +110,12 @@
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="0dp"
+                            android:layout_height="1dp"
                             android:layout_marginTop="5dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
                             android:layout_below="@+id/email"
-                            android:background="@color/white"
+                            android:background="@color/appBlue"
                             android:id="@+id/view6" />
 
                         <TextView
@@ -140,12 +142,12 @@
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="0dp"
+                            android:layout_height="1dp"
                             android:layout_marginTop="5dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
                             android:layout_below="@+id/mobile"
-                            android:background="@color/white"
+                            android:background="@color/appBlue"
                             android:id="@+id/view7" />
 
                         <TextView
@@ -175,12 +177,12 @@
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="0dp"
+                            android:layout_height="1dp"
                             android:layout_marginTop="5dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
                             android:layout_below="@+id/dob"
-                            android:background="@color/white"
+                            android:background="@color/appBlue"
                             android:id="@+id/view8" />
 
                         <TextView
@@ -210,12 +212,12 @@
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="0dp"
+                            android:layout_height="1dp"
                             android:layout_marginTop="5dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
                             android:layout_below="@+id/gender"
-                            android:background="@color/white"
+                            android:background="@color/appBlue"
                             android:id="@+id/view9" />
 
                         <TextView
@@ -245,12 +247,12 @@
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="0dp"
+                            android:layout_height="1dp"
                             android:layout_marginTop="5dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
                             android:layout_below="@+id/marital"
-                            android:background="@color/white"
+                            android:background="@color/appBlue"
                             android:id="@+id/view10" />
 
 
@@ -281,12 +283,12 @@
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="0dp"
+                            android:layout_height="1dp"
                             android:layout_marginTop="5dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
                             android:layout_below="@+id/profession"
-                            android:background="@color/white"
+                            android:background="@color/appBlue"
                             android:id="@+id/view11" />
 
                         <TextView
@@ -316,34 +318,25 @@
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="0dp"
+                            android:layout_height="1dp"
                             android:layout_marginTop="5dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
                             android:layout_below="@+id/address"
-                            android:background="@color/white"
+                            android:background="@color/appBlue"
                             android:id="@+id/view13" />
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="0dp"
+                            android:layout_height="1dp"
                             android:layout_marginTop="5dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
                             android:layout_below="@+id/email"
-                            android:background="@color/white"
+                            android:background="@color/appBlue"
                             android:id="@+id/view12" />
 
-                        <TextView
-                            android:id="@+id/user_name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerHorizontal="true"
-                            android:layout_marginBottom="56dp"
-                            android:fontFamily="@font/pt_sans_web_bold"
-                            android:text="User Name"
-                            android:textColor="@color/black"
-                            android:textSize="20sp" />
+
 
 
                         <!--<TextView-->
@@ -383,15 +376,14 @@
 
                     </RelativeLayout>
 
-
-
-
-
-
-
-
-
-
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/person_profile_image"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_above="@+id/relativeLayout5"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginBottom="18dp"
+                        android:background="@drawable/user" />
 
 
                 </RelativeLayout>

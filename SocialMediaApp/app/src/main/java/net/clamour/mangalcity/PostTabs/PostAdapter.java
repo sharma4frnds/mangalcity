@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
@@ -581,6 +582,26 @@ public void disableButton(){
                 MediaGridAdapter adapter = new MediaGridAdapter(context,mediaList);
 
                 gridView.setAdapter(adapter);
+
+                gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        // Get the GridView selected/clicked item text
+                        String selectedItem = parent.getItemAtPosition(position).toString();
+
+                        //   Toast.makeText(context,selectedItem,Toast.LENGTH_SHORT).show();
+
+                        // Display the selected/clicked item text and position on TextView
+                        Intent intent = new Intent(context, OpenImageActivity.class);
+                        intent.putExtra("postimage", post.getMedia().get(position).getName());
+                        intent.putExtra("posttext", post.getMessage());
+
+                        context.startActivity(intent);
+
+
+                    }
+                });
+
 
                 Log.i("image", "image");
 

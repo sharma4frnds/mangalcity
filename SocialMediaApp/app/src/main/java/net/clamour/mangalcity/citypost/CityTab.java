@@ -68,10 +68,12 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 
 
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -148,8 +150,9 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
     Boolean isSucess, isSucessPost;
     String fullPath;
     private List<String> imagePathList;
+    PostCommentResponse   postCommentResponse;
 
-    private static final String TAG = "PostActivity";
+    private static final String TAG = "CityTab";
     //   List<String>imageFilePath=new ArrayList<>();
 
 
@@ -190,10 +193,11 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
     private String message = "";
     private String audiopath = "";
     JSONArray jsonArray, filtered_array;
-    public static BottomSheetDialog dialog;
+    BottomSheetDialog bottomSheetDialog;
     BottomSheetBehavior bottomSheetBehavior;
 
     LinearLayoutManager linearLayoutManager;
+    public static List<MediaImageResponse>mediaList;
 
     RecyclerView rv;
     ProgressBar progressBar;
@@ -211,7 +215,7 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
     private String user_id;
     List<FeedPostData> nextList;
     List<CommentShowData>showComment_array;
-    String comment_message,comment_id,user_imagecomment,comment_post_id;
+    String comment_message,comment_id,user_imagecomment,comment_post_id,user_comment_firstname,user_comment_lastname,comment_time;
 
     String character, character_dialog;
     Boolean isSucessSearch;
@@ -241,6 +245,7 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
         Log.i("UserToken", UserToken);
         user_id = LoginPrefrences.getString("user_id", "");
         profile_image = LoginPrefrences.getString("profileImage", "");
+        imagesEncodedList=new ArrayList<>();
 //
 //        if(profileprefrences.contains("")){
 //
@@ -323,14 +328,14 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
             public void onPostButtonClick(String msz) {
                 //message = editTextTextpost.getText().toString();
                 Log.d(TAG, "input : " + imagepath + "\n" + videopath + "\n" + message + "\n" + audiopath);
-//        if(msz.isEmpty()&&imagepath.isEmpty()&&videopath.isEmpty()&&audiopath.isEmpty()){
-//            postAdapter.desableButton();
-//        }
-//        else {
-                // postAdapter.enableButton();
-                 uploadImage();
-                pjUploadMultiFile(msz, imagesEncodedList, videopath, audiopath);}
-            //}
+                if(msz.isEmpty()&&imagesEncodedList.isEmpty()&&videopath.isEmpty()&&audiopath.isEmpty()){
+                    postAdapter.desableButton();
+                }
+                else {
+                    postAdapter.enableButton();
+                    //uploadImage();
+                    pjUploadMultiFile(msz, imagesEncodedList, videopath, audiopath);}
+            }
 
             @Override
             public void onImageButttonClick() {
@@ -427,9 +432,6 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
 
             @Override
             public void OnCommentTextClick(int position) {
-
-
-
 
 
                 showCommentPopup(v,position);
@@ -536,6 +538,9 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
             public void onShareImageClick(int position) {
                 Log.d(TAG, "onShareImageClick: " + position);
 
+                //   mediaList=postDataList.get(position).getMedia();
+                //  Log.d(TAG, "onShareImageClick: "+mediaList.size());
+
                 Intent intent = new Intent(getActivity(), SharePostActivity.class);
 
                 if (postDataList.get(position).getType().contains("image")) {
@@ -545,6 +550,16 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
                     intent.putExtra("post_id", String.valueOf(postDataList.get(position).getId()));
                     intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
                     intent.putExtra("text", postDataList.get(position).getMessage());
+
+                    List<MediaImageResponse> mediaList = postDataList.get(position).getMedia();
+                    intent.putExtra("media", (Serializable) mediaList);
+//                    Bundle bundle  = new Bundle();
+//                    bundle.putSerializable("list", (Serializable) postDataList.get(position).getMedia());
+//                    intent.putExtras(bundle);
+
+
+
+
 
                 } else if (postDataList.get(position).getType().contains("video")) {
                     intent.putExtra("video", postDataList.get(position).getValue());
@@ -597,6 +612,9 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
                     intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
                     intent.putExtra("text", postDataList.get(position).getMessage());
 
+                    List<MediaImageResponse> mediaList = postDataList.get(position).getMedia();
+                    intent.putExtra("media", (Serializable) mediaList);
+
                 } else if (postDataList.get(position).getType().contains("video")) {
                     intent.putExtra("video", postDataList.get(position).getValue());
                     intent.putExtra("token", UserToken);
@@ -628,18 +646,18 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
             @Override
             public void onCommentImageClick(int position) {
 
-                List<CommentShowData> commentList = postDataList.get(position).getComment();
-                comment_array= new ArrayList<>();
-
-                if(commentList!=null){
-                    for(CommentShowData commentShowData :commentList){
-                        comment_message=commentShowData.getMessage();
-                        Log.d(TAG, "commentListtttt: "+comment_message);
-                        comment_id=commentShowData.getId();
-                        comment_post_id=commentShowData.getPost_id();
-                        comment_array.add(commentShowData);
-                    }
-                }
+//                List<CommentShowData> commentList = postDataList.get(position).getComment();
+//                comment_array= new ArrayList<>();
+//
+//                if(commentList!=null){
+//                    for(CommentShowData commentShowData :commentList){
+//                        comment_message=commentShowData.getMessage();
+//                        Log.d(TAG, "commentListtttt: "+comment_message);
+//                        comment_id=commentShowData.getId();
+//                        comment_post_id=commentShowData.getPost_id();
+//                        comment_array.add(commentShowData);
+//                    }
+//                }
                 showCommentPopup(v,position);
             }
 
@@ -736,7 +754,7 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
 
                                 postAdapter.remove(postDataList.get(position));
                                 postDataList.remove(position);
-                                dialog.hide();
+                                bottomSheetDialog.hide();
                                 //postAdapter.notifyDataSetChanged();
 
                                 final AlertDialog alertDialog = new AlertDialog.Builder(
@@ -867,7 +885,7 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
                             }
                             Log.v("LOG_TAG", "Selected Images" + mArrayUri.size());
                             Log.v(TAG, "getImageFilePath: "+imagesEncodedList.get(0)+" "+imagesEncodedList.get(1)+"   "+mArrayUri.size()+"    "+mArrayUri.get(0));
-                            Toast.makeText(getActivity(),imagesEncodedList.get(0)+"   "+mArrayUri.size()+"    "+mArrayUri.get(0),Toast.LENGTH_SHORT).show();
+                            //   Toast.makeText(getActivity(),imagesEncodedList.get(0)+"   "+mArrayUri.size()+"    "+mArrayUri.get(0),Toast.LENGTH_SHORT).show();
                         }
                     }
                 } else {
@@ -1006,7 +1024,7 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
         pDialog.setMessage("Please wait...");
         pDialog.setCancelable(true);
         pDialog.show();
-     //   imageFilePath=new ArrayList<>();
+          // imageFilePath=new ArrayList<>();
         File videoFile = new File(videoFilePath);
         File audioFile = new File(audioFilePath);
 
@@ -1022,7 +1040,7 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
         Log.d(TAG, "pjUploadMultiFile: "  + "  " + videoFile.getName() + " " + audioFile.getName());
         builder.addFormDataPart("token", UserToken);
         builder.addFormDataPart("message", message);
-        if (!imageFilePath.isEmpty()) {
+        if (imageFilePath.size()>=0) {
 
             for (int i = 0; i <imageFilePath.size() ; i++) {
                 File imageFile = new File(imageFilePath.get(i));
@@ -1030,8 +1048,8 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
                 // RequestBody requestImage = RequestBody.create(MediaType.parse("multipart/form-data"), file);
                 builder.addFormDataPart("image[]", imageFile.getName(), RequestBody.create(mediaType, imageFile));
                 // builder.addFormDataPart("event_images[]", file.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), file));
-                //  }
-            }}
+                 }
+            }
         Log.d(TAG, "pjUploadMultiFilenameeeeimagepathhhafterloop: "+imageFilePath.size());
 
         if (!videoFilePath.equalsIgnoreCase("")) {
@@ -1520,11 +1538,11 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
         View modalbottomsheet = getLayoutInflater().inflate(R.layout.modal_bottomsheet, null);
 
 
-        dialog = new BottomSheetDialog(getActivity());
-        dialog.setContentView(modalbottomsheet);
-        dialog.setCanceledOnTouchOutside(true);
-        dialog.setCancelable(true);
-        dialog.show();
+        bottomSheetDialog = new BottomSheetDialog(getActivity());
+        bottomSheetDialog.setContentView(modalbottomsheet);
+        bottomSheetDialog.setCanceledOnTouchOutside(true);
+        bottomSheetDialog.setCancelable(true);
+        bottomSheetDialog.show();
 
 
         btn_cancel = (Button) modalbottomsheet.findViewById(R.id.btn_cancel);
@@ -1547,7 +1565,7 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
                 Intent intent = new Intent(getActivity(), FeedBackActivity.class);
                 intent.putExtra("postid",String.valueOf(postDataList.get(position).getId()));
                 startActivity(intent);
-                dialog.hide();
+                bottomSheetDialog.hide();
 
 
             }
@@ -1575,6 +1593,7 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
                                     pDialog.setMessage("Please wait...");
                                     pDialog.setCancelable(true);
                                     pDialog.show();
+                                    //dialog.dismiss();
 
                                     apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
 
@@ -1584,7 +1603,7 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
                                         @Override
                                         public void onResponse(Call<PostDeleteResponse> call, Response<PostDeleteResponse> response) {
                                             pDialog.cancel();
-
+                                            dialog.dismiss();
                                             PostDeleteResponse postDeleteResponse = response.body();
                                             isSucess = postDeleteResponse.getSuccess();
                                             Log.d(TAG, "onResponse: " + isSucess);
@@ -1595,6 +1614,7 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
 
                                                 postAdapter.remove(postDataList.get(position));
                                                 postDataList.remove(position);
+                                                bottomSheetDialog.dismiss();
                                                 ;
                                                 //   alertDialog.dismiss();
                                                 //dialog.dismiss();
@@ -1603,7 +1623,7 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
                                             } else if (isSucess == false) {
 
                                                 Toast.makeText(getActivity(), "Please Try Again", Toast.LENGTH_SHORT).show();
-                                                // dialog.dismiss();
+                                                bottomSheetDialog.dismiss();
 
                                             }
 
@@ -1624,9 +1644,8 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
                                 public void onClick(DialogInterface dialog, int id) {
                                     // if this button is clicked, just close
                                     // the dialog box and do nothing
-                                    dialog.cancel();
-
-
+                                    bottomSheetDialog.dismiss();
+                                    bottomSheetDialog.hide();
                                 }
                             });
 
@@ -1651,6 +1670,8 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
 
 
         Log.d(TAG, "init_modal_bottomsheet: "+"insideeeeeeeeeeee");
+        Log.d(TAG, "init_modal_bottomsheettypeeeeeee:"+postDataList.get(position).getType());
+        if ((postDataList.get(position).getType().contains("image")||(postDataList.get(position).getType().contains("video"))||(postDataList.get(position).getType().contains("audio")))) {
         download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -1685,17 +1706,17 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
             }
         });
 
-        //}
+        }
 
-// else {
-//     //download.setVisibility(View.GONE);
-// }
+ else {
+     download.setVisibility(View.GONE);
+ }
 
 
         btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialog.hide();
+                bottomSheetDialog.hide();
             }
         });
     }
@@ -1729,7 +1750,7 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
 
             // Add the image to the system gallery
             galleryAddPic(savedImagePath);
-            dialog.hide();
+            bottomSheetDialog.hide();
             Toast.makeText(getActivity(), "IMAGE SAVED TO GALLERY", Toast.LENGTH_LONG).show();
         }
         return savedImagePath;
@@ -1753,9 +1774,12 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
             for(CommentShowData commentShowData :commentList){
                 comment_message=commentShowData.getMessage();
                 Log.d(TAG, "commentListtttt: "+comment_message);
-
                 comment_id=commentShowData.getId();
                 comment_post_id=commentShowData.getPost_id();
+                user_imagecomment=commentShowData.getImage();
+                user_comment_firstname=commentShowData.getFirst_name();
+                user_comment_lastname=commentShowData.getLast_name();
+                comment_time=commentShowData.getCreated_at();
                 comment_array.add(commentShowData);
             }
         }
@@ -1774,15 +1798,21 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
         postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                if(postedit.getText().toString().trim().equals("")){
+
+                    Toast.makeText(getActivity(),"please enter some text",Toast.LENGTH_SHORT).show();
+                }
+                else {
                 pDialog = new ProgressDialog(getActivity());
                 pDialog.setMessage("Please wait...");
                 pDialog.setCancelable(true);
                 pDialog.show();
-                postcommet_st=postedit.getText().toString();
-                Log.d(TAG, "postComment: "+postcommet_st);
+
                 //Log.d(TAG, "postComment: "+comment_array.get(position).getPost_id());
 
-
+                    postcommet_st=postedit.getText().toString();
+                    Log.d(TAG, "postComment: "+postcommet_st);
                 apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
                 Call<PostCommentResponse> call = apiInterface.postComment(UserToken,String.valueOf(postDataList.get(position).getId()),postcommet_st,"0");
 
@@ -1791,9 +1821,18 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
                     public void onResponse(Call<PostCommentResponse> call, Response<PostCommentResponse> response) {
                         pDialog.cancel();
                         try {
-                            PostCommentResponse   postCommentResponse = response.body();
+                               postCommentResponse = response.body();
                             isSucess = postCommentResponse.getSuccess();
+                            Log.d(TAG, "onResponse: "+isSucess);
                             Log.d(TAG, "comment_array onResponse: " + postCommentResponse.toString());
+
+
+
+                        }
+                        catch (Exception e){
+                        }
+                        if(isSucess==true){
+
                             CommentShowData csd = new CommentShowData();
                             if (postCommentResponse !=null) {
                                 postedit.setText("");
@@ -1802,13 +1841,16 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
                                 csd.setPost_id(postCommentResponse.getComment_id());
                                 csd.setFirst_name(postCommentResponse.getName());
                                 csd.setParent_id(postCommentResponse.getPost_id());
+                                csd.setCreated_at(postCommentResponse.getDate());
                                 comment_array.add(csd);
                                 commentAdapter.notifyDataSetChanged();
                             }
                         }
-                        catch (Exception e){
-                        }
 
+                        else {
+
+
+                        }
                     }
 
                     @Override
@@ -1816,7 +1858,7 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
 
                     }
                 });
-            }
+            }}
         });
 
 
@@ -1899,11 +1941,11 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
         pDialog.setMessage("Please wait...");
         pDialog.setCancelable(true);
         pDialog.show();
-     //   imageFilePath=new ArrayList<>();
+        //   imageFilePath=new ArrayList<>();
 
-      //  File videoFile = new File(videoFilePath);
+        //  File videoFile = new File(videoFilePath);
         //File imageFile = new File(imageFilePath);
-       // File audioFile = new File(audioFilePath);
+        // File audioFile = new File(audioFilePath);
 
 //        for (int i = 0; i <imageFilePath.size() ; i++) {
 //            File imageFile = new File(imageFilePath.get(i));

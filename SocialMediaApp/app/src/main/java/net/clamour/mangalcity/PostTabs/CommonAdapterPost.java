@@ -245,7 +245,7 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
                     if (listner != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            listner.onLikeClick(position-1);
+                            listner.onLikeClick(position);
                         }
 
                     }
@@ -254,7 +254,7 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
                     if (listner != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            listner.onDislikeClick(position-1);
+                            listner.onDislikeClick(position);
                         }
 
                     }
@@ -263,7 +263,7 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
                     if (listner != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            listner.onCommentImageClick(position-1);
+                            listner.onCommentImageClick(position);
                         }
 
                     }
@@ -272,7 +272,7 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
                     if (listner != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            listner.onShareImageClick(position-1);
+                            listner.onShareImageClick(position);
                         }
 
                     }
@@ -281,7 +281,7 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
                     if (listner != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            listner.onLikeClick(position-1);
+                            listner.onLikeClick(position);
                         }
 
                     }
@@ -290,7 +290,7 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
                     if (listner != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            listner.onDislikeClick(position-1);
+                            listner.onDislikeClick(position);
                         }
 
                     }
@@ -299,7 +299,7 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
                     if (listner != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            listner.onShareTextClick(position-1);
+                            listner.onShareTextClick(position);
                         }
 
                     }
@@ -308,7 +308,7 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
                     if (listner != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            listner.onDotClick(position-1);
+                            listner.onDotClick(position);
                         }
 
                     }
@@ -319,14 +319,14 @@ public class CommonAdapterPost extends RecyclerView.Adapter<RecyclerView.ViewHol
                     if(listner !=null){
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            listner.onUserImageClick(position-1);
+                            listner.onUserImageClick(position);
                         }
                     }
                 case R.id.commentsCountTextView:
                     if(listner !=null){
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            listner.OnCommentTextClick(position-1);
+                            listner.OnCommentTextClick(position);
                         }
                     }
             }

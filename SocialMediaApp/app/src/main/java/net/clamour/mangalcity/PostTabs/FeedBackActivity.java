@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import net.clamour.mangalcity.Home.CommonBaseActivity;
 import net.clamour.mangalcity.Home.PostActivity;
 import net.clamour.mangalcity.R;
 import net.clamour.mangalcity.ResponseModal.CountryPostResponse;
@@ -177,6 +178,9 @@ public void SubmitFaeedback(){
             if (isSucess == true) {
 
                 Toast.makeText(getApplicationContext(),"Thankyou for your FeedBack",Toast.LENGTH_SHORT).show();
+                Intent intent=new Intent(FeedBackActivity.this,CommonBaseActivity.class);
+                startActivity(intent);
+                finish();
 
             } else if (isSucess == false) {
 

@@ -26,7 +26,7 @@
             android:id="@+id/no_of_likes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1"
+            android:text=""
             android:fontFamily="@font/pt_sans_web_regular"
             android:paddingLeft="@dimen/small_intrinsic_padding"
             android:textAppearance="@style/TextAppearance.Second.Light" />
@@ -53,7 +53,7 @@
             android:id="@+id/no_of_dislikes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2"
+            android:text=""
             android:fontFamily="@font/pt_sans_web_regular"
             android:paddingLeft="@dimen/small_intrinsic_padding"
             android:textAppearance="@style/TextAppearance.Second.Light" />

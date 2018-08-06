@@ -88,27 +88,31 @@
                     android:layout_below="@+id/post_text"
                     android:id="@+id/relative_imagevideo">
 
-                    <ImageView
-                        android:id="@+id/post_image"
-                        android:layout_width="match_parent"
-                        android:layout_height="250dp"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_marginBottom="15dp"
-                        android:visibility="invisible" />
+                    <GridView
+                        android:id="@+id/gridView"
+                        android:layout_width="fill_parent"
+                        android:layout_height="190dp"
+                        android:columnWidth="100dp"
+                        android:drawSelectorOnTop="true"
+                        android:gravity="center"
+                        android:numColumns="2"
+                        android:focusable="true"
+                        android:visibility="gone"
+                        android:clickable="true"
+                        android:layout_marginTop="105dp"
+                        />
 
                     <RelativeLayout
                         android:id="@+id/videorelative"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
                         android:visibility="invisible">
-                        <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+                        <uk.co.jakelee.vidsta.VidstaPlayer
+                            android:id="@+id/videoplayer"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:id="@+id/exo_player_view">
+                            android:layout_height="190dp"
+                            />
 
-                        </com.google.android.exoplayer2.ui.SimpleExoPlayerView>
                     </RelativeLayout>
                     <RelativeLayout
                         android:id="@+id/audiorelative"

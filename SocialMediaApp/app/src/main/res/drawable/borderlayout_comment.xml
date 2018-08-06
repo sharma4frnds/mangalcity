@@ -5,11 +5,11 @@
         android:bottomLeftRadius="17dp"
         android:topLeftRadius="17dp"
         android:topRightRadius="17dp"/>
-    <stroke
-        android:width="1dip"
-        android:color="#d3d3d3"
-        />
-    <solid android:color="#ededed"/>
+    <!--<stroke-->
+        <!--android:width="1dip"-->
+        <!--android:color="#d3d3d3"-->
+        <!--/>-->
+    <solid android:color="#d3d3d3"/>
 </shape>
 
 

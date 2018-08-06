@@ -131,12 +131,10 @@
                     android:id="@+id/gridView"
                     android:layout_width="fill_parent"
                     android:layout_height="190dp"
-                    android:columnWidth="100dp"
+                    android:columnWidth="10dp"
                     android:drawSelectorOnTop="true"
                     android:gravity="center"
                     android:numColumns="2"
-
-
                     android:focusable="true"
                     android:visibility="gone"
                     android:clickable="true"

@@ -317,12 +317,18 @@ public class UserProfile extends DrawerBaseActivity {
             @Override
             public void onClick(View view) {
 
-                if (!checkBox.isChecked()) {
+                if ((!checkBox.isChecked())&&(!checkboxDob.isChecked())&&(!checkboxMobile.isChecked())) {
                     saveProfileHome();
                 }
-                if (checkBox.isChecked()) {
+                else if ((checkBox.isChecked())&& (checkboxDob.isChecked())&&(checkboxMobile.isChecked())) {
                     saveProfile();
 
+                }
+                else if((!checkBox.isChecked())&& (checkboxDob.isChecked())&&(checkboxMobile.isChecked())){
+                    saveProfile();
+                }
+                else if((checkBox.isChecked())&& (!checkboxDob.isChecked())&&(!checkboxMobile.isChecked())){
+                    saveProfile();
                 }
 
             }
@@ -425,7 +431,7 @@ public class UserProfile extends DrawerBaseActivity {
                             // profile_prefrence.edit().remove("guset_profileimage").apply();
 
                             //displaying selected image to imageview
-                            //  personProfileImage.setImageBitmap(bitmap);
+                              personProfileImage.setImageBitmap(bitmap);
 
                             //calling the method uploadBitmap to upload image
 
@@ -1234,7 +1240,7 @@ public class UserProfile extends DrawerBaseActivity {
         pDialog = new ProgressDialog(UserProfile.this);
         pDialog.setMessage("Please wait...");
         pDialog.setCancelable(true);
-        pDialog.show();
+      //  pDialog.show();
 
 
         StringRequest stringRequest1 = new StringRequest(Request.Method.POST, "http://emergingncr.com/mangalcity/api/getprofile",
@@ -1242,7 +1248,8 @@ public class UserProfile extends DrawerBaseActivity {
                     @Override
                     public void onResponse(String response) {
                         //Toast.makeText(JobDetails.this, response, Toast.LENGTH_LONG).show();
-pDialog.cancel();
+
+
                         Log.i("responsegetProfile", response);
 
 
@@ -1450,7 +1457,7 @@ checkboxMobile.setChecked(false);
                 if ((isSucessprofile == true)) {
 
                     Toast.makeText(getApplicationContext(), "Successfully Updated", Toast.LENGTH_SHORT).show();
-                    getProfileData();
+                  //  getProfileData();
 
 
                 } else if (isSucessprofile == false) {
@@ -1791,8 +1798,8 @@ checkboxMobile.setChecked(false);
                 params.put("address", fulladdress_st);
                 params.put("profession", proffession_st);
                 params.put("dob", dob_st);
-               // params.put("dob_hidden",hiddendob_set);
-              //  params.put("mobile_hidden",hiddenmobile_st);
+                params.put("dob_hidden","1");
+                params.put("mobile_hidden","1");
 
 
                 return params;
@@ -1848,6 +1855,7 @@ checkboxMobile.setChecked(false);
                             isSucessProfileUpdate = jsonObject.getBoolean("success");
                             Log.d(TAG, "onResponse: " + isSucessProfileUpdate);
                             Toast.makeText(UserProfile.this, "updated sucessfully", Toast.LENGTH_LONG).show();
+                            getProfileData();
 //                            String res = jsonObject.getString("data");
 //                            Log.d(TAG, "onResponse: " + res);
 //
@@ -1916,8 +1924,8 @@ checkboxMobile.setChecked(false);
                 params.put("address", fulladdress_st);
                 params.put("profession", proffession_st);
                 params.put("dob", dob_st);
-               // params.put("dob_hidden",hiddendob_set);
-              //  params.put("mobile_hidden",hiddenmobile_st);
+                params.put("dob_hidden","0");
+                params.put("mobile_hidden","0");
 
 
                 return params;
