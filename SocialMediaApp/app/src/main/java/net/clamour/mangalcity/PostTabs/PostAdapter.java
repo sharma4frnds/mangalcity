@@ -1,13 +1,17 @@
 package net.clamour.mangalcity.PostTabs;
 
 
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -52,12 +56,19 @@ import net.clamour.mangalcity.Home.GetTimeAgo;
 import net.clamour.mangalcity.Home.MediaGridAdapter;
 import net.clamour.mangalcity.Home.OpenImageActivity;
 import net.clamour.mangalcity.Home.OtherUserProfile;
+import net.clamour.mangalcity.Home.SlideshowDialogFragment;
 import net.clamour.mangalcity.R;
 import net.clamour.mangalcity.feed.FeedPostData;
 import net.clamour.mangalcity.feed.MediaImageResponse;
 
+
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -249,8 +260,10 @@ public void disableButton(){
         SimpleExoPlayerView exoPlayerView_audio;
         @BindView(R.id.videoplayer)
         VidstaPlayer player;
-        @BindView(R.id.gridView)
-        GridView gridView;
+//        @BindView(R.id.gridView)
+//        GridView gridView;
+        @BindView(R.id.recycler_view)
+        RecyclerView recyclerView;
 //        @BindView(R.id.videorelative)
 //        RelativeLayout videorelative;
 //        @BindView(R.id.relativ1)
@@ -470,7 +483,7 @@ public void disableButton(){
 
                 Log.i("video", "video");
 
-                gridView.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.GONE);
                 player.setVisibility(View.VISIBLE);
                 exoPlayerView_audio.setVisibility(View.GONE);
 
@@ -540,12 +553,12 @@ public void disableButton(){
 //
 //                }
 
-                gridView.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.VISIBLE);
                 // postImage.setVisibility(View.VISIBLE);
                 player.setVisibility(View.GONE);
                 exoPlayerView_audio.setVisibility(View.GONE);
                 //  mediaList=new ArrayList<>();
-                List<MediaImageResponse>mediaList=post.getMedia();
+                final List<MediaImageResponse>mediaList=post.getMedia();
 
 
 //                try {
@@ -579,28 +592,71 @@ public void disableButton(){
 //                }
 
 
-                MediaGridAdapter adapter = new MediaGridAdapter(context,mediaList);
 
-                gridView.setAdapter(adapter);
 
-                gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                MediaGridAdapter mAdapter = new MediaGridAdapter(context, mediaList);
+
+                if(mediaList.size()==1){
+                    RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(context, 1);
+                    recyclerView.setLayoutManager(mLayoutManager);
+                    recyclerView.setItemAnimator(new DefaultItemAnimator());
+                    recyclerView.setAdapter(mAdapter);
+                }
+
+                else {
+
+                RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(context, 2);
+                recyclerView.setLayoutManager(mLayoutManager);
+                recyclerView.setItemAnimator(new DefaultItemAnimator());
+                recyclerView.setAdapter(mAdapter);}
+
+                recyclerView.addOnItemTouchListener(new MediaGridAdapter.RecyclerTouchListener(context, recyclerView, new MediaGridAdapter.ClickListener() {
                     @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        // Get the GridView selected/clicked item text
-                        String selectedItem = parent.getItemAtPosition(position).toString();
+                    public void onClick(View view, int position) {
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("images", (Serializable) mediaList);
+                        bundle.putInt("position", position);
 
-                        //   Toast.makeText(context,selectedItem,Toast.LENGTH_SHORT).show();
+                        android.support.v4.app.FragmentTransaction ft = ((AppCompatActivity) context).getSupportFragmentManager()
+                                .beginTransaction();
 
-                        // Display the selected/clicked item text and position on TextView
-                        Intent intent = new Intent(context, OpenImageActivity.class);
-                        intent.putExtra("postimage", post.getMedia().get(position).getName());
-                        intent.putExtra("posttext", post.getMessage());
 
-                        context.startActivity(intent);
+                     //   android.support.v4.app.FragmentTransaction ft = context.getFragmentManager().beginTransaction();;
+                        SlideshowDialogFragment newFragment = SlideshowDialogFragment.newInstance();
+                        newFragment.setArguments(bundle);
+                        newFragment.show(ft, "slideshow");
+                    }
 
+                    @Override
+                    public void onLongClick(View view, int position) {
 
                     }
-                });
+                }));
+
+
+
+//                MediaGridAdapter adapter = new MediaGridAdapter(context,mediaList);
+//
+//                gridView.setAdapter(adapter);
+//
+//                gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                    @Override
+//                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                        // Get the GridView selected/clicked item text
+//                        String selectedItem = parent.getItemAtPosition(position).toString();
+//
+//                        //   Toast.makeText(context,selectedItem,Toast.LENGTH_SHORT).show();
+//
+//                        // Display the selected/clicked item text and position on TextView
+//                        Intent intent = new Intent(context, OpenImageActivity.class);
+//                        intent.putExtra("postimage", post.getMedia().get(position).getName());
+//                        intent.putExtra("posttext", post.getMessage());
+//
+//                        context.startActivity(intent);
+//
+//
+//                    }
+//                });
 
 
                 Log.i("image", "image");
@@ -636,7 +692,7 @@ public void disableButton(){
 
                 Log.i("audio", "audio");
 
-                gridView.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.GONE);
                 player.setVisibility(View.GONE);
                 exoPlayerView_audio.setVisibility(View.VISIBLE);
 
@@ -682,7 +738,7 @@ public void disableButton(){
 
 
             } else if (post.getType().equalsIgnoreCase("")) {
-                gridView.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.GONE);
                 player.setVisibility(View.GONE);
                 exoPlayerView_audio.setVisibility(View.GONE);
 

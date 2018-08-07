@@ -545,7 +545,8 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
 
                 if (postDataList.get(position).getType().contains("image")) {
 
-                    intent.putExtra("image", postDataList.get(position).getValue());
+                    intent.putExtra("first_name", postDataList.get(position).getUser().getFirstName());
+                    intent.putExtra("last_name",postDataList.get(position).getUser().getLastName());
                     intent.putExtra("token", UserToken);
                     intent.putExtra("post_id", String.valueOf(postDataList.get(position).getId()));
                     intent.putExtra("profileimage", postDataList.get(position).getUser().getImage());
@@ -562,6 +563,8 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
 
 
                 } else if (postDataList.get(position).getType().contains("video")) {
+                    intent.putExtra("first_name", postDataList.get(position).getUser().getFirstName());
+                    intent.putExtra("last_name",postDataList.get(position).getUser().getLastName());
                     intent.putExtra("video", postDataList.get(position).getValue());
                     intent.putExtra("token", UserToken);
                     intent.putExtra("post_id", String.valueOf(postDataList.get(position).getId()));
@@ -570,6 +573,8 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
 
 
                 } else if (postDataList.get(position).getType().contains("audio")) {
+                    intent.putExtra("first_name", postDataList.get(position).getUser().getFirstName());
+                    intent.putExtra("last_name",postDataList.get(position).getUser().getLastName());
                     intent.putExtra("audio", postDataList.get(position).getValue());
                     intent.putExtra("token", UserToken);
                     intent.putExtra("post_id", String.valueOf(postDataList.get(position).getId()));
@@ -579,6 +584,8 @@ public class CityTab extends android.support.v4.app.Fragment implements EasyPerm
 
                 } else if (postDataList.get(position).getType().contains("")) {
 
+                    intent.putExtra("first_name", postDataList.get(position).getUser().getFirstName());
+                    intent.putExtra("last_name",postDataList.get(position).getUser().getLastName());
                     intent.putExtra("text", postDataList.get(position).getMessage());
                     intent.putExtra("token", UserToken);
                     intent.putExtra("post_id", String.valueOf(postDataList.get(position).getId()));

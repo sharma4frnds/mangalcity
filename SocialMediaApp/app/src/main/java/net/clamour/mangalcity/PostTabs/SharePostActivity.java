@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -76,20 +77,22 @@ public class SharePostActivity extends AppCompatActivity {
     @BindView(R.id.profile_image)
     ImageView profile_image;
 
-    String post_text_st, post_image_st, post_video_st, userToken, postId,profile_image_st,post_audio_st;
+    String post_text_st, post_image_st, post_video_st, userToken, postId,profile_image_st,post_audio_st,first_name_st,last_name_st;
     ProgressDialog pDialog;
     ApiInterface apiInterface;
     Boolean isSucess;
-    @BindView(R.id.relative_imagevideo)
-    RelativeLayout relativeImagevideo;
+   // @BindView(R.id.relative_imagevideo)
+   // RelativeLayout relativeImagevideo;
     @BindView(R.id.relative_complete)
     RelativeLayout relativeComplete;
     @BindView(R.id.audiorelative)
     RelativeLayout audiorelative;
     @BindView(R.id.videoplayer)
     VidstaPlayer player;
-    @BindView(R.id.gridView)
-    GridView gridView;
+    @BindView(R.id.recycler_view)
+    RecyclerView recyclerView;
+    @BindView(R.id.user_name)
+    TextView user_name;
 
     RelativeLayout videorelative;
 
@@ -121,6 +124,7 @@ public class SharePostActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+
        // mediaImageResponses=new ArrayList<>();
 
       //  mediaImageResponses= CityTab.mediaList;
@@ -128,7 +132,13 @@ public class SharePostActivity extends AppCompatActivity {
 
      //   ((List<MediaImageResponse>) getIntent().getExtras().getSerializable("list"));
 
-      mediaImageResponses= (List<MediaImageResponse>)getIntent().getExtras().getSerializable("list");
+      mediaImageResponses= (List<MediaImageResponse>)getIntent().getExtras().getSerializable("media");
+       // Log.d(TAG, "onCreate: "+mediaImageResponses.size());
+
+        for (MediaImageResponse media:mediaImageResponses){
+
+            String dhfj=media.getName();
+        }
 
         LoginPrefrences = this.getSharedPreferences("net.clamour.mangalcity.profile.LoginActivity", MODE_PRIVATE);
         pro = LoginPrefrences.getString("profileImage", "");
@@ -138,7 +148,9 @@ public class SharePostActivity extends AppCompatActivity {
         Intent intent = getIntent();
         post_text_st = intent.getStringExtra("text");
         Log.d(TAG, "onCreate: " + post_text_st);
-        post_image_st = intent.getStringExtra("image");
+        first_name_st=intent.getStringExtra("first_name");
+        last_name_st=intent.getStringExtra("last_name");
+     //   post_image_st = intent.getStringExtra("image");
         post_video_st = intent.getStringExtra("video");
         userToken = intent.getStringExtra("token");
         postId = intent.getStringExtra("post_id");
@@ -146,6 +158,10 @@ public class SharePostActivity extends AppCompatActivity {
         profile_image_st = intent.getStringExtra("profileimage");
         post_audio_st=intent.getStringExtra("audio");
         Log.d(TAG, "onCreate: "+post_audio_st);
+
+        user_name.setText(first_name_st+" "+last_name_st);
+
+
 
       //  exoPlayerView = (SimpleExoPlayerView) findViewById(R.id.exo_player_view);
         videorelative = (RelativeLayout) findViewById(R.id.videorelative);
@@ -160,21 +176,21 @@ public class SharePostActivity extends AppCompatActivity {
                 .into(profile_image);
 
 
-        if (post_image_st == null && post_video_st == null && post_audio_st == null) {
+        if (mediaImageResponses.isEmpty() && post_video_st == null && post_audio_st == null) {
 
-            ViewGroup.LayoutParams params = relativeImagevideo.getLayoutParams();
-            params.height = 0;
-            params.width = 0;
-
-            ViewGroup.LayoutParams params1 = relativeComplete.getLayoutParams();
-
-            params1.height = 400;
+//            ViewGroup.LayoutParams params = relativeImagevideo.getLayoutParams();
+//            params.height = 0;
+//            params.width = 0;
+//
+//            ViewGroup.LayoutParams params1 = relativeComplete.getLayoutParams();
+//
+//            params1.height = 200;
 
             postText.setText(post_text_st);
 
-        } else if (post_image_st == null && post_text_st != null) {
+        } else if (mediaImageResponses.isEmpty() && post_audio_st==null) {
 
-            gridView.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.GONE);
             videorelative.setVisibility(View.VISIBLE);
             audiorelative.setVisibility(View.GONE);
             postText.setText(post_text_st);
@@ -193,7 +209,7 @@ public class SharePostActivity extends AppCompatActivity {
 
                 }
 
-        } else if (post_video_st == null && post_text_st != null) {
+        } else if (post_video_st == null && post_audio_st==null) {
 
           //  postImage.setVisibility(View.VISIBLE);
             videorelative.setVisibility(View.INVISIBLE);
@@ -206,9 +222,9 @@ public class SharePostActivity extends AppCompatActivity {
 //                    .diskCacheStrategy(DiskCacheStrategy.ALL)
 //                    .into(postImage);
 
-        } else if (post_image_st == null && post_video_st == null && post_text_st != null) {
+        } else if (post_image_st == null && post_video_st == null) {
 
-            gridView.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.GONE);
             videorelative.setVisibility(View.INVISIBLE);
             audiorelative.setVisibility(View.VISIBLE);
             postText.setText(post_text_st);
@@ -319,6 +335,7 @@ public class SharePostActivity extends AppCompatActivity {
 
             default:
                 return super.onOptionsItemSelected(item);
+
         }
 
 
